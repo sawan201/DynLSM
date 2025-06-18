@@ -9,3 +9,5 @@ def main():
     print(f"The square of {y} is {x}")
 
 main()
+
+print("test")
