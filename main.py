@@ -4,7 +4,7 @@ def func(num):
     return num * num
 
 def main():
-    y = -5
+    y = 5
     x = func(abs(y))
     print(f"The square of {y} is {x}")
 
