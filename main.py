@@ -8,3 +8,5 @@ def main():
     print(f"The square of 5 is {x}")
 
 main()
+
+print("test")
