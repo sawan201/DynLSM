@@ -91,6 +91,7 @@ print(f"Distinct countries in country_to:   {distinct_to}")
 # 7. Save tensor to .npy file
 ###############################################################################
 
+
 output_path = "migration_tensor.npy"
 np.save(output_path, data)
 print(f"Tensor saved to {output_path}")
@@ -135,15 +136,59 @@ print(f"Saved countryindex.csv with {len(countries)} entries")
 
 
 ###############################################################################
+# Binary percentile function generator
+###############################################################################
+
+
+def threshold_by_percentile_per_month(weights: np.ndarray, percentile: float) -> np.ndarray:
+    """
+    For each month (axis 0), compute the percentile cutoff over that month's
+    [n_countries × n_countries] slice, and binarize edges ≥ that cutoff.
+
+    Parameters
+    ----------
+    weights : np.ndarray
+        Shape (n_months, n_countries, n_countries).
+    percentile : float
+        Percentile in [0, 100].
+
+    Returns
+    -------
+    np.ndarray
+        Same shape, dtype int8, with 1 for edges in the top (100 - percentile)% 
+        of that month, else 0.
+    """
+    n_months = weights.shape[0]
+    binary = np.zeros_like(weights, dtype=np.int8) # np.zeros_like creates an array of the same shape and type
+
+    for m in range(n_months):
+        # Flatten the m-th month slice to find its percentile cutoff
+        cutoff = np.percentile(weights[m].ravel(), percentile)
+        # Threshold that slice
+        binary[m] = (weights[m] >= cutoff).astype(np.int8)
+
+    return binary
+
+# Example use:
+data = np.load("migration_tensor.npy")  
+
+# Pick percentile
+pct = 90.0  
+
+# 3) Call the function:
+binary_tensor = threshold_by_percentile_per_month(data, pct)
+
+# 4) Inspect the result:
+print("Shape:", binary_tensor.shape)             # → (48, n_countries, n_countries)
+print("Month 0: kept edges =", int(binary_tensor[0].sum()), "out of", data.shape[1]**2)
+
+# 5) (Optional) Save it for your MCMC pipeline:
+np.save(f"binary_by_month_top_{100-int(pct)}pct.npy", binary_tensor)
+
+
+###############################################################################
 # End‑of‑script marker
 ###############################################################################
 
 
 print("CODE COMPLETED")
-
-
-
-
-
-
-

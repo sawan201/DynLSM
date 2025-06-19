@@ -25,7 +25,7 @@ class DynamicLSM():
         # Set up empty Numpy arrays for each latent parameter
         self.positions = np.empty(shape=(self.ns, self.T, self.n, self.p))
         self.radii = np.empty(shape=(self.ns, self.n))
-        self.taoSq = np.empty(shape=(self.ns))
+        self.tauSq = np.empty(shape=(self.ns))
         self.sigmaSq = np.empty(shape=(self.ns))
         self.betaIN = np.empty(shape=(self.ns))
         self.betaOUT = np.empty(shape=(self.ns))
