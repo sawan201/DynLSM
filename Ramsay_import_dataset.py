@@ -91,17 +91,14 @@ print(f"Distinct countries in country_to:   {distinct_to}")
 # 7. Save tensor to .npy file
 ###############################################################################
 
-import numpy as np
+output_path = "migration_tensor.npy"
+np.save(output_path, data)
+print(f"Tensor saved to {output_path}")
 
+# (optional) now define your loader function
 def load_migration_tensor(filepath: str = "migration_tensor.npy") -> np.ndarray:
     """
     Load and return the 3-D migration tensor from a .npy file.
-
-    Args:
-        filepath: Path to the .npy file containing the tensor.
-
-    Returns:
-        A NumPy ndarray of shape (months, countries, countries).
     """
     return np.load(filepath)
 
