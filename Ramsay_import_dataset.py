@@ -107,7 +107,8 @@ for _, row in df.iterrows():
 ###############################################################################
 fi, ti = country2idx["EE"], country2idx["AU"]
 print(data[47, fi, ti])       # expected to print the integer count
-
+print(data[47, fi, fi])
+print(data[47, ti, fi])
 
 ###############################################################################
 # 7. End-of-script marker ─────────────────────────────────────────────────────
