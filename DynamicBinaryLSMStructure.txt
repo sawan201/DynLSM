@@ -1,0 +1,96 @@
+Structure:
+
+DynamicBinaryLSM class:
+    Constructor: 
+        get data, set n (number of actors), T (number of periods) attributes
+
+    RunGibbs(numSteps = , 
+             latentDim = , 
+             randomWalkVariance = , 
+             dirichletFactor = ,
+             nuIN = ,
+             etaIN = ,
+             nuOUT = ,
+             etaOUT = ,
+             thetaSigma = ,
+             phiSigma = ,
+             thetaTau = ,
+             phiTau = ,
+             alphas = [alpha_1 ... alpha_n]):
+        Set attributes:
+            self.ns = numSteps
+            self.p = latentDim
+            self.dirichletFactor = dirichletFactor
+            self.alphas = alphas
+            self.nuIN = nuIN
+            self.nuOUT = nuOUT
+            self.etaIN = etaIN
+            self.etaOUT = etaOUT
+            self.thetaSigma = thetaSigma
+            self.thetaTau = thetaTau
+            self.phiSigma = phiSigma
+            self.phiTau = phiTau
+            self.alphas = alphas
+        Create empty tensors/vectors for each parameter to be estimated
+        Create dictionary attribute representing the current values everywhere (called self.currentState) with:
+            key : value pairs:
+            "X" : empty n x n matrix
+            "r" : empty n vector
+            "sigmaSq" : single value
+            "taoSq" : single value
+            "betaIN" : single value
+            "betaOUT" : single value
+
+        Set the first values for each parameter
+
+        Loop over iter in {1, ..., self.ns - 1}:
+
+            ** Sampling Latent Positions **
+            Loop over t in {0 ... self.T-1}:
+                
+                Loop over i in {0 ... self.n-1}:
+
+                    Run Metropolis-Hastings for positions with: 
+                        Conditional posterior for position for X_{it}
+                        Normal random walk proposal centered at X{iter - 1, t, i}, variance randomWalkVariance
+                        (return a p-dimensional vector, and assign it to X[iter, t, i], update self.currentState)
+
+            ** Sampling Radii **
+            Run Metropolis-Hastings for radii with:
+                Conditional joint posterior for all r values
+                Dirichlet random walk proposal with parameters dirichletFactor(r[iter - 1])
+                (return an n-dimensional vector, and assign it to r[iter], update self.CurrentState)
+            
+            ** Sampling Global Parameters **
+            Run Metropolis-Hastings for beta_IN with:
+                Conditional joint posterior for beta_IN
+                Normal random walk proposal centered at beta_IN[iter - 1], variance randomWalkVariance
+                (return value, assign it to betaIN[iter], update self.CurrentState)
+            Run Metropolis-Hastings for beta_OUT with:
+                Conditional joint posterior for beta_OUT
+                Normal random walk proposal centered at beta_OUT[iter - 1], variance randomWalkVariance
+                (return value, assign it to betaIN[iter], update self.CurrentState)
+            Directly sample from conditional posterior for tauSquared:
+                (return value, assign it to tauSq[iter], update self.CurrentState)
+            Directly sample from conditional posterior for sigmaSquared:
+                (return value, assign it to sigmaSq[iter], update self.CurrentState)
+    
+    MetropolisHastings(conditional, proposal, currentValue, iter, proposalSymmetric = False):
+        # Implements Metropolis-Hastings algorithm
+        Sample from proposal distribution (using the self.currentState and passed in proposal function)
+        Evaluate conditional distribution at proposalValue
+        Evaluate conditional distribution at currentValue
+        if proposalSymmetric == True:
+            Calculate acceptance ratio (r)
+        else:
+            Evaluate proposal distribution at proposalValue given currentValue
+            Evaluate proposal distribution at currentValue given proposalValue
+            Calculate acceptance ratio (r)
+        if r == 1:
+            return proposalValue
+        else:
+            Sample from uniform distribution on [0, 1] -> uniformSample
+            if uniformSample < proposalValue:
+                return proposalValue
+            else:
+                return currentValue
