@@ -18,7 +18,7 @@ import numpy as np
 #   migration_month , country_from , country_to , num_migrants
 # Example row:  2019-01,  EE,  AU,  42
 ###############################################################################
-df = pd.read_csv("international_migration_flow.csv")
+df = pd.read_csv("international_migration_flow.csv", keep_default_na = False)
 
 
 ###############################################################################
@@ -109,6 +109,28 @@ fi, ti = country2idx["EE"], country2idx["AU"]
 print(data[47, fi, ti])       # expected to print the integer count
 print(data[47, fi, fi])
 print(data[47, ti, fi])
+
+
+
+###############################################################################
+# Test to make sure all 181 countries are present
+
+import pandas as pd
+
+# assuming your DataFrame is called df
+# and the two columns are named 'countries_from' and 'countries_to'
+
+# count distinct “from” countries
+distinct_from = df['country_from'].nunique()
+print(f"Distinct countries in country_from: {distinct_from}")
+
+# count distinct “to” countries
+distinct_to = df['country_to'].nunique()
+print(f"Distinct countries in countries_to:   {distinct_to}")
+###############################################################################
+
+
+
 
 ###############################################################################
 # 7. End-of-script marker ─────────────────────────────────────────────────────
