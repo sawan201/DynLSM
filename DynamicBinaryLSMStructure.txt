@@ -37,7 +37,7 @@ DynamicBinaryLSM class:
         Create empty tensors/vectors for each parameter to be estimated
         Create dictionary attribute representing the current values everywhere (called self.currentState) with:
             key : value pairs:
-            "X" : empty n x n matrix
+            "X" : empty T x n x p matrix
             "r" : empty n vector
             "sigmaSq" : single value
             "taoSq" : single value
@@ -53,10 +53,21 @@ DynamicBinaryLSM class:
                 
                 Loop over i in {0 ... self.n-1}:
 
-                    Run Metropolis-Hastings for positions with: 
-                        Conditional posterior for position for X_{it}
-                        Normal random walk proposal centered at X{iter - 1, t, i}, variance randomWalkVariance
-                        (return a p-dimensional vector, and assign it to X[iter, t, i], update self.currentState)
+                    if t == 0:
+                        Run Metropolis-Hastings for positions with: 
+                            Conditional posterior for position for X_{i1}
+                            Normal random walk proposal centered at X{iter - 1, t, i}, variance randomWalkVariance
+                            (return a p-dimensional vector, and assign it to X[iter, t, i], update self.currentState)
+                    elif t == T:
+                        Run Metropolis-Hastings for positions with:
+                            Conditional posterior for position for X_{i1}
+                            Normal random walk proposal centered at X{iter - 1, t, i}, variance randomWalkVariance
+                            (return a p-dimensional vector, and assign it to X[iter, t, i], update self.currentState)
+                    else:
+                        Run Metropolis-Hastings for positions with:
+                            Conditional posterior for position for X_{it} using X_{2 to T-1} conditional
+                            Normal random walk proposal centered at X{iter - 1, t, i}, variance randomWalkVariance
+                            (return a p-dimensional vector, and assign it to X[iter, t, i], update self.currentState)
 
             ** Sampling Radii **
             Run Metropolis-Hastings for radii with:
@@ -107,4 +118,20 @@ DynamicBinaryLSM class:
         return random sample from Dirichlet distribution with parameters dirichletFactor*currentValue
     
     ** Functions for Conditional Posterior Distributions
+    ConditionalPosteriorBetaIN(value):
+        return betaIN posterior evaluated at betaIN = value with all other values from self.currentState
     
+    ConditionalPosteriorBetaOUT(value):
+        return betaOUT posterior evaluated at betaOUT = value with all other values from self.currentState
+
+    ConditionalPosteriorR(value):
+        return R_{1:n} posterior evaluated at r_{1:n} = value with all other values from self.currentState
+    
+    ConditionalPosteriorX1(value):
+        return X (at time 1) posterior evaluated at X_{i1} = value with all other values from self.currentState
+    
+    ConditionalPosteriorX2toTMinus1(value):
+        return X (at time 2 to T-1) posterior evaluated at X_{it} = value with all other values from self.currentState
+    
+    ConditionalPosteriorXT(value):
+        return X (at time T) posterior evaluated at X_{iT} = value with all other values from self.currentState
