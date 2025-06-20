@@ -1,8 +1,11 @@
 Structure:
 
+Package Dependencies: numpy, scipy (for sampling from inverse gamma)
+
 DynamicBinaryLSM class:
     Constructor: 
         get data, set n (number of actors), T (number of periods) attributes
+        (assume that data comes in a T x n x n tensor)
 
     RunGibbs(numSteps = , 
              latentDim = , 
@@ -94,3 +97,14 @@ DynamicBinaryLSM class:
                 return proposalValue
             else:
                 return currentValue
+    
+    ** Functions for Proposal Distribution
+    # General form of a proposal function:
+    SampleFromNormalProposal(currentValue)
+        return random sample from normal distribution centered at currentValue, variance self.randomWalkVariance
+    
+    SampleFromDirichletProposal(currentValue)
+        return random sample from Dirichlet distribution with parameters dirichletFactor*currentValue
+    
+    ** Functions for Conditional Posterior Distributions
+    
