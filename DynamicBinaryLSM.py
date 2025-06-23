@@ -33,34 +33,67 @@ class DynamicLSM():
     def MetroHastings(self, parameters):
         """
         Metropolis-Hastings sampling for Dynamic LSM.
-        
-        
         """
+       
+
     def ConditionalPosteriorBetaIN(self, beta_value: float) -> float:
-            """
-            Full conditional log-posterior for beta_IN, as a function of the single argument beta_value.
-            Uses current X’s, r’s, y’s and the Normal(nuIN, etaIN) prior stored on self.
-            """
-            # 1) log-prior: beta_IN ~ N(self.nuIN, self.etaIN)
-            log_prior = -0.5 * (beta_value - self.nuIN)**2 / self.etaIN
+        """
+        log f(beta_IN | rest)  ∝  log N(beta_IN|nuIN, etaIN) +
+          Σ_{t,i,j} [ y_ijt * η_ijt  –  log(1+exp(η_ijt)) ]
+        where η_ijt = beta_IN * a_in[t,i,j] + beta_OUT * a_out[t,i,j].
+        """
+        # 1) prior
+        log_prior = -0.5 * (beta_value - self.nuIN)**2 / self.etaIN
 
-            # 2) pull latent positions and radii from currentState
-            X = self.currentState['X']    # shape (T, n, p)
-            r = self.currentState['r']    # shape (n,)
+        # 2) current state
+        X = self.currentState['X']      # (T,n,p)
+        r = self.currentState['r']      # (n,)
+        betaOUT = self.currentState['betaOUT']
 
-            # 3) compute pairwise distances dist[t,i,j]
-            diff = X[:, :, None, :] - X[:, None, :, :]  
-            distances = np.linalg.norm(diff, axis=-1)  # shape (T, n, n)
+        # 3) pairwise distances d[t,i,j]
+        diff = X[:, :, None, :] - X[:, None, :, :]
+        distances = np.linalg.norm(diff, axis=-1)  # (T,n,n)
 
-            # 4) affinity a[t,i,j] = 1 – dist[t,i,j] / r[j]
-            a = 1 - distances / r[np.newaxis, np.newaxis, :]
+        # 4) affinities
+        #    a_in[t,i,j]  = 1 - d_{ijt}/r_j
+        a_in = 1 - distances / r[np.newaxis, np.newaxis, :]
+        #    a_out[t,i,j] = 1 - d_{ijt}/r_i
+        a_out = 1 - distances / r[np.newaxis, :, None]
 
-            # 5) linear predictor η[t,i,j] = beta_value * a[t,i,j]
-            eta = beta_value * a
+        # 5) linear predictor
+        eta = beta_value * a_in + betaOUT * a_out
 
-            # 6) log-likelihood: Σ[y[t,i,j]*η - log(1+exp(η))]
-            y = self.data  # shape (T, n, n)
-            log_lik = np.sum(y * eta - np.logaddexp(0, eta))
+        # 6) log‐likelihood
+        y = self.data
+        log_lik = np.sum(y * eta - np.logaddexp(0, eta))
 
-            # 7) return unnormalized log-posterior = log-prior + log-likelihood
-            return log_prior + log_lik
+        return log_prior + log_lik
+
+    def ConditionalPosteriorBetaOUT(self, beta_value: float) -> float:
+        """
+        Same as above, swapping roles of IN and OUT.
+        """
+        # 1) prior
+        log_prior = -0.5 * (beta_value - self.nuOUT)**2 / self.etaOUT
+
+        # 2) current state
+        X = self.currentState['X']
+        r = self.currentState['r']
+        betaIN = self.currentState['betaIN']
+
+        # 3) distances
+        diff = X[:, :, None, :] - X[:, None, :, :]
+        distances = np.linalg.norm(diff, axis=-1)
+
+        # 4) affinities
+        a_in = 1 - distances / r[np.newaxis, np.newaxis, :]
+        a_out = 1 - distances / r[np.newaxis, :, None]
+
+        # 5) predictor
+        eta = betaIN * a_in + beta_value * a_out
+
+        # 6) log‐likelihood
+        y = self.data
+        log_lik = np.sum(y * eta - np.logaddexp(0, eta))
+
+        return log_prior + log_lik
