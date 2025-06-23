@@ -116,8 +116,15 @@ DynamicBinaryLSM class:
     
     SampleFromDirichletProposal(currentValue)
         return random sample from Dirichlet distribution with parameters dirichletFactor*currentValue
+
+    ** Functions for Full Conditional Posterior Distribution
+    SampleFromFullTauSquaredProposal(currentValue)
+        return random sample from Inverse Gamma distribution with parameters of the posterior of tau^2
+
+    SampleFromFullSigmaSquaredProposal(currentValue)
+        return random sample from Inverse Gamma distribution with parameters of the posterior of sigma^2
     
-    ** Functions for Conditional Posterior Distributions
+    ** Functions for Proportional Conditional Posterior Distributions
     ConditionalPosteriorBetaIN(value):
         return betaIN posterior evaluated at betaIN = value with all other values from self.currentState
     
