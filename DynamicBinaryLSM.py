@@ -36,10 +36,31 @@ class DynamicLSM():
         
         
         """
-    def Conditional1(self, parameters):
-        """
-        Conditional sampling for Dynamic LSM.
-        
-        
-        """
-    
+    def ConditionalPosteriorBetaIN(self, beta_value: float) -> float:
+            """
+            Full conditional log-posterior for beta_IN, as a function of the single argument beta_value.
+            Uses current X’s, r’s, y’s and the Normal(nuIN, etaIN) prior stored on self.
+            """
+            # 1) log-prior: beta_IN ~ N(self.nuIN, self.etaIN)
+            log_prior = -0.5 * (beta_value - self.nuIN)**2 / self.etaIN
+
+            # 2) pull latent positions and radii from currentState
+            X = self.currentState['X']    # shape (T, n, p)
+            r = self.currentState['r']    # shape (n,)
+
+            # 3) compute pairwise distances dist[t,i,j]
+            diff = X[:, :, None, :] - X[:, None, :, :]  
+            distances = np.linalg.norm(diff, axis=-1)  # shape (T, n, n)
+
+            # 4) affinity a[t,i,j] = 1 – dist[t,i,j] / r[j]
+            a = 1 - distances / r[np.newaxis, np.newaxis, :]
+
+            # 5) linear predictor η[t,i,j] = beta_value * a[t,i,j]
+            eta = beta_value * a
+
+            # 6) log-likelihood: Σ[y[t,i,j]*η - log(1+exp(η))]
+            y = self.data  # shape (T, n, n)
+            log_lik = np.sum(y * eta - np.logaddexp(0, eta))
+
+            # 7) return unnormalized log-posterior = log-prior + log-likelihood
+            return log_prior + log_lik

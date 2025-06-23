@@ -1,13 +1,6 @@
-def func(num):
-    if num < 0:
-        raise ValueError("Negative numbers are not allowed")
-    return num * num
-
-def main():
-    y = 5
-    x = func(abs(y))
-    print(f"The square of {y} is {x}")
-
-main()
-
-print("test")
+a = 'strawberry'
+counter = 0
+for letter in a:
+    if letter == 'r':
+        counter += 1
+print(f"The letter 'r' appears {counter} times in the word '{a}'.")
