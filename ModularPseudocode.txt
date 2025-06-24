@@ -52,10 +52,27 @@ RunBinaryGibbs(Y, ns, p, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, theta
 
                 Call CalculateLogLikelihood(X, r, betaIN, betaOUT)
 
-MetropolisHastings(likelihood, proposal, currentValue, dataDict):
-    Call Proposal(dataDict) to get the proposal value
-    Call Likelihood(proposalValue, dataDict)
-    Call 
+MetropolisHastings(conditional, proposal, currentValue, data, proposalSymmetric = False):
+    # data = dictionary of necessary values to be passed into
+
+    # Implements Metropolis-Hastings algorithm
+    Sample from proposal distribution (pass in data)
+    Evaluate conditional function at proposalValue (pass in data)
+    Evaluate conditional function at currentValue (pass in data)
+    if proposalSymmetric == True:
+        Calculate acceptance ratio (r)
+    else:
+        Evaluate proposal distribution at proposalValue given currentValue
+        Evaluate proposal distribution at currentValue given proposalValue
+        Calculate acceptance ratio (r)
+    if r == 1:
+        return proposalValue
+    else:
+        Sample from uniform distribution on [0, 1] -> uniformSample
+        if uniformSample < r:
+            return proposalValue
+        else:
+            return currentValue
 
 InitializeX(X):
 
