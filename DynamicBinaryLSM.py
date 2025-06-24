@@ -42,16 +42,10 @@ class DynamicLSM():
         self.betaIN = np.empty(shape=(self.ns))
         self.betaOUT = np.empty(shape=(self.ns))
 
-        # Set up current state
-        self.currentState = {"X" : self.positions,
-                             "r" : self.radii,
-                             "tauSq" : self.tauSq,
-                             "sigmaSq" : self.sigmaSq,
-                             "betaIN" : self.betaIN,
-                             "betaOUT" : self.betaOUT}
-        
         # Set first value for each parameter in Markov chain:
         
+        # Set up current state
+        self.currentState = {}
 
     def MetroHastings(self, parameters):
         """

@@ -35,14 +35,6 @@ DynamicBinaryLSM class:
             self.phiTau = phiTau
             self.alphas = alphas
         Create empty tensors/vectors for each parameter to be estimated
-        Create dictionary attribute representing the current values everywhere (called self.currentState) with:
-            key : value pairs:
-            "X" : empty T x n x p matrix
-            "r" : empty n vector
-            "sigmaSq" : single value
-            "taoSq" : single value
-            "betaIN" : single value
-            "betaOUT" : single value
 
         ** Set the first values for each parameter:
         * Social Radii (r) parameter:
@@ -53,6 +45,14 @@ DynamicBinaryLSM class:
         connectionsByActor = connectionsIn + connectionsOut
         self.r[0] = connectionsByActor / (2 * totalConnections)
 
+        Create dictionary attribute representing the current values everywhere (called self.currentState) with:
+            key : value pairs:
+            "X" : first positions for X (T, n, p) array
+            "r" : first positions for r (n) array
+            "sigmaSq" : single value
+            "taoSq" : single value
+            "betaIN" : single value
+            "betaOUT" : single value
 
         Loop over iter in {1, ..., self.ns - 1}:
 
