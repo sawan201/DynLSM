@@ -44,7 +44,15 @@ DynamicBinaryLSM class:
             "betaIN" : single value
             "betaOUT" : single value
 
-        Set the first values for each parameter
+        ** Set the first values for each parameter:
+        * Social Radii (r) parameter:
+        totalConnections = sum of all entries in self.data (sum along all axes)
+        summedData = sum over T axis (collapse down to a single n by n)
+        connectionsIn = sum over vertical axis (collapse down to a single n length vector)
+        connectionsOut = sum over horizontal axis (collapse down to a single n length vector)
+        connectionsByActor = connectionsIn + connectionsOut
+        self.r[0] = connectionsByActor / (2 * totalConnections)
+
 
         Loop over iter in {1, ..., self.ns - 1}:
 
@@ -57,37 +65,37 @@ DynamicBinaryLSM class:
                         Run Metropolis-Hastings for positions with: 
                             Conditional posterior for position for X_{i1}
                             Normal random walk proposal centered at X{iter - 1, t, i}, variance randomWalkVariance
-                            (return a p-dimensional vector, and assign it to X[iter, t, i], update self.currentState)
+                            (return a p-dimensional vector, and assign it to X[iter, t, i], self.currentState updates)
                     elif t == T:
                         Run Metropolis-Hastings for positions with:
                             Conditional posterior for position for X_{i1}
                             Normal random walk proposal centered at X{iter - 1, t, i}, variance randomWalkVariance
-                            (return a p-dimensional vector, and assign it to X[iter, t, i], update self.currentState)
+                            (return a p-dimensional vector, and assign it to X[iter, t, i], self.currentState updates)
                     else:
                         Run Metropolis-Hastings for positions with:
                             Conditional posterior for position for X_{it} using X_{2 to T-1} conditional
                             Normal random walk proposal centered at X{iter - 1, t, i}, variance randomWalkVariance
-                            (return a p-dimensional vector, and assign it to X[iter, t, i], update self.currentState)
+                            (return a p-dimensional vector, and assign it to X[iter, t, i], self.currentState updates)
 
             ** Sampling Radii **
             Run Metropolis-Hastings for radii with:
                 Conditional joint posterior for all r values
                 Dirichlet random walk proposal with parameters dirichletFactor(r[iter - 1])
-                (return an n-dimensional vector, and assign it to r[iter], update self.CurrentState)
+                (return an n-dimensional vector, and assign it to r[iter], self.currentState updates)
             
             ** Sampling Global Parameters **
             Run Metropolis-Hastings for beta_IN with:
                 Conditional joint posterior for beta_IN
                 Normal random walk proposal centered at beta_IN[iter - 1], variance randomWalkVariance
-                (return value, assign it to betaIN[iter], update self.CurrentState)
+                (return value, assign it to betaIN[iter], self.currentState updates)
             Run Metropolis-Hastings for beta_OUT with:
                 Conditional joint posterior for beta_OUT
                 Normal random walk proposal centered at beta_OUT[iter - 1], variance randomWalkVariance
-                (return value, assign it to betaIN[iter], update self.CurrentState)
+                (return value, assign it to betaIN[iter], self.currentState updates)
             Directly sample from conditional posterior for tauSquared:
-                (return value, assign it to tauSq[iter], update self.CurrentState)
+                (return value, assign it to tauSq[iter], self.currentState updates)
             Directly sample from conditional posterior for sigmaSquared:
-                (return value, assign it to sigmaSq[iter], update self.CurrentState)
+                (return value, assign it to sigmaSq[iter], self.currentState updates)
     
     MetropolisHastings(conditional, proposal, currentValue, iter, proposalSymmetric = False):
         # Implements Metropolis-Hastings algorithm

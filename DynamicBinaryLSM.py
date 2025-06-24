@@ -13,7 +13,8 @@ class DynamicLSM():
         self.n = data.shape[1]
         self.T = data.shape[0]
 
-    def RunGibbs(self, numSteps, latentDim):
+    def RunGibbs(self, numSteps, latentDim, randomWalkVariance, dirichletFactor, nuIN, etaIN, nuOUT, etaOUT, thetaSigma,
+            phiSigma, thetaTau, phiTau, alphas):
         """
         Gibbs sampling for Dynamic LSM.
         ns is the number of steps in the Markov Chain formed to estimate each parameter
@@ -21,6 +22,17 @@ class DynamicLSM():
         """
         self.ns = numSteps
         self.p = latentDim
+        self.dirichletFactor = dirichletFactor
+        self.randomWalkVariance = randomWalkVariance
+        self.nuIN = nuIN
+        self.nuOUT = nuOUT
+        self.etaIN = etaIN
+        self.etaOUT = etaOUT
+        self.thetaSigma = thetaSigma
+        self.thetaTau = thetaTau
+        self.phiSigma = phiSigma
+        self.phiTau = phiTau
+        self.alphas = alphas
 
         # Set up empty Numpy arrays for each latent parameter
         self.positions = np.empty(shape=(self.ns, self.T, self.n, self.p))
@@ -29,6 +41,17 @@ class DynamicLSM():
         self.sigmaSq = np.empty(shape=(self.ns))
         self.betaIN = np.empty(shape=(self.ns))
         self.betaOUT = np.empty(shape=(self.ns))
+
+        # Set up current state
+        self.currentState = {"X" : self.positions,
+                             "r" : self.radii,
+                             "tauSq" : self.tauSq,
+                             "sigmaSq" : self.sigmaSq,
+                             "betaIN" : self.betaIN,
+                             "betaOUT" : self.betaOUT}
+        
+        # Set first value for each parameter in Markov chain:
+        
 
     def MetroHastings(self, parameters):
         """
