@@ -112,7 +112,7 @@ DynamicBinaryLSM class:
             return proposalValue
         else:
             Sample from uniform distribution on [0, 1] -> uniformSample
-            if uniformSample < proposalValue:
+            if uniformSample < r:
                 return proposalValue
             else:
                 return currentValue
