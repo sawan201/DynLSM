@@ -91,7 +91,7 @@ DynamicBinaryLSM class:
             Run Metropolis-Hastings for beta_OUT with:
                 Conditional joint posterior for beta_OUT
                 Normal random walk proposal centered at beta_OUT[iter - 1], variance randomWalkVariance
-                (return value, assign it to betaIN[iter], self.currentState updates)
+                (return value, assign it to betaOUT[iter], self.currentState updates)
             Directly sample from conditional posterior for tauSquared:
                 (return value, assign it to tauSq[iter], self.currentState updates)
             Directly sample from conditional posterior for sigmaSquared:
