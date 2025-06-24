@@ -1,0 +1,63 @@
+Files:
+    BinaryGibbs.py
+    simulation.py
+
+BinaryGibbs.py:
+RunBinaryGibbs(Y, ns, p, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas):
+    Inputs: 
+        Y (T x n x n Numpy array of data)
+        ns (int number of steps)
+        p (int dimension of latent space)
+        nuIN (mean of prior on betaIN)
+        etaIN (variance of prior on betaIN)
+        nuOUT (mean of prior on betaOUT)
+        etaOUT (variance of prior on betaOUT)
+        thetaSigma (shape parameter of prior on SigmaSq)
+        phiSigma (scale parameter of prior on SigmaSq)
+        thetaTau (shape parameter of prior on TauSq)
+        phiTau (scale parameter of prior on TauSq)
+        alphas (parameters for Dirichlet prior on r_{1:n})
+        ** FOR NOW: Fix the variance of the normal random walk (to the true value for sigma when testing)
+        ** Fix the Dirichlet factor (what value we will use in the proposal)
+    
+    Outputs:
+        X (ns x T x n x p Numpy array of latent positions samples from Markov Chain)
+        r (ns x n Numpy array of reach samples from Markov Chain)
+        tauSq (ns array of tauSq samples from Markov Chain)
+        sigmaSq (ns array of sigmaSq samples from Markov Chain)
+        betaIN (ns array of betaIN samples from Markov Chain)
+        betaOUT (ns array of betaOUT samples from Markov Chain)
+    
+    Determine n and T based on shape of Y
+    Allocate the following empty Numpy arrays: name (shape)
+        X (ns, T, n, p)
+        r (ns, n)
+        tauSq (ns)
+        sigmaSq (ns)
+        betaIN (ns)
+        betaOUT (ns)
+    Initialize values for X, r, tauSq, sigmaSq, betaIN, betaOUT
+        Call a function for each that does this, provided the relevant parameter, to make easy to change later
+    
+    Loop over iter in {1, 2, 3, ..., ns - 1}:
+        
+        Loop over j in {0, 1, 2, ..., n - 1}:
+
+            Loop over i in {0, 1, 2, ..., n - 1}:
+
+                if i == j:
+                    continue 
+                
+                Call CalculateLogLikelihood(X, r, betaIN, betaOUT)
+    
+InitializeX(X):
+
+InitializeR(r):
+
+InitializeTauSq(tauSq):
+
+InitializeSigmaSq(sigmaSq):
+
+InitializeBetaIN(betaIN):
+
+InitializeBetaOUT(betaOUT):
