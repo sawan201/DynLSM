@@ -48,8 +48,15 @@ RunBinaryGibbs(Y, ns, p, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, theta
                 if i == j:
                     continue 
                 
+                Call MetropolisHastings()
+
                 Call CalculateLogLikelihood(X, r, betaIN, betaOUT)
-    
+
+MetropolisHastings(likelihood, proposal, currentValue, dataDict):
+    Call Proposal(dataDict) to get the proposal value
+    Call Likelihood(proposalValue, dataDict)
+    Call 
+
 InitializeX(X):
 
 InitializeR(r):
