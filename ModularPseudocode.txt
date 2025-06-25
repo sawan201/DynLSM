@@ -1,6 +1,7 @@
 Files:
     gibbs.py
-    conditionals.py
+    initialize.py
+    conditionalposteriors.py
     simulation.py
 
 gibbs.py:
@@ -70,6 +71,8 @@ gibbs.py:
             "betaIN" : initial value of betaIN
             "betaOUT" : initial value of betaOUT
         
+        Set value of n based on X
+        
         Loop over iter in {1, 2, 3, ..., ns - 1}:
             
             ** Sampling Latent Positions
@@ -104,9 +107,9 @@ gibbs.py:
             Put returned value in proper place in betaOUT and in currentState
 
             ** Directly Sampling Global Parameters
-            Call conditionals.SampleTauSquared(currentState)
+            Call conditionals.SampleTauSquared(currentState["X"])
             Put returned value in proper place in tauSq and in currentState
-            Call conditionals.SampleSigmaSquared(currentState)
+            Call conditionals.SampleSigmaSquared(currentState["X"])
             Put returned value in proper place in sigmaSq and in currentState
 
         return X, r, tauSq, sigmaSq, betaIN, betaOUT
@@ -291,13 +294,13 @@ gibbs.py:
             calculate and return eta using the typical formula at position i, j, t
         
         ** DIRECTLY SAMPLING FROM FUNCTIONS
-        function SampleTauSquared(currentData):
+        function SampleTauSquared(X):
             Calculate shape parameter of Tau^2 given else
             Calculate scale parameter of Tau^2 given else
             Sample from inverse gamma given shape, scale parameters
             return sample value
         
-        function SampleSigmaSquared(currentData):
+        function SampleSigmaSquared(X):
             Calculate shape parameter of Sigma^2 given else
             Calculate scale parameter of Sigma^2 given else
             Sample from inverse gamma given shape, scale parameters
