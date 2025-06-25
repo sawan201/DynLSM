@@ -42,13 +42,33 @@ class conditionals:
 
     # Tau squared and sigma squared draws from inverse gamma distribution
     def sample_tau2(self, X_current):   # X_current is one snapshot of all latent positions at the present MCMC iteration                       
-        X1 = X_current[0]  # This is taking the the currentData tensor, and extracting the first slice which is the first time point, which is what we want for tau squared
-        n, p = X_current.shape
+        X1 = X_current[0]  # This is taking the first slice of the X_current tensor, the first time point, which is what we want for tau squared
+        n, p = X1.shape
         shape = self.theta_tau + 0.5 * n * p
         scale = self.phi_tau  + 0.5 * np.linalg.norm(X1) ** 2  
         return invgamma.rvs(a=shape, scale=scale)
 
+'''
 
+    def sample_sigma2(self, X):
+        diffs = X[1:] - X[:-1]                 # X_{t+1} − X_t
+        Tm1, n, p = diffs.shape
+        shape = self.theta_sig + 0.5 * n * p * Tm1
+        scale = self.phi_sig  + 0.5 * np.sum(diffs ** 2)
+        return invgamma.rvs(a=shape, scale=scale)
+
+    # ---------- log-prior densities for β’s --------------------
+    def log_prior_beta_in(self, beta_val):
+        return -0.5 * (beta_val - self.nu_in)  ** 2 / self.xi_in
+
+    def log_prior_beta_out(self, beta_val):
+        return -0.5 * (beta_val - self.nu_out) ** 2 / self.xi_out
+    
+
+
+    # END OF CODE
+
+'''
 
 
 
