@@ -1,195 +1,277 @@
 Files:
-    BinaryGibbs.py
+    gibbs.py
+    conditionals.py
     simulation.py
 
-BinaryGibbs.py:
-RunBinaryGibbs(Y, ns, p, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas):
-    Inputs: 
-        Y (T x n x n Numpy array of data)
-        ns (int number of steps)
-        p (int dimension of latent space)
-        nuIN (mean of prior on betaIN)
-        etaIN (variance of prior on betaIN)
-        nuOUT (mean of prior on betaOUT)
-        etaOUT (variance of prior on betaOUT)
-        thetaSigma (shape parameter of prior on SigmaSq)
-        phiSigma (scale parameter of prior on SigmaSq)
-        thetaTau (shape parameter of prior on TauSq)
-        phiTau (scale parameter of prior on TauSq)
-        alphas (parameters for Dirichlet prior on r_{1:n})
-        
-        ** FOR NOW: 
-        ** Fix the variance of the normal random walk (to the true value for sigma when testing)
-        ** Fix the Dirichlet factor (what value we will use in the proposal)
-    
-    Outputs:
-        X (ns x T x n x p Numpy array of latent positions samples from Markov Chain)
-        r (ns x n Numpy array of reach samples from Markov Chain)
-        tauSq (ns array of tauSq samples from Markov Chain)
-        sigmaSq (ns array of sigmaSq samples from Markov Chain)
-        betaIN (ns array of betaIN samples from Markov Chain)
-        betaOUT (ns array of betaOUT samples from Markov Chain)
-    
-    Determine n and T based on shape of Y
-    Allocate the following empty Numpy arrays: name (shape)
-        X (ns, T, n, p)
-        r (ns, n)
-        tauSq (ns)
-        sigmaSq (ns)
-        betaIN (ns)
-        betaOUT (ns)
-    Initialize values for X, r, tauSq, sigmaSq, betaIN, betaOUT
-        Call a function for each that does this, provided the relevant parameter, to make easy to change later
-    
-    Initialize currentValue dictionary with:
-        key : value
-        "Y" : data (as T x n x n array)
-        "X" : initial value of X (as T x n x n array)
-        "r" : initial value of r (as n length array)
-        "tauSq" : initial value of tauSq
-        "sigmaSq" : initial value of sigmaSq
-        "betaIN" : initial value of betaIN
-        "betaOUT" : initial value of betaOUT
-    
-    Loop over iter in {1, 2, 3, ..., ns - 1}:
-        
-        ** Sampling Latent Positions
-        Loop over t in {1, 2, ..., T}: (potentially time index {0, 1, 2, ..., T - 1})
+gibbs.py:
+    import conditionals as cds
+    impot initialize as init
 
-            if t == 1:
-                Set logPosterior = LogTime1ConditionalPosterior()
+    function RunBinaryGibbs(Y, ns, p, modelType, initialization
+                            mnuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas):
+        Inputs: 
+            Y (T x n x n Numpy array of data)
+            ns (int number of steps)
+            p (int dimension of latent space)
+            modelType (either "poisson" or "binary")
+            initialization (either "base" or something else that we create later)
+            nuIN (mean of prior on betaIN)
+            etaIN (variance of prior on betaIN)
+            nuOUT (mean of prior on betaOUT)
+            etaOUT (variance of prior on betaOUT)
+            thetaSigma (shape parameter of prior on SigmaSq)
+            phiSigma (scale parameter of prior on SigmaSq)
+            thetaTau (shape parameter of prior on TauSq)
+            phiTau (scale parameter of prior on TauSq)
+            alphas (parameters for Dirichlet prior on r_{1:n})
             
-            elif t == T:
-                Set logPosterior = LogTimeTConditionalPosterior()
+            ** FOR NOW: 
+            ** Fix the variance of the normal random walk (to the true value for sigma when testing)
+            ** Fix the Dirichlet factor (what value we will use in the proposal)
+        
+        Outputs:
+            X (ns x T x n x p Numpy array of latent positions samples from Markov Chain)
+            r (ns x n Numpy array of reach samples from Markov Chain)
+            tauSq (ns array of tauSq samples from Markov Chain)
+            sigmaSq (ns array of sigmaSq samples from Markov Chain)
+            betaIN (ns array of betaIN samples from Markov Chain)
+            betaOUT (ns array of betaOUT samples from Markov Chain)
+        
+        ** Choose the right set of conditionals (the right class)
+        if modelType == "binary":
+            set conditionals = new object of class cds.BinaryConditionals()
+                pass in the following key-value dictionary:
+                    "nuIN": nuIN
+                    "etaIN" : etaIN
+                    "nuOUT" : nuOUT 
+                    "etaOUT" : etaOUT 
+                    "thetaSigma": thetaSigma 
+                    "phiSigma" : phiSigma 
+                    "thetaTau" : thetaTau 
+                    "phiTau" : phiTau 
+                    "alphas" : alphas 
 
-            else:
-                Set logPosterior = LogMiddleTimeConditionalPosterior()
+        elif modeltype == "poisson":
+            set conditionals = new object of class cds.PoissonConditionals()
+        
+        ** Choose the right set of initializations
+        if initialization == "base":
+            set initialization = new object of class init.BaseInitialization()
 
-            Loop over j in {0, 1, 2, ..., n - 1}:
+        Determine n and T based on shape of Y
+        Allocate the following empty Numpy arrays: name (shape)
+            X (ns, T, n, p)
+            r (ns, n)
+            tauSq (ns)
+            sigmaSq (ns)
+            betaIN (ns)
+            betaOUT (ns)
+        Initialize values for X, r, tauSq, sigmaSq, betaIN, betaOUT
+            Call a function on the initialization object that does this
+        
+        Initialize currentValue dictionary with:
+            key : value
+            "Y" : data (as T x n x n array)
+            "X" : initial value of X (as T x n x n array)
+            "r" : initial value of r (as n length array)
+            "tauSq" : initial value of tauSq
+            "sigmaSq" : initial value of sigmaSq
+            "betaIN" : initial value of betaIN
+            "betaOUT" : initial value of betaOUT
+        
+        Loop over iter in {1, 2, 3, ..., ns - 1}:
+            
+            ** Sampling Latent Positions
+            Loop over t in {1, 2, ..., T}: (potentially time index {0, 1, 2, ..., T - 1})
 
-                Loop over i in {0, 1, 2, ..., n - 1}:
+                if t == 1:
+                    Set logPosterior = conditionals.LogTime1ConditionalPosterior()
+                
+                elif t == T:
+                    Set logPosterior = conditionals.LogTimeTConditionalPosterior()
 
-                    if i == j:
-                        continue 
-                    
-                    Call MetropolisHastings(logPosterior, SampleFromNormalProposal, X[iter, t, i, j], data)
-                        where data has all the key-value pairs of currentState and the following:
-                            "i" : i
-                            "t" : t
-                    Put returned value in proper place in X and in currentState   
+                else:
+                    Set logPosterior = conditionals.LogMiddleTimeConditionalPosterior()
 
-        ** Sampling Radii
+                Loop over j in {0, 1, 2, ..., n - 1}:
+
+                    Loop over i in {0, 1, 2, ..., n - 1}:
+
+                        if i == j:
+                            continue 
+                        
+                        Call MetropolisHastings(logPosterior, conditionals.SampleFromNormalProposal, X[iter - 1, t, i, j], data)
+                            where data has all the key-value pairs of currentState and the following:
+                                "i" : i
+                                "t" : t
+                        Put returned value in proper place in X and in currentState   
+
+            ** Sampling Radii
+            Call MetropolisHastings(conditionals.LogRConditionalPosterior, SampleFromDirichletProposal, r[iter - 1], data
+                                    logProposalEvaluate = LogEvaluateDirichlet, proposalSymmetric = False)
+            Put returned value in proper place in r and in currentState
+
+            ** Sampling Global Parameters
 
 
-MetropolisHastings(conditionalPosterior, proposalSampler, currentValue, data, 
-                   logProposalEvaluate = None, proposalSymmetric = False, logPosterior = True):
-    Inputs:
-        conditionalPosterior: one of the conditional posterior functions below
-        proposalSampler : one of the proposal sampler functions below
-        currentValue : the current value in the Markov chain of the parameter under study
-        data : dictionary of all values needed by the conditionalPosterior, proposalSampler
-        logProposalEvaluate : one of the "evaluate at" functions below (only needed for asymmetric proposal, default None)
-        proposalSymmetric : is the proposal symmetric? (False for Normal, True for Dirichlet)
-        logPosterior : are we passing in log functions everywhere? (defaults to True)
+    function MetropolisHastings(conditionalPosterior, proposalSampler, currentValue, data, 
+                    logProposalEvaluate = None, proposalSymmetric = True, logPosterior = True):
+        Inputs:
+            conditionalPosterior: one of the conditional posterior functions below
+            proposalSampler : one of the proposal sampler functions below
+            currentValue : the current value in the Markov chain of the parameter under study
+            data : dictionary of all values needed by the conditionalPosterior, proposalSampler
+            logProposalEvaluate : one of the "evaluate at" functions below (only needed for asymmetric proposal, default None)
+            proposalSymmetric : is the proposal symmetric? (False for Normal, True for Dirichlet)
+            logPosterior : are we passing in log functions everywhere? (defaults to True)
+        
+        Output:
+            next value in the Markov chain (either proposalValue or currentValue)
 
-    # data = dictionary of necessary values to be passed into
+        # data = dictionary of necessary values to be passed into
 
-    # Implements Metropolis-Hastings algorithm
-    Sample from proposal distribution (pass in currentValue, data)
-    Evaluate conditional posterior function at proposalValue (pass in data)
-    Evaluate conditional posterior function at currentValue (pass in data)
-    if proposalSymmetric == True:
-        Calculate acceptance ratio (r), add/subtract if logPosterior = True (divide else)
-    else:
-        Evaluate proposal distribution at proposalValue given currentValue
-        Evaluate proposal distribution at currentValue given proposalValue
-        Calculate acceptance ratio (r), add/subtract if logPosterior = True (divide else)
-    if r == 1:
-        return proposalValue
-    else:
-        Sample from uniform distribution on [0, 1] -> uniformSample
-        if uniformSample < r:
+        # Implements Metropolis-Hastings algorithm
+        Sample from proposal distribution (pass in currentValue, data)
+        Evaluate conditional posterior function at proposalValue (pass in data)
+        Evaluate conditional posterior function at currentValue (pass in data)
+        if proposalSymmetric == True:
+            Calculate acceptance ratio (r), add/subtract if logPosterior = True (divide else)
+        else:
+            Evaluate proposal distribution at proposalValue given currentValue
+            Evaluate proposal distribution at currentValue given proposalValue
+            Calculate acceptance ratio (r), add/subtract if logPosterior = True (divide else)
+        if r == 1:
             return proposalValue
         else:
-            return currentValue
+            Sample from uniform distribution on [0, 1] -> uniformSample
+            if uniformSample < r:
+                return proposalValue
+            else:
+                return currentValue
 
-** CONDITIONAL POSTERIOR FUNCTIONS
-LogTime1ConditionalPosterior(currentData, xValue, index, time):
-    Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
-    Call LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                       currentData["tauSq"], currentData["sigmaSq"])
-    Call LogX1Prior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                    currentData["tauSq"], currentData["sigmaSq"])
-    return the sum of the results above
+    ** "SAMPLE FROM" FUNCTIONS (to be used as proposalSampler)
+    function SampleFromNormalProposal(currentValue, variance = 1)
+        return random sample from normal distribution centered at currentValue
+            Fixed variance (should eventually be able to vary)
 
-LogMiddleTimeConditionalPosterior(currentData, xValue):
-    Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
-    Call LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                       currentData["tauSq"], currentData["sigmaSq"])
-    Call LogMiddleXPrior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                    currentData["tauSq"], currentData["sigmaSq"])
-    return the sum of the results above
+    function SampleFromDirichletProposal(currentValue, dirichletFactor = 10)
+        return random sample from Dirichlet distribution with parameters dirichletFactor*currentValue
+            (where dirichletFactor is a fixed number unless passed in)
 
-LogTimeTConditionalPosterior(currentData, xValue):
-    Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
-    Call LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                       currentData["tauSq"], currentData["sigmaSq"])
-    Call LogXTPrior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                    currentData["tauSq"], currentData["sigmaSq"])
-    return the sum of the results above
+    ** "EVALUATE AT" FUNCTIONS (to be used as proposalEvaluate for asymmetric proposals)
+    function LogEvaluateDirichlet(parameters, values):
+        Evaluate the log-probability of the Dirichlet distribution with specified parameters at values
 
-** LIKELIHOOD FUNCTION
-LogLikelihood(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq):
-    Evaluate log-likelihood at the given values
-    Inputs:
-        X (shape T x n x n)
-        r (shape n)
-        betaIN, betaOUT, tauSq, sigmaSq (scalars)
+== END gibbs.py == 
 
-    logLikelihood = 0
-    T = X.shape[0]
-    n = X.shape[1]
+== BEGIN initialize.py ==
+    class BaseInitialization:
+        function InitializeX(X):
+            For now, initialize X to all zeros across the entire tensor
+            return X
 
-    for t in range(T):
-        for j in range(n):
-            for i in range(n):
-                if i == j: 
-                    continue
-                else:
-                    Calculate LogLikelihood of Y[t, i, j] given everything else
+        function InitializeR(r):
+            For now, initalize r to 1/n, where n = length of r
+            return r
 
-** PRIOR FUNCTIONS
-LogX1Prior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
-    Evaluate log-prior for X at t = 1 at the given values
+        function InitializeTauSq(tauSq):
+            For now, initialize tauSq = 1
+            return tauSq
 
-LogMiddleXPrior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
-    Evaluate log-prior for X between t = 2 and t = T - 1 at the given values
+        function InitializeSigmaSq(sigmaSq):
+            For now, initialize sigmaSq = 1
+            return sigmaSq
 
-LogXTPrior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
-    Evaluate log-prior for X at time t = T at the given values
+        function InitializeBetaIN(betaIN):
+            For now, initialize betaIN = 1
+            return betaIN
 
-** "SAMPLE FROM" FUNCTIONS (to be used as proposalSampler)
-SampleFromNormalProposal(currentValue, variance = 1)
-    return random sample from normal distribution centered at currentValue
-        Fixed variance (should eventually be able to vary)
+        function InitializeBetaOUT(betaOUT):
+            For now, initialize betaOUT = 1
+            return betaOUT
 
-SampleFromDirichletProposal(currentValue, dirichletFactor = 10)
-    return random sample from Dirichlet distribution with parameters dirichletFactor*currentValue
-        (where dirichletFactor is a fixed number unless passed in)
 
-** "EVALUATE AT" FUNCTIONS (to be used as proposalEvaluate for asymmetric proposals)
-LogDirichlet(parameters, values):
-    Evaluate the log-probability of the Dirichlet distribution with specified parameters at values
+== BEGIN conditionalposteriors.py ==    
+    class ConditionalPosteriors:
+        ConditionalPosteriors is a base class that will be inherited by others (like BinaryConditionals)
+        
+        ** CONDITIONAL POSTERIORS
+        LogTime1ConditionalPosterior(currentData, xValue, index, time):
+            Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
+            Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
+                            currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogX1Prior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
+                                 currentData["tauSq"], currentData["sigmaSq"])
+            return the sum of the results above
 
-** INITIALIZATION FUNCTIONS
-InitializeX(X):
+        LogMiddleTimeConditionalPosterior(currentData, xValue):
+            Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
+            Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
+                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogMiddleXPrior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
+                                      currentData["tauSq"], currentData["sigmaSq"])
+            return the sum of the results above
 
-InitializeR(r):
+        LogTimeTConditionalPosterior(currentData, xValue):
+            Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
+            Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
+                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogXTPrior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
+                                 currentData["tauSq"], currentData["sigmaSq"])
+            return the sum of the results above
 
-InitializeTauSq(tauSq):
+        LogRConditionalPosterior(currentData, rValues):
+            Call self.LogLikelihood(currentData["X"], rValues, currentData["betaIN"], currentData["betaOUT"],
+                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogRPrior(currentData["X"], currentData["r"], currentData["betaIN"], currentData["betaOUT"],
+                                currentData["tauSq"], currentData["sigmaSq"])
+            return the sum of the results above
 
-InitializeSigmaSq(sigmaSq):
+        ** PRIOR FUNCTIONS
+        function LogX1Prior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
+            Evaluate log-prior for X at t = 1 at the given values
 
-InitializeBetaIN(betaIN):
+        function LogMiddleXPrior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
+            Evaluate log-prior for X between t = 2 and t = T - 1 at the given values
 
-InitializeBetaOUT(betaOUT):
+        function LogXTPrior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
+            Evaluate log-prior for X at time t = T at the given values
+
+        ** LIKELIHOOD FUNCTION
+        function LogLikelihood(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq):
+            Evaluates log-likelihood across the entire Y matrix (individual entries assumed to be independent)
+
+            Inputs:
+                X (shape T x n x n)
+                r (shape n)
+                betaIN, betaOUT, tauSq, sigmaSq (scalars)
+            
+            Output:
+                log-likelihood of Y given everything else
+
+            logLikelihood = 0
+            T = X.shape[0]
+            n = X.shape[1]
+
+            for t in range(T):
+                for j in range(n):
+                    for i in range(n):
+                        if i == j: 
+                            continue
+                        else:
+                            Call logPijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq) to calculate for Y[t, i, j]
+                            Add result to logLikelihood variable
+            
+            return logLikelihood
+        
+        function logPijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
+            print error message (we should never be using this function from the base class)
+        
+        function ETAijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
+            calculate and return eta using the typical formula at position i, j, t
+
+    class BernoulliConditionals: inherits from ConditionalPosteriors
+        function logPijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
+            Calculate log-likelihood of Y[t, i, j] given else under Bernoulli assumption.
+
+== END conditionalposteriors.py ==
