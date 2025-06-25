@@ -40,16 +40,7 @@ gibbs.py:
         ** Choose the right set of conditionals (the right class)
         if modelType == "binary":
             set conditionals = new object of class cds.BinaryConditionals()
-                pass in the following key-value dictionary:
-                    "nuIN": nuIN
-                    "etaIN" : etaIN
-                    "nuOUT" : nuOUT 
-                    "etaOUT" : etaOUT 
-                    "thetaSigma": thetaSigma 
-                    "phiSigma" : phiSigma 
-                    "thetaTau" : thetaTau 
-                    "phiTau" : phiTau 
-                    "alphas" : alphas 
+                pass in the following: nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas
 
         elif modeltype == "poisson":
             set conditionals = new object of class cds.PoissonConditionals()
@@ -93,26 +84,32 @@ gibbs.py:
                 else:
                     Set logPosterior = conditionals.LogMiddleTimeConditionalPosterior()
 
-                Loop over j in {0, 1, 2, ..., n - 1}:
+                Loop over i in {0, 1, 2, ..., n - 1}:
 
-                    Loop over i in {0, 1, 2, ..., n - 1}:
-
-                        if i == j:
-                            continue 
-                        
-                        Call MetropolisHastings(logPosterior, conditionals.SampleFromNormalProposal, X[iter - 1, t, i, j], data)
-                            where data has all the key-value pairs of currentState and the following:
-                                "i" : i
-                                "t" : t
-                        Put returned value in proper place in X and in currentState   
+                    Call MetropolisHastings(logPosterior, conditionals.SampleFromNormalProposal, X[iter - 1, t, i], data)
+                        where data has all the key-value pairs of currentState and the following:
+                            "i" : i
+                            "t" : t
+                    Put returned value in proper place in X and in currentState   
 
             ** Sampling Radii
-            Call MetropolisHastings(conditionals.LogRConditionalPosterior, SampleFromDirichletProposal, r[iter - 1], data
+            Call MetropolisHastings(conditionals.LogRConditionalPosterior, SampleFromDirichletProposal, r[iter - 1], currentState
                                     logProposalEvaluate = LogEvaluateDirichlet, proposalSymmetric = False)
             Put returned value in proper place in r and in currentState
 
-            ** Sampling Global Parameters
+            ** Sampling Global Parameters with MH
+            Call MetropolisHastings(conditionals.LogBetaINConditional, SampleFromNormalProposal, betaIN[iter - 1], currentState)
+            Put returned value in proper place in betaIN and in currentState
+            Call MetropolisHastings(conditionals.LogBetaOUTConditional, SampleFromNormalProposal, betaOUT[iter - 1], currentState)
+            Put returned value in proper place in betaOUT and in currentState
 
+            ** Directly Sampling Global Parameters
+            Call conditionals.SampleTauSquared(currentState)
+            Put returned value in proper place in tauSq and in currentState
+            Call conditionals.SampleSigmaSquared(currentState)
+            Put returned value in proper place in sigmaSq and in currentState
+
+        return X, r, tauSq, sigmaSq, betaIN, betaOUT
 
     function MetropolisHastings(conditionalPosterior, proposalSampler, currentValue, data, 
                     logProposalEvaluate = None, proposalSymmetric = True, logPosterior = True):
@@ -196,7 +193,7 @@ gibbs.py:
         ConditionalPosteriors is a base class that will be inherited by others (like BinaryConditionals)
         
         ** CONDITIONAL POSTERIORS
-        LogTime1ConditionalPosterior(currentData, xValue, index, time):
+        function LogTime1ConditionalPosterior(currentData, xValue, index, time):
             Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
             Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
                             currentData["tauSq"], currentData["sigmaSq"])
@@ -204,7 +201,7 @@ gibbs.py:
                                  currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
-        LogMiddleTimeConditionalPosterior(currentData, xValue):
+        function LogMiddleTimeConditionalPosterior(currentData, xValue):
             Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
             Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
                                     currentData["tauSq"], currentData["sigmaSq"])
@@ -212,7 +209,7 @@ gibbs.py:
                                       currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
-        LogTimeTConditionalPosterior(currentData, xValue):
+        function LogTimeTConditionalPosterior(currentData, xValue):
             Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
             Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
                                     currentData["tauSq"], currentData["sigmaSq"])
@@ -220,11 +217,25 @@ gibbs.py:
                                  currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
-        LogRConditionalPosterior(currentData, rValues):
+        function LogRConditionalPosterior(currentData, rValues):
             Call self.LogLikelihood(currentData["X"], rValues, currentData["betaIN"], currentData["betaOUT"],
                                     currentData["tauSq"], currentData["sigmaSq"])
-            Call self.LogRPrior(currentData["X"], currentData["r"], currentData["betaIN"], currentData["betaOUT"],
+            Call self.LogRPrior(currentData["X"], rValues, currentData["betaIN"], currentData["betaOUT"],
                                 currentData["tauSq"], currentData["sigmaSq"])
+            return the sum of the results above
+        
+        function LogBetaINConditional(currentData, betaINValue):
+            Call self.LogLikelihood(currentData["X"], currentData["r"], betaINValue, currentData["betaOUT"],
+                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogBetaINPrior(currentData["X"], currentData["r"], betaINValue, currentData["betaOUT"],
+                                currentData["tauSq"], currentData["sigmaSq"])
+            return the sum of the results above
+
+        function LogBetaOUTConditional(currentData, betaOUTValue):
+            Call self.LogLikelihood(currentData["X"], currentData["r"], currentData["betaIN"], betaOUTValue,
+                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogBetaOUTPrior(currentData["X"], currentData["r"], currentData["betaIN"], betaOUTValue,
+                                     currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
         ** PRIOR FUNCTIONS
@@ -236,6 +247,15 @@ gibbs.py:
 
         function LogXTPrior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
             Evaluate log-prior for X at time t = T at the given values
+        
+        function LogRPrior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
+            Evaluate log-prior for R at the given values
+        
+        function LogBetaINPrior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
+            Evaluate log-prior for betaIN at the given values
+        
+        function LogBetaOUTPrior(X, r, betaIN, betaOUT, tauSq, sigmaSq):
+            Evaluate log-prior for betaOUT at the given values
 
         ** LIKELIHOOD FUNCTION
         function LogLikelihood(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq):
@@ -264,14 +284,38 @@ gibbs.py:
             
             return logLikelihood
         
-        function logPijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
+        function LogPijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
             print error message (we should never be using this function from the base class)
         
         function ETAijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
             calculate and return eta using the typical formula at position i, j, t
+        
+        ** DIRECTLY SAMPLING FROM FUNCTIONS
+        function SampleTauSquared(currentData):
+            Calculate shape parameter of Tau^2 given else
+            Calculate scale parameter of Tau^2 given else
+            Sample from inverse gamma given shape, scale parameters
+            return sample value
+        
+        function SampleSigmaSquared(currentData):
+            Calculate shape parameter of Sigma^2 given else
+            Calculate scale parameter of Sigma^2 given else
+            Sample from inverse gamma given shape, scale parameters
+            return sample value
 
     class BernoulliConditionals: inherits from ConditionalPosteriors
-        function logPijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
-            Calculate log-likelihood of Y[t, i, j] given else under Bernoulli assumption.
+        constructor __init__(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas):
+            self.nuIN = nuIN
+            self.etaIN = etaIN
+            self.nuOUT = nuOUT
+            self.etaOUT = etaOUT
+            self.thetaSigma = thetaSigma
+            self.phiSigma = phiSigma
+            self.thetaTau = thetaTau
+            self.phiTau = phiTau
+            self.alphas = alphas
+
+        function LogPijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
+            Calculate log-likelihood of Y[t, i, j] given else under Bernoulli assumption using ETAijt
 
 == END conditionalposteriors.py ==
