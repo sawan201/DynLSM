@@ -43,12 +43,16 @@ class conditionals:
     # Tau squared and sigma squared draws from inverse gamma distribution
     def sample_tau2(self, X_current):   # X_current is one snapshot of all latent positions at the present MCMC iteration                       
         X1 = X_current[0]  # This is taking the first slice of the X_current tensor, the first time point, which is what we want for tau squared
-        n, p = X1.shape
-        shape = self.theta_tau + 0.5 * n * p
-        scale = self.phi_tau  + 0.5 * np.linalg.norm(X1) ** 2  
-        return invgamma.rvs(a=shape, scale=scale)
+        n, p = X1.shape   # Giving us a tuple of of the dimensions of X1
+        shape = self.theta_tau + 0.5 * n * p   # Specifying the shape parameter for the inverse gamma distribution
+        scale = self.phi_tau  + 0.5 * np.sum(X1**2)   # This is the scale parameter for the inverse gamma distribution
+        return invgamma.rvs(a=shape, scale=scale)   # Drawing a single time from the specific inverse gamma distribution 
 
-
-
+    def sample_sigma2(self, X_current):
+        diffs = X_current[1:] - X_current[:-1]   # Creating a tensor, where the t = 0 entry contains the difference between X2 - X1, the t = 1 entry contains the difference between X3 - X2, etc. This goes up to the XT - X(T-1) entry. 
+        Tm1, n, p = diffs.shape   # Tm1 = T - 1, which is the number of increments
+        a_post = self.theta_sig + 0.5 * n * p * Tm1   # Posterior shape parameter for the inverse gamma distribution
+        b_post = self.phi_sig  + 0.5 * np.sum(diffs ** 2)   # Posterior scale parameter for the inverse gamma distribution
+        return invgamma.rvs(a=a_post, scale=b_post)   # Drawing a single time from the specific inverse gamma distribution for sigma squared
 
 
