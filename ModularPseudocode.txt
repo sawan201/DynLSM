@@ -59,7 +59,7 @@ gibbs.py:
             betaIN (ns)
             betaOUT (ns)
         Initialize values for X, r, tauSq, sigmaSq, betaIN, betaOUT
-            Call a function on the initialization object that does this
+            Call a function on the initialization object that does this, namely InitializeAll()
         
         Initialize currentValue dictionary with:
             key : value
@@ -165,7 +165,39 @@ gibbs.py:
 == END gibbs.py == 
 
 == BEGIN initialize.py ==
-    class BaseInitialization:
+    Abstract class: AbstractInitialization
+    class AbstractInitialization:
+        constructor(Y, X, r, betaIN, betaOUT, sigmaSq, tauSq):
+            set attributes to the parameters passed in
+
+        function InitializeAll():
+            InitializeX()
+            InitializeR()
+            InitializeBetaIN()
+            InitializeBetaOUT()
+            InitializeSigmaSq()
+            InitializeTauSq()
+
+        function InitializeX():
+            raise error
+
+        function InitializeR():
+            raise error
+
+        function InitializeTauSq():
+            raise error
+
+        function InitializeSigmaSq():
+            raise error
+
+        function InitializeBetaIN():
+            raise error
+
+        function InitializeBetaOUT():
+            raise error
+
+    Implementation of abstract class: BaseInitialization
+    class BaseInitialization(AbstractInitialization):
         function InitializeX(X):
             For now, initialize X to all zeros across the entire tensor
             return X
@@ -189,7 +221,7 @@ gibbs.py:
         function InitializeBetaOUT(betaOUT):
             For now, initialize betaOUT = 1
             return betaOUT
-
+== END initialize.py
 
 == BEGIN conditionalposteriors.py ==    
     class ConditionalPosteriors:
@@ -197,46 +229,47 @@ gibbs.py:
         
         ** CONDITIONAL POSTERIORS
         function LogTime1ConditionalPosterior(currentData, xValue, index, time):
+
             Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
-            Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                            currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogLikelihood(currentData["Y"], proposedX, currentData["r"], currentData["betaIN"], 
+                                    currentData["betaOUT"], currentData["tauSq"], currentData["sigmaSq"])
             Call self.LogX1Prior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
                                  currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
         function LogMiddleTimeConditionalPosterior(currentData, xValue):
             Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
-            Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogLikelihood(currentData["Y"], proposedX, currentData["r"], currentData["betaIN"], 
+                                    currentData["betaOUT"], currentData["tauSq"], currentData["sigmaSq"])
             Call self.LogMiddleXPrior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
                                       currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
         function LogTimeTConditionalPosterior(currentData, xValue):
             Set value proposedX to currentData["X"] but with the xValue at the correct time, index position
-            Call self.LogLikelihood(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
-                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogLikelihood(currentData["Y"], proposedX, currentData["r"], currentData["betaIN"], 
+                                    currentData["betaOUT"], currentData["tauSq"], currentData["sigmaSq"])
             Call self.LogXTPrior(proposedX, currentData["r"], currentData["betaIN"], currentData["betaOUT"],
                                  currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
         function LogRConditionalPosterior(currentData, rValues):
-            Call self.LogLikelihood(currentData["X"], rValues, currentData["betaIN"], currentData["betaOUT"],
-                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogLikelihood(currentData["Y"], currentData["X"], rValues, currentData["betaIN"], 
+                                    currentData["betaOUT"], currentData["tauSq"], currentData["sigmaSq"])
             Call self.LogRPrior(currentData["X"], rValues, currentData["betaIN"], currentData["betaOUT"],
                                 currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
         
         function LogBetaINConditional(currentData, betaINValue):
-            Call self.LogLikelihood(currentData["X"], currentData["r"], betaINValue, currentData["betaOUT"],
-                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogLikelihood(currentData["Y"], currentData["X"], currentData["r"], betaINValue, 
+                                    currentData["betaOUT"], currentData["tauSq"], currentData["sigmaSq"])
             Call self.LogBetaINPrior(currentData["X"], currentData["r"], betaINValue, currentData["betaOUT"],
                                 currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
         function LogBetaOUTConditional(currentData, betaOUTValue):
-            Call self.LogLikelihood(currentData["X"], currentData["r"], currentData["betaIN"], betaOUTValue,
-                                    currentData["tauSq"], currentData["sigmaSq"])
+            Call self.LogLikelihood(currentData["Y"], currentData["X"], currentData["r"], currentData["betaIN"], 
+                                    betaOUTValue, currentData["tauSq"], currentData["sigmaSq"])
             Call self.LogBetaOUTPrior(currentData["X"], currentData["r"], currentData["betaIN"], betaOUTValue,
                                      currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
