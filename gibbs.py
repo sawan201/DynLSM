@@ -1,0 +1,94 @@
+import Conditionals as cds
+import initialize as init
+import numpy as np
+
+def RunBinaryGibbs(Y, ns, p, modelType, initType, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
+                   thetaTau, phiTau, alphas):
+        '''
+        Inputs: 
+            Y (T x n x n Numpy array of data)
+            ns (int number of steps)
+            p (int dimension of latent space)
+            modelType (either "poisson" or "binary")
+            initialization (either "base" or something else that we create later)
+            nuIN (mean of prior on betaIN)
+            etaIN (variance of prior on betaIN)
+            nuOUT (mean of prior on betaOUT)
+            etaOUT (variance of prior on betaOUT)
+            thetaSigma (shape parameter of prior on SigmaSq)
+            phiSigma (scale parameter of prior on SigmaSq)
+            thetaTau (shape parameter of prior on TauSq)
+            phiTau (scale parameter of prior on TauSq)
+            alphas (parameters for Dirichlet prior on r_{1:n})
+        
+        ** FOR NOW: 
+            ** Fix the variance of the normal random walk
+            ** Fix the Dirichlet factor (what value we will use in the proposal)
+        
+        Outputs:
+            X (ns x T x n x p Numpy array of latent positions samples from Markov Chain)
+            r (ns x n Numpy array of reach samples from Markov Chain)
+            tauSq (ns array of tauSq samples from Markov Chain)
+            sigmaSq (ns array of sigmaSq samples from Markov Chain)
+            betaIN (ns array of betaIN samples from Markov Chain)
+            betaOUT (ns array of betaOUT samples from Markov Chain)
+        '''
+
+        # Assign the conditionals based on the input argument
+        if modelType == "binary":
+            conditionals = cds.BinaryConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
+                                                  thetaTau, phiTau, alphas)
+        elif modelType == "poisson":
+            conditionals = cds.PoissonConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
+                                                   thetaTau, phiTau, alphas)
+
+        # Define key things:
+        T = Y.shape[0]
+        n = Y.shape[1]
+
+        # Set up empty Numpy arrays
+        positions = np.empty(shape=(ns, T, n, p))
+        radii = np.empty(shape=(ns, n))
+        betaIN = np.empty(shape=(ns))
+        betaOUT = np.empty(shape=(ns))
+        tauSq = np.empty(shape=(ns))
+        sigmaSq = np.empty(shape=(ns))
+
+        # Assign the initialization based on the input argument
+        if initType == "base":
+            initialization = init.BaseInitialization(Y, positions, radii, betaIN, betaOUT, tauSq, sigmaSq)
+        
+        # Set initial values for all
+        positions, radii, betaIN, betaOUT, tauSq, sigmaSq = initialization.InitializeAll()
+
+        # Setup the currentData dictionary
+        currentData = {"Y" : Y, 
+                       "X" : positions[0],
+                       "r" : radii[0],
+                       "betaIN" : betaIN[0],
+                       "betaOUT" : betaOUT[0],
+                       "tauSq" : tauSq[0],
+                       "sigmaSq" : sigmaSq[0]}
+
+        # Begin Sampling
+        for iter in range(1, ns):
+
+            # Sample latent positions
+            for t in range(0, T):
+                if t == 0:
+                    logPosterior = conditionals.LogTime1ConditionalPosterior()
+                elif t == T - 1:
+                    logPosterior = conditionals.LogTimeTConditionalPosterior()
+                else:
+                    logPosterior = conditionals.LogMiddleTimeConditionalPosterior()
+
+                for i in range(0, n):
+                    currentData["i"] = i
+                    currentData["t"] = t
+                    newValue = MetropolisHastings(logPosterior, conditionals.SampleFromNormalProposal, positions[iter - 1, t, i], currentData)
+                    positions[iter, t, i] = newValue
+                    currentData["X"][t, i] = newValue
+
+def MetropolisHastings(conditionalPosterior, proposalSampler, currentValue, data, 
+                    logProposalEvaluate = None, proposalSymmetric = True, logPosterior = True):
+    pass

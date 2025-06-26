@@ -8,8 +8,8 @@ gibbs.py:
     import conditionals as cds
     impot initialize as init
 
-    function RunBinaryGibbs(Y, ns, p, modelType, initialization
-                            mnuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas):
+    function RunBinaryGibbs(Y, ns, p, modelType, initType,
+                            nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas):
         Inputs: 
             Y (T x n x n Numpy array of data)
             ns (int number of steps)
@@ -45,11 +45,8 @@ gibbs.py:
 
         elif modeltype == "poisson":
             set conditionals = new object of class cds.PoissonConditionals()
+                pass in the following: nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas
         
-        ** Choose the right set of initializations
-        if initialization == "base":
-            set initialization = new object of class init.BaseInitialization()
-
         Determine n and T based on shape of Y
         Allocate the following empty Numpy arrays: name (shape)
             X (ns, T, n, p)
@@ -58,6 +55,11 @@ gibbs.py:
             sigmaSq (ns)
             betaIN (ns)
             betaOUT (ns)
+        
+        ** Choose the right set of initializations
+        if initType == "base":
+            set initialization = new object of class init.BaseInitialization()
+
         Initialize values for X, r, tauSq, sigmaSq, betaIN, betaOUT
             Call a function on the initialization object that does this, namely InitializeAll()
         
