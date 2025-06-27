@@ -133,7 +133,7 @@ gibbs.py:
         # data = dictionary of necessary values to be passed into
 
         # Implements Metropolis-Hastings algorithm
-        Sample from proposal distribution (pass in currentValue, data)
+        Sample from proposal distribution (pass in currentValue)
         Evaluate conditional posterior function at proposalValue (pass in data)
         Evaluate conditional posterior function at currentValue (pass in data)
         if proposalSymmetric == True:

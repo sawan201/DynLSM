@@ -89,6 +89,56 @@ def RunBinaryGibbs(Y, ns, p, modelType, initType, nuIN, etaIN, nuOUT, etaOUT, th
                     positions[iter, t, i] = newValue
                     currentData["X"][t, i] = newValue
 
-def MetropolisHastings(conditionalPosterior, proposalSampler, currentValue, data, 
-                    logProposalEvaluate = None, proposalSymmetric = True, logPosterior = True):
-    pass
+def MetropolisHastings(ConditionalPosterior, ProposalSampler, currentValue, data, 
+                       LogProposalEvaluate = None, proposalSymmetric = True, logPosterior = True):
+    """
+    Inputs:
+    conditionalPosterior: one of the conditional posterior functions below
+    proposalSampler : one of the proposal sampler functions below
+    currentValue : the current value in the Markov chain of the parameter under study
+    data : dictionary of all values needed by the conditionalPosterior, proposalSampler
+    logProposalEvaluate : one of the "evaluate at" functions below (only needed for asymmetric proposal, default None)
+    proposalSymmetric : is the proposal symmetric? (False for Normal, True for Dirichlet)
+    logPosterior : are we passing in log functions everywhere? (defaults to True)
+
+    Output:
+        next value in the Markov chain (either proposalValue or currentValue)
+    """
+    proposalValue = ProposalSampler(currentValue)
+    posteriorAtProposal = ConditionalPosterior(data, proposalValue)
+    posteriorAtCurrent = ConditionalPosterior(data, currentValue)
+
+    # If the proposal distribution is symmetric, we do not need to have a correction factor in the ratio
+    if proposalSymmetric == True:
+        if logPosterior == True:
+            logAcceptanceRatio = posteriorAtProposal - posteriorAtCurrent
+            acceptanceRatio = min(1, np.exp(logAcceptanceRatio))
+        else:
+            acceptanceRatio = min(1, posteriorAtProposal / posteriorAtCurrent)
+    
+    # If the proposal distribution is not symmetric, we need a correction factor
+    else:
+        # Evaluate proposal distribution each way
+        logProposalValueGivenCurrent = LogProposalEvaluate(currentValue, proposalValue)
+        logCurrentValueGivenProposal = LogProposalEvaluate(proposalValue, currentValue)
+
+        if logPosterior == True:
+            logAcceptanceRatio = (posteriorAtProposal + logCurrentValueGivenProposal) - (posteriorAtCurrent + logProposalValueGivenCurrent)
+            acceptanceRatio = min(1, np.exp(logAcceptanceRatio))
+        
+        else:
+            proposalValueGivenCurrent = np.exp(logProposalValueGivenCurrent)
+            currentValueGivenProposal = np.exp(logCurrentValueGivenProposal)
+
+            acceptanceRatio = min(1, (posteriorAtProposal * logCurrentValueGivenProposal) / (posteriorAtCurrent * logProposalValueGivenCurrent))
+    
+    # We have an acceptanceRatio. Now, we need to decide whether to accept or reject.
+    if acceptanceRatio == 1:
+        return proposalValue
+    else:
+        # Choose a random number between [0, 1]
+        randomValue = np.random.rand()
+        if randomValue < acceptanceRatio:
+            return proposalValue
+        else:
+            return currentValue
