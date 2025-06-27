@@ -25,6 +25,7 @@ gibbs.py:
             thetaTau (shape parameter of prior on TauSq)
             phiTau (scale parameter of prior on TauSq)
             alphas (parameters for Dirichlet prior on r_{1:n})
+            normalRWVariance (default value to 9)
             
             ** FOR NOW: 
             ** Fix the variance of the normal random walk (to the true value for sigma when testing)
@@ -74,6 +75,9 @@ gibbs.py:
             "betaOUT" : initial value of betaOUT
         
         Set value of n based on X
+
+        Define a closure of the SampleFromIndMultivariateNormalProposal that only takes in currentValue
+            (sets the variance parameter and dimension)
         
         Loop over iter in {1, 2, 3, ..., ns - 1}:
             
@@ -152,7 +156,8 @@ gibbs.py:
                 return currentValue
 
     ** "SAMPLE FROM" FUNCTIONS (to be used as proposalSampler)
-    function SampleFromNormalProposal(currentValue, variance = 1)
+    Define a closure earlier in the function
+    function SampleFromIndMultivariateNormalProposal(currentValue, variance = 1)
         return random sample from normal distribution centered at currentValue
             Fixed variance (should eventually be able to vary)
 
@@ -262,14 +267,14 @@ gibbs.py:
                                 currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
         
-        function LogBetaINConditional(currentData, betaINValue):
+        function LogBetaINConditionalPosterior(currentData, betaINValue):
             Call self.LogLikelihood(currentData["Y"], currentData["X"], currentData["r"], betaINValue, 
                                     currentData["betaOUT"], currentData["tauSq"], currentData["sigmaSq"])
             Call self.LogBetaINPrior(currentData["X"], currentData["r"], betaINValue, currentData["betaOUT"],
                                 currentData["tauSq"], currentData["sigmaSq"])
             return the sum of the results above
 
-        function LogBetaOUTConditional(currentData, betaOUTValue):
+        function LogBetaOUTConditionalPosterior(currentData, betaOUTValue):
             Call self.LogLikelihood(currentData["Y"], currentData["X"], currentData["r"], currentData["betaIN"], 
                                     betaOUTValue, currentData["tauSq"], currentData["sigmaSq"])
             Call self.LogBetaOUTPrior(currentData["X"], currentData["r"], currentData["betaIN"], betaOUTValue,
