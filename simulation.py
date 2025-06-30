@@ -1,28 +1,85 @@
-import numpy as np                                        # import NumPy for numerical operations
-from gibbs import RunBinaryGibbs                             # import the Gibbs sampler entry point
-import initialize as init_mod                                # import initialization routines
+import numpy as np  # Import NumPy for numerical operations and array handling
+import Conditionals as cond  # Import the Conditionals module (your modeling functions)
 
+def compute_phi_tau(X1, scale=1.05):  # Define a function to compute the phi_tau hyperparameter
+    n, p = X1.shape  # Unpack the number of actors (n) and latent dimensions (p)
+    sum_sq = np.sum(X1**2)  # Compute the sum of squared entries of the initial positions
+    return scale * (sum_sq / (n * p))  # Scale by 1.05 (default) and normalize by n*p
 
+def scaled_inverse_norm(X1, i):  # Define a function to compute the scaled inverse norm for actor i
+    n = X1.shape[0]  # Number of actors
+    norms_inv = 1.0 / np.linalg.norm(X1, axis=1)  # Inverse of the Euclidean norm for each actor's vector
+    return n * norms_inv[i] / np.max(norms_inv)  # Scale by n and normalize by the maximum inverse norm
 
-def main():
-    # initialize simulation and MCMC parameters
-    T = 10                                                  # number of time periods
-    n = 100                                                 # number of actors
-    p = 2                                                   # latent-space dimensionality
-    numSamples = 50000                                      # total MCMC samples
-    burnin = 15000                                          # burn-in period for posterior summaries
+def sigmoid(x):  # Define the sigmoid (logistic) function to squash values into [0, 1]
+    return 1.0 / (1.0 + np.exp(-x))  # Compute 1 / (1 + exp(-x))
 
-    betaIN = 1.0                                            # true IN-effect parameter
-    betaOUT = 2.0                                           # true OUT-effect parameter
-    sigmaSq = 1.0 / (5 * n)**2                              # true variance of random walk
-    mu = 0.02                                               # drift magnitude for influenced actors
+def main():  # Main function to run the simulation and sampling
+    T, n, p = 10, 100, 2  # Set time points (T), number of actors (n), and latent space dimensions (p)
+    SigmaSq = 1.0 / (5 * n)**2  # Compute the step-size variance for latent position draws
 
-    # specify prior hyperparameters
-    nuIN, etaIN = betaIN, 100**2                            # Normal prior for betaIN
-    nuOUT, etaOUT = betaOUT, 100**2                         # Normal prior for betaOUT
-    thetaSigma, phiSigma = 9.0, 1.5                         # Inverse-gamma prior for sigmaSq
-    alphas = np.ones(n)                                     # Dirichlet prior parameters for radii
+    # Pre-allocate the latent positions array of shape (T, n, p)
+    LargeX = np.zeros((T, n, p))
 
+    # Simulate latent positions over time
+    for t in range(T):  # Loop over each time point
+        for i in range(n):  # Loop over each actor
+            mu = 0.0 if t == 0 else LargeX[t-1, i]  # If t=0, center at origin; otherwise use last position
+            LargeX[t, i] = np.random.normal(loc=mu, scale=SigmaSq, size=p)  # Sample from N(mu, SigmaSq)
 
-if __name__ == '__main__':
-    main()                                                   # execute main when script is run directly
+    # Extract the initial positions and compute phi_tau
+    X1 = LargeX[0]  # Initial positions at time t=0
+    phi_tau = compute_phi_tau(X1)  # Compute phi_tau using the helper function
+    print(f"Computed phi_tau: {phi_tau:.4f}")  # Print the computed phi_tau value
+
+    # Fit or sample from the conditional model using the hyperparameters
+    P = cond.conditionals(
+        theta_tau=2.05,  # Shape parameter for tau^2 prior
+        phi_tau=phi_tau,  # Scale parameter for tau^2 prior (computed)
+        theta_sig=9.0,  # Shape parameter for sigma^2 prior
+        phi_sig=1.5,  # Scale parameter for sigma^2 prior
+        nu_in=0.0,  # Additional model hyperparameters
+        xi_in=1.0,
+        nu_out=0.0,
+        xi_out=1.0
+    )
+
+    # Initialize an adjacency tensor Y of shape (T, n, n) with zeros
+    Y = np.zeros((T, n, n), dtype=int)
+
+    # Sample edges for each time and pair of actors
+    for t in range(T):  # Loop over time points
+        for i in range(n):  # Loop over actor i
+            r_i = scaled_inverse_norm(X1, i)  # Compute radius/influence for actor i
+            for j in range(n):  # Loop over actor j
+                if i == j:  # Skip self-edges
+                    continue  # Continue to next j
+
+                r_j = scaled_inverse_norm(X1, j)  # Compute radius/influence for actor j
+
+                # Compute the linear predictor (log-odds) for the edge probability
+                eta = P.eta(
+                    beta_in=1.0,  # Input effect parameter
+                    beta_out=2.0,  # Output effect parameter
+                    r_i=r_i,  # Radius for actor i
+                    r_j=r_j,  # Radius for actor j
+                    X_i=LargeX[t, i],  # Latent position of actor i at time t
+                    X_j=LargeX[t, j]  # Latent position of actor j at time t
+                )
+
+                # Print debug information for this edge
+                print(f"t={t}, i={i}, j={j}, r_i={r_i:.4f}, r_j={r_j:.4f}, eta={eta:.4f}")
+
+                # Convert log-odds to probability via the sigmoid function
+                prob = sigmoid(eta)  # Probability of an edge occurring
+
+                # Sample the edge as a Bernoulli trial
+                Y[t, i, j] = np.random.binomial(n=1, p=prob)  # Draw 0 or 1
+
+    # After sampling, print the full adjacency tensor
+    print("Adjacency tensor Y:")  # Label the output
+    print(Y)  # Display the sampled tensor
+
+# Entry point check: only run main() if this script is executed directly
+if __name__ == "__main__":  # Check if script is main program
+    main()  # Call the main function to execute
