@@ -107,7 +107,8 @@ class BinaryConditionals(ConditionalPosteriors):
         return self.log_p(y_ijt, eta_ijt)
 
 class PoissonConditionals(ConditionalPosteriors):
-    return print("PoissonConditionals not yet implemented")
+    def __init__(self):
+        print("PoissonConditionals not yet implemented")
 
 
 
