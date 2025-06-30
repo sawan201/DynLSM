@@ -7,8 +7,9 @@
 
 import numpy as np
 from scipy.stats import invgamma
+from scipy.special import gammaln
 
-class conditionals:
+class ConditionalPosteriors:
     def __init__(self,
                  theta_tau,  phi_tau,   #  Inv-Gamma prior for tau squared
                  theta_sig,  phi_sig,   #  Inv-Gamma prior for sigma squared
@@ -27,19 +28,6 @@ class conditionals:
                                                                        # lamda is introducing an inline function that can take two arguements
                                                                        # logaddexp is the log transform we use, with the form np.logaddexp(a, b) = log(exp(a) + exp(b)). a = 0 since we are adding 1 as the first term in the expression.
                                                                     
-    # Eta linear predictor for a SINGLE edge
-    def eta(self, beta_in, beta_out, r_i, r_j, X_i, X_j):
-        d_ijt = np.linalg.norm(X_i - X_j)   # Euclidean norm of x_i and x_j
-        return (beta_in  * (1.0 - d_ijt / r_j) +   # toward j
-                beta_out * (1.0 - d_ijt / r_i))   # from i
-
-    # Log-likelihood of a SINGLE edge
-    def log_p_ijt(self, y_ijt,
-                  beta_in, beta_out,
-                  r_i, r_j, X_i, X_j):
-        eta_ijt = self.eta(beta_in, beta_out, r_i, r_j, X_i, X_j)
-        return self.log_p(y_ijt, eta_ijt)
-
 
     #######################
     # VARIANCE PARAMETERS #
@@ -98,7 +86,29 @@ class conditionals:
         xm1 = X[-2, i]   # Taking out the second to last time slice vector for actor i
         x   = X[-1, i]   # Taking out the last time slice vector for actor i
         return mvnorm_logpdf(x, xm1, sigmaSq)
+    
 
+
+
+
+### IMPLEMENTING SUBCLASSES FOR MODULAR SWAPPING ###
+class BinaryConditionals(ConditionalPosteriors):
+    # Eta linear predictor for a SINGLE edge
+    def eta(self, beta_in, beta_out, r_i, r_j, X_i, X_j):
+        d_ijt = np.linalg.norm(X_i - X_j)   # Euclidean norm of x_i and x_j
+        return (beta_in  * (1.0 - d_ijt / r_j) +   # toward j
+                beta_out * (1.0 - d_ijt / r_i))   # from i
+
+    # Log-likelihood of a SINGLE edge
+    def log_p_ijt(self, y_ijt,
+                  beta_in, beta_out,
+                  r_i, r_j, X_i, X_j):
+        eta_ijt = self.eta(beta_in, beta_out, r_i, r_j, X_i, X_j)
+        return self.log_p(y_ijt, eta_ijt)
+
+class PoissonConditionals(ConditionalPosteriors):
+    def __init__(self):
+        print("PoissonConditionals not yet implemented")
 
 
 
