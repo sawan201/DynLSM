@@ -48,7 +48,7 @@ def main():  # Main function to run the simulation and sampling
     # Initialize an adjacency tensor Y of shape (T, n, n) with zeros
     Y = np.zeros((T, n, n), dtype=int)
 
-    # Sample edges for each time and pair of actors
+    # Create the Y adjacency tensor by sampling edges
     for t in range(T):  # Loop over time points
         for i in range(n):  # Loop over actor i
             r_i = scaled_inverse_norm(X1, i)  # Compute radius/influence for actor i
@@ -68,7 +68,7 @@ def main():  # Main function to run the simulation and sampling
                     X_j=LargeX[t, j]  # Latent position of actor j at time t
                 )
 
-                # Print debug information for this edge
+                # Testing output of the eta calculation
                 print(f"t={t}, i={i}, j={j}, r_i={r_i:.4f}, r_j={r_j:.4f}, eta={eta:.4f}")
 
                 # Convert log-odds to probability via the sigmoid function
