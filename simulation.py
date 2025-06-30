@@ -1,5 +1,6 @@
 import numpy as np  # Import NumPy for numerical operations and array handling
 import Conditionals as cond  # Import the Conditionals module (your modeling functions)
+import gibbs as gibbs  # Import the Gibbs sampling module
 
 def compute_phi_tau(X1, scale=1.05):  # Define a function to compute the phi_tau hyperparameter
     n, p = X1.shape  # Unpack the number of actors (n) and latent dimensions (p)
@@ -30,7 +31,7 @@ def main():  # Main function to run the simulation and sampling
     # Extract the initial positions and compute phi_tau
     X1 = LargeX[0]  # Initial positions at time t=0
     phi_tau = compute_phi_tau(X1)  # Compute phi_tau using the helper function
-    print(f"Computed phi_tau: {phi_tau:.4f}")  # Print the computed phi_tau value
+   
 
     # Fit or sample from the conditional model using the hyperparameters
     P = cond.conditionals(
@@ -76,9 +77,34 @@ def main():  # Main function to run the simulation and sampling
                 # Sample the edge as a Bernoulli trial
                 Y[t, i, j] = np.random.binomial(n=1, p=prob)  # Draw 0 or 1
 
-    # After sampling, print the full adjacency tensor
-    print("Adjacency tensor Y:")  # Label the output
-    print(Y)  # Display the sampled tensor
+   
+
+    X_new, R_new, tauSq_new, sigmaSq_new, betaIN_new, betaOUT_new = gibbs.RunBinaryGibbs(
+        Y=Y,  # The sampled adjacency tensor
+        ns=n,
+        p=2,
+        modelType="binary",  # Model type for Gibbs sampling
+        initType="base",  # Initialization type for Gibbs sampling
+        nuIN=0.0,
+        etaIN=1.0,
+        nuOUT=0.0,
+        etaOUT=1.0,
+        thetaSigma=9.0,  # Shape parameter for sigma^2 prior
+        phiSigma=1.5,  # Scale parameter for sigma^2 prior
+        thetaTau=2.05,  # Shape parameter for tau^2 prior
+        phiTau=phi_tau,  # Scale parameter for tau^2 prior
+        alphas=None,  # Not sure what to put here, assuming None for now   
+        randomWalkVariance=9.0  # Variance for the random walk proposal
+    )
+
+    print("Gibbs sampling results:")  # Label the output
+    print("X_new:", X_new)  # Display the sampled latent positions
+    print("R_new:", R_new)  # Display the sampled reach (radii)     
+    print("tauSq_new:", tauSq_new)  # Display the sampled tau^2
+    print("sigmaSq_new:", sigmaSq_new)  # Display the sampled sigma^2       
+    print("betaIN_new:", betaIN_new)  # Display the sampled beta_IN
+    print("betaOUT_new:", betaOUT_new)  # Display the sampled beta_OUT
+    # Note: The alphas parameter is not used in the Gibbs sampling call,
 
 # Entry point check: only run main() if this script is executed directly
 if __name__ == "__main__":  # Check if script is main program

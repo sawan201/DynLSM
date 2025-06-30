@@ -106,8 +106,6 @@ class BinaryConditionals(ConditionalPosteriors):
         eta_ijt = self.eta(beta_in, beta_out, r_i, r_j, X_i, X_j)
         return self.log_p(y_ijt, eta_ijt)
 
-
-# ─────────────────────────── poisson model ──────────────────────────
 class PoissonConditionals(ConditionalPosteriors):
     return print("PoissonConditionals not yet implemented")
 
