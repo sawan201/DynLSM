@@ -1,4 +1,4 @@
-import Conditionals as cds
+import conditionalposteriors as cds
 import initialize as init
 import numpy as np
 from scipy.stats import dirichlet
@@ -97,7 +97,7 @@ class Gibbs:
                     for i in range(0, n):
                         self.currentData["i"] = i
                         self.currentData["t"] = t
-                        newPosition = self.MetropolisHastings(logPosterior, self.SampleFromIndMultivarNormal, positions[iter - 1, t, i], currentData)
+                        newPosition = self.MetropolisHastings(logPosterior, self.SampleFromIndMultivarNormal, positions[iter - 1, t, i], self.currentData)
                         positions[iter, t, i] = newPosition
                         self.currentData["X"][t, i] = newPosition
                 
