@@ -130,7 +130,81 @@ def main():  # Main function to run the simulation and sampling
 
     print(f"Big X: {LargeX[:10]}")  # Print the first 10 time points of latent positions
     print(f"Adjacency tensor Y: {Y[:10]}")  # Print the sampled adjacency tensor
+
+
+
+
+
+
+
+
+
+
+
+
+    # ------------------------------------------------------------
+    #  RUN GIBBS SAMPLER AND CHECK PARAMETER RECOVERY
+    # ------------------------------------------------------------
+    ns_total  = 4_000          # total MCMC sweeps
+    burn_in   = 1_000          # first draws to discard
+    alphas    = np.ones(n)     # flat Dirichlet prior for radii
+
+    sampler = gibbs.Gibbs(Y)   # create sampler object with data
+
+    X_chain, R_chain, tauSq_chain, sigmaSq_chain, \
+    betaIN_chain, betaOUT_chain = sampler.RunGibbs(
+        ns                 = ns_total,
+        p                  = p,
+        modelType          = "binary",
+        initType           = "base",
+        nuIN               = 0.0,
+        etaIN              = 1.0,
+        nuOUT              = 0.0,
+        etaOUT             = 1.0,
+        thetaSigma         = 9.0,
+        phiSigma           = 1.5,
+        thetaTau           = 2.05,
+        phiTau             = phi_tau,
+        alphas             = alphas,
+        randomWalkVariance = 9.0
+    )
+
+    # ---------- posterior summaries (after burn-in) ----------
+    keep         = slice(burn_in, None)
+    betaIN_hat   = betaIN_chain[keep].mean()
+    betaOUT_hat  = betaOUT_chain[keep].mean()
+    tauSq_hat    = tauSq_chain[keep].mean()
+    sigmaSq_hat  = sigmaSq_chain[keep].mean()
+    r_hat        = R_chain[keep].mean(axis=0)           # actor-wise mean
+    X_hat        = X_chain[keep].mean(axis=0)           # latent positions
+
+    # ---------- print comparison ----------
+    print("\n=== PARAMETER RECOVERY CHECK ===")
+    print(f"true  betaIN  = 1.0   |  posterior mean = {betaIN_hat:6.3f}")
+    print(f"true  betaOUT = 2.0   |  posterior mean = {betaOUT_hat:6.3f}")
+    print(f"true  SigmaSq = {SigmaSq:6.4f} |  posterior mean = {sigmaSq_hat:6.4f}")
+    print(f"posterior mean of tauSq (true value varied each i) = {tauSq_hat:6.3f}")
+    print("first five posterior means of r:", r_hat[:5])
+
+    # ---------- (optional) save full MCMC output ----------
+    np.savez_compressed("sim_run.npz",
+                        X_true=LargeX, Y=Y,
+                        X_chain=X_chain, R_chain=R_chain,
+                        betaIN_chain=betaIN_chain, betaOUT_chain=betaOUT_chain,
+                        tauSq_chain=tauSq_chain, sigmaSq_chain=sigmaSq_chain)
+    print("Saved full chains to sim_run.npz")
     
+
+
+
+
+
+
+
+
+
+
+
 
 # Entry point check: only run main() if this script is executed directly
 if __name__ == "__main__":  # Check if script is main program
