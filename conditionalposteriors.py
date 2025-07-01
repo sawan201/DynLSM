@@ -3,37 +3,37 @@ from scipy.stats import invgamma
 
 class ConditionalPosteriors:
     def __init__(self,
-                 theta_tau,  phi_tau,   #  Inv-Gamma prior for tau squared
-                 theta_sig,  phi_sig,   #  Inv-Gamma prior for sigma squared
-                 nu_in,      xi_in,   #  Normal prior for beta IN
-                 nu_out,     xi_out,   #  Normal prior for beta OUT
-                 alphas = None,   # Not using right now, but kept for future
-                 p = None):   # Latent position
+                 theta_tau,  phi_tau,
+                 theta_sig,  phi_sig,
+                 nu_in,      xi_in,
+                 nu_out,     xi_out,
+                 alphas = None,
+                 p = None):
 
         # hyper-parameters
         self.theta_tau, self.phi_tau = theta_tau, phi_tau
         self.theta_sig, self.phi_sig = theta_sig, phi_sig
         self.nu_in,   self.xi_in  = nu_in,  xi_in
         self.nu_out,  self.xi_out = nu_out, xi_out
-        self.alphas = alphas   # Not used in this class, but can be used in subclasses
+        self.alphas = alphas
         self.p = p
 
-        # log-likelihood for a SINGLE Bernoulli observation. Looping over will happen in the outer code. 
+        # log-likelihood for a SINGLE BERNOULLI observation
         # This can swap out for something like poisson over time, but the eta term will remain the same.
         self.log_p = lambda y, eta: y * eta - np.logaddexp(0.0, eta)   # y is the observed edge value, and eta is the linear predictor specified below
                                                                        # lamda is introducing an inline function that can take two arguements
                                                                        # logaddexp is the log transform we use, with the form np.logaddexp(a, b) = log(exp(a) + exp(b)). a = 0 since we are adding 1 as the first term in the expression.
                                                                     
     def LogLikelihood(self, Y, X, r, betaIN, betaOUT, tauSq, sigmaSq):
-        T, n, _ = Y.shape
+        T, n, _ = Y.shape   # Last dimension is n, ignore with _
         log_like = 0.0
 
         for t in range(T):
-            for i in range(n):
-                for j in range(n):
+            for i in range(n):   # Going over every sender
+                for j in range(n):   # Every reciever
                     if i == j:
-                        continue  
-                    # Delegates distribution-specific work to the subclass
+                        continue   # Skip self-edges
+                    
                     log_like += self.LogPijt(
                         Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t
                     )
@@ -90,8 +90,8 @@ class ConditionalPosteriors:
         xm1 = X[t - 1, i]   # Taking out the t-1 timeslice vector for actor i
         x   = X[t, i]   # Taking out the t timeslice vector for actor i
         xp1 = X[t + 1, i]   # Taking out the t+1 timeslice vector for actor i
-        lp  = self.mvnorm_logpdf(x, xm1, sigmaSq)   # Evaluating logp(x_it | x_i(t-1))
-        lp += self.mvnorm_logpdf(xp1, x, sigmaSq)   # Evaluating logp(x_i(t+1) | x_it)
+        lp  = self.mvnorm_logpdf(x, xm1, sigmaSq)
+        lp += self.mvnorm_logpdf(xp1, x, sigmaSq)
         return lp
 
     def LogXTPrior(self, X, sigmaSq, i):   # Returning the log prior contribution from the last actor i
@@ -107,7 +107,6 @@ class ConditionalPosteriors:
     # Posteriors #
     ##############
 
-    # Putting together the likelihood and priors for latent positions
     def LogTime1ConditionalPosterior(self, currentData, xValue):
         i, t = currentData["i"], currentData["t"]   # t should be 0 here, done to identify which element of latent postion tensor we update
         X_prop = currentData["X"].copy()   # Creating copy of current latent positions tensor to temporarily modify without affecting current state of chain
@@ -146,7 +145,7 @@ class ConditionalPosteriors:
         return ll + lp
 
     def LogTimeTConditionalPosterior(self, currentData, xValue):
-        i, t = currentData["i"], currentData["t"]          # t == T-1
+        i, t = currentData["i"], currentData["t"]
         X_prop = currentData["X"].copy()
         X_prop[t, i] = xValue
 
