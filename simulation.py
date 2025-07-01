@@ -128,8 +128,8 @@ def main():  # Main function to run the simulation and sampling
     
     '''
 
-    print(f"Big X: {LargeX}")
-    print(f"Adjacency tensor Y: {Y}")  # Print the sampled adjacency tensor
+    print(f"Big X: {LargeX[:10]}")  # Print the first 10 time points of latent positions
+    print(f"Adjacency tensor Y: {Y[:10]}")  # Print the sampled adjacency tensor
     
 
 # Entry point check: only run main() if this script is executed directly
