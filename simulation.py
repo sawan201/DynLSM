@@ -1,6 +1,11 @@
 import numpy as np  # Import NumPy for numerical operations and array handling
-import Conditionals as cond  # Import the Conditionals module (your modeling functions)
+import conditionalposteriors as cond  # Import the Conditionals module 
 import gibbs as gibbs  # Import the Gibbs sampling module
+
+'''
+Helper Functions
+These functions are used to compute hyperparameters and perform operations needed for the simulation.
+'''
 
 def compute_phi_tau(X1, scale=1.05):  # Define a function to compute the phi_tau hyperparameter
     n, p = X1.shape  # Unpack the number of actors (n) and latent dimensions (p)
@@ -14,6 +19,10 @@ def scaled_inverse_norm(X1, i):  # Define a function to compute the scaled inver
 
 def sigmoid(x):  # Define the sigmoid (logistic) function to squash values into [0, 1]
     return 1.0 / (1.0 + np.exp(-x))  # Compute 1 / (1 + exp(-x))
+
+'''
+Main Function
+'''
 
 def main():  # Main function to run the simulation and sampling
     T, n, p = 10, 100, 2  # Set time points (T), number of actors (n), and latent space dimensions (p)
@@ -36,7 +45,7 @@ def main():  # Main function to run the simulation and sampling
     # Fit or sample from the conditional model using the hyperparameters
     P = cond.conditionals(
         theta_tau=2.05,  # Shape parameter for tau^2 prior
-        phi_tau=phi_tau,  # Scale parameter for tau^2 prior (computed)
+        phi_tau=phi_tau,  # Scale parameter for tau^2 prior
         theta_sig=9.0,  # Shape parameter for sigma^2 prior
         phi_sig=1.5,  # Scale parameter for sigma^2 prior
         nu_in=0.0,  # Additional model hyperparameters
@@ -105,6 +114,16 @@ def main():  # Main function to run the simulation and sampling
     print("betaIN_new:", betaIN_new)  # Display the sampled beta_IN
     print("betaOUT_new:", betaOUT_new)  # Display the sampled beta_OUT
     # Note: The alphas parameter is not used in the Gibbs sampling call,
+
+
+    #The rest of the program may not work right now, as it is not fully implemented.
+
+    betaIN_ = (1.0/n) * np.sum(betaIN_new)
+    betaOUT_ = (1.0/n) * np.sum(betaOUT_new)    
+    r_ = (1.0/n) * np.sum(R_new, axis=0)  # Average radius across actors
+    tauSq_ = (1.0/n) * np.sum(tauSq_new)  # Average tau^2 across actors
+    sigmaSq_ = (1.0/n) * np.sum(sigmaSq_new)  # Average sigma^2 across actors   
+
 
 # Entry point check: only run main() if this script is executed directly
 if __name__ == "__main__":  # Check if script is main program
