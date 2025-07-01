@@ -77,8 +77,7 @@ def main():  # Main function to run the simulation and sampling
                     X_j=LargeX[t, j]  # Latent position of actor j at time t
                 )
 
-                # Testing output of the eta calculation
-                print(f"t={t}, i={i}, j={j}, r_i={r_i:.4f}, r_j={r_j:.4f}, eta={eta:.4f}")
+                
 
                 # Convert log-odds to probability via the sigmoid function
                 prob = sigmoid(eta)  # Probability of an edge occurring
@@ -88,7 +87,8 @@ def main():  # Main function to run the simulation and sampling
 
    
 
-    X_new, R_new, tauSq_new, sigmaSq_new, betaIN_new, betaOUT_new = gibbs.RunBinaryGibbs(
+    '''
+     X_new, R_new, tauSq_new, sigmaSq_new, betaIN_new, betaOUT_new = gibbs.RunBinaryGibbs(
         Y=Y,  # The sampled adjacency tensor
         ns=n,
         p=2,
@@ -105,7 +105,6 @@ def main():  # Main function to run the simulation and sampling
         alphas=None,  # Not sure what to put here, assuming None for now   
         randomWalkVariance=9.0  # Variance for the random walk proposal
     )
-
     print("Gibbs sampling results:")  # Label the output
     print("X_new:", X_new)  # Display the sampled latent positions
     print("R_new:", R_new)  # Display the sampled reach (radii)     
@@ -124,6 +123,12 @@ def main():  # Main function to run the simulation and sampling
     tauSq_ = (1.0/n) * np.sum(tauSq_new)  # Average tau^2 across actors
     sigmaSq_ = (1.0/n) * np.sum(sigmaSq_new)  # Average sigma^2 across actors   
 
+    
+    '''
+
+    print(f"Big X: {LargeX}")
+    print(f"Adjacency tensor Y: {Y}")  # Print the sampled adjacency tensor
+    
 
 # Entry point check: only run main() if this script is executed directly
 if __name__ == "__main__":  # Check if script is main program
