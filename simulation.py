@@ -25,7 +25,7 @@ Main Function
 '''
 
 def main():  # Main function to run the simulation and sampling
-    T, n, p = 10, 100, 2  # Set time points (T), number of actors (n), and latent space dimensions (p)
+    T, n, p = 5, 10, 2  # Set time points (T), number of actors (n), and latent space dimensions (p)
     SigmaSq = 1.0 / (5 * n)**2  # Compute the step-size variance for latent position draws
 
     # Pre-allocate the latent positions array of shape (T, n, p)
