@@ -1,5 +1,5 @@
 import numpy as np  # Import NumPy for numerical operations and array handling
-import conditionalposteriors as cond  # Import the Conditionals module 
+import Conditionals as cond  # Import the Conditionals module (your modeling functions)
 import gibbs as gibbs  # Import the Gibbs sampling module
 
 '''
