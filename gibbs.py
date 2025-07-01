@@ -101,6 +101,7 @@ class Gibbs:
                         newPosition = self.MetropolisHastings(logPosterior, self.SampleFromIndMultivarNormal, positions[iter - 1, t, i], self.currentData)
                         positions[iter, t, i] = newPosition
                         self.currentData["X"][t, i] = newPosition
+                        print("Iteration", iter, "Time", t, "Actor", i, "completed.")
                 
                 # Sample radii using Metropolis-Hastings
                 newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
