@@ -45,6 +45,8 @@ class ConditionalPosteriors:
     # VARIANCE PARAMETERS #
     #######################
 
+    #Why are the "shape/scale" parameters called "a_post" and "b_post" in SampleSigmaSquared but not SampleTauSquared?
+
     def SampleTauSquared(self, X_current):   # X_current is one snapshot of all latent positions at the present MCMC iteration                       
         X1 = X_current[0]  # This is taking the first slice of the X_current tensor, the first time point, which is what we want for tau squared
         n, p = X1.shape   # Giving us a tuple of of the dimensions of X1
