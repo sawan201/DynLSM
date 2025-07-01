@@ -76,8 +76,8 @@ class Gibbs:
 
             # Setup the currentData dictionary
             self.currentData = {"Y" : self.Y, 
-                                "X" : positions[0],
-                                "r" : radii[0],
+                                "X" : positions[0].copy(),
+                                "r" : radii[0].copy(),
                                 "betaIN" : betaIN[0],
                                 "betaOUT" : betaOUT[0],
                                 "tauSq" : tauSq[0],

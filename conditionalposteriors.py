@@ -139,7 +139,6 @@ class ConditionalPosteriors:
                                 currentData["betaOUT"],
                                 currentData["tauSq"],
                                 currentData["sigmaSq"])
-
         lp = self.LogMiddleXPrior(X_prop,
                                   currentData["sigmaSq"],
                                   i, t)
