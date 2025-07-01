@@ -1,26 +1,22 @@
-# Function outline:
-
-# def eta_ijt(beta_in, beta_out, r_i, r_j, X_it, X_jt):
-#    return {eta_function}
-
-# Continue here
-
 import numpy as np
 from scipy.stats import invgamma
-from scipy.special import gammaln
 
 class ConditionalPosteriors:
     def __init__(self,
                  theta_tau,  phi_tau,   #  Inv-Gamma prior for tau squared
                  theta_sig,  phi_sig,   #  Inv-Gamma prior for sigma squared
                  nu_in,      xi_in,   #  Normal prior for beta IN
-                 nu_out,     xi_out):   #  Normal prior for beta OUT
+                 nu_out,     xi_out,   #  Normal prior for beta OUT
+                 alphas = None,   # Not using right now, but kept for future
+                 p = None):   # Latent position
 
         # hyper-parameters
         self.theta_tau, self.phi_tau = theta_tau, phi_tau
         self.theta_sig, self.phi_sig = theta_sig, phi_sig
         self.nu_in,   self.xi_in  = nu_in,  xi_in
         self.nu_out,  self.xi_out = nu_out, xi_out
+        self.alphas = alphas   # Not used in this class, but can be used in subclasses
+        self.p = p
 
         # log-likelihood for a SINGLE Bernoulli observation. Looping over will happen in the outer code. 
         # This can swap out for something like poisson over time, but the eta term will remain the same.
@@ -28,19 +24,35 @@ class ConditionalPosteriors:
                                                                        # lamda is introducing an inline function that can take two arguements
                                                                        # logaddexp is the log transform we use, with the form np.logaddexp(a, b) = log(exp(a) + exp(b)). a = 0 since we are adding 1 as the first term in the expression.
                                                                     
+    def LogLikelihood(self, Y, X, r, betaIN, betaOUT, tauSq, sigmaSq):
+        T, n, _ = Y.shape
+        log_like = 0.0
+
+        for t in range(T):
+            for i in range(n):
+                for j in range(n):
+                    if i == j:
+                        continue  
+                    # Delegates distribution-specific work to the subclass
+                    log_like += self.LogPijt(
+                        Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t
+                    )
+
+        return log_like
+
 
     #######################
     # VARIANCE PARAMETERS #
     #######################
 
-    def sample_tau2(self, X_current):   # X_current is one snapshot of all latent positions at the present MCMC iteration                       
+    def SampleTauSquared(self, X_current):   # X_current is one snapshot of all latent positions at the present MCMC iteration                       
         X1 = X_current[0]  # This is taking the first slice of the X_current tensor, the first time point, which is what we want for tau squared
         n, p = X1.shape   # Giving us a tuple of of the dimensions of X1
         shape = self.theta_tau + 0.5 * n * p   # Specifying the shape parameter for the inverse gamma distribution
         scale = self.phi_tau  + 0.5 * np.sum(X1**2)   # This is the scale parameter for the inverse gamma distribution
         return invgamma.rvs(a=shape, scale=scale)   # Drawing a single time from the specific inverse gamma distribution 
 
-    def sample_sigma2(self, X_current):
+    def SampleSigmaSquared(self, X_current):
         diffs = X_current[1:] - X_current[:-1]   # Creating a tensor, where the t = 0 entry contains the difference between X2 - X1, the t = 1 entry contains the difference between X3 - X2, etc. This goes up to the XT - X(T-1) entry. 
         Tm1, n, p = diffs.shape   # Tm1 = T - 1, which is the number of increments
         a_post = self.theta_sig + 0.5 * n * p * Tm1   # Posterior shape parameter for the inverse gamma distribution
@@ -53,40 +65,139 @@ class ConditionalPosteriors:
     ##############
 
     ### BETA LOG-PRIORS ###
-    def log_prior_beta_in(self, beta_val):
+    def LogBetaINPrior(self, beta_val):
         return -0.5 * (beta_val - self.nu_in)  ** 2 / self.xi_in
 
-    def log_prior_beta_out(self, beta_val):
+    def LogBetaOUTPrior(self, beta_val):
         return -0.5 * (beta_val - self.nu_out) ** 2 / self.xi_out
     
     ### LATENT POSITION LOG-PRIORS ###
     LOG2PI = np.log(2.0 * np.pi)   # Pre-storing log(2pi) so it doesn't have to be recalculated every time in the loop
 
-    def mvnorm_logpdf(x, mu, var):   # Helper function to calculate the log density of a multivariate normal distribution
+    def mvnorm_logpdf(self, x, mu, var):   # Helper function to calculate the log density of a multivariate normal distribution
         diff = x - mu   # Performing element wise subtraction to get the deviation vector
         p = diff.size   # Counting all elements in the array
-        return -0.5 * (p * LOG2PI + p * np.log(var) + diff.dot(diff) / var)   # Evaluating formula for multivariate normal with covariance sigma squared * I_p
+        return -0.5 * (p * self.LOG2PI + p * np.log(var) + diff.dot(diff) / var)   # Evaluating formula for multivariate normal with covariance sigma squared * I_p
 
     def LogX1Prior(self, X, tauSq, sigmaSq, i):   # Returning the log prior contribution from one actor i 
         x1 = X[0, i]   # Taking out the first time slice vector for actor i
         x2 = X[1, i]   # Taking out the second time slide vector for actor i
-        lp = mvnorm_logpdf(x1, np.zeros_like(x1), tauSq)   # Using np.zeros_like(x1) to create a zero vector of the same shape as x1, which is the mean of the prior distribution
-        lp += mvnorm_logpdf(x2, x1, sigmaSq)   # This is the log prior contribution of the second time slice from the initial latent positions distribution
+        lp = self.mvnorm_logpdf(x1, np.zeros_like(x1), tauSq)   # Using np.zeros_like(x1) to create a zero vector of the same shape as x1, which is the mean of the prior distribution
+        lp += self.mvnorm_logpdf(x2, x1, sigmaSq)   # This is the log prior contribution of the second time slice from the initial latent positions distribution
         return lp   
 
     def LogMiddleXPrior(self, X, sigmaSq, i, t):
         xm1 = X[t - 1, i]   # Taking out the t-1 timeslice vector for actor i
         x   = X[t, i]   # Taking out the t timeslice vector for actor i
         xp1 = X[t + 1, i]   # Taking out the t+1 timeslice vector for actor i
-        lp  = mvnorm_logpdf(x, xm1, sigmaSq)   # Evaluating logp(x_it | x_i(t-1))
-        lp += mvnorm_logpdf(xp1, x, sigmaSq)   # Evaluating logp(x_i(t+1) | x_it)
+        lp  = self.mvnorm_logpdf(x, xm1, sigmaSq)   # Evaluating logp(x_it | x_i(t-1))
+        lp += self.mvnorm_logpdf(xp1, x, sigmaSq)   # Evaluating logp(x_i(t+1) | x_it)
         return lp
 
     def LogXTPrior(self, X, sigmaSq, i):   # Returning the log prior contribution from the last actor i
         xm1 = X[-2, i]   # Taking out the second to last time slice vector for actor i
         x   = X[-1, i]   # Taking out the last time slice vector for actor i
-        return mvnorm_logpdf(x, xm1, sigmaSq)
+        return self.mvnorm_logpdf(x, xm1, sigmaSq)
     
+    def LogRPrior(self, r):
+        return 0.0   # Any constant works, so returning 0.0 is conventional here
+
+
+    ##############
+    # Posteriors #
+    ##############
+
+    # Putting together the likelihood and priors for latent positions
+    def LogTime1ConditionalPosterior(self, currentData, xValue):
+        i, t = currentData["i"], currentData["t"]   # t should be 0 here, done to identify which element of latent postion tensor we update
+        X_prop = currentData["X"].copy()   # Creating copy of current latent positions tensor to temporarily modify without affecting current state of chain
+        X_prop[t, i] = xValue   # Replacing old xi1 with new proposal
+
+        ll = self.LogLikelihood(currentData["Y"], X_prop,
+                                currentData["r"],
+                                currentData["betaIN"],
+                                currentData["betaOUT"],
+                                currentData["tauSq"],
+                                currentData["sigmaSq"])   # Evaluating the log likelihood of observed network Y under proposed X
+
+        lp = self.LogX1Prior(X_prop,
+                             currentData["tauSq"],
+                             currentData["sigmaSq"],
+                             i)   # Log-prior contribution from xi1
+
+        return ll + lp   # Log posterior
+
+    def LogMiddleTimeConditionalPosterior(self, currentData, xValue):
+        i, t = currentData["i"], currentData["t"]   # Identifying which element of latent position tensor is updated
+        X_prop = currentData["X"].copy()
+        X_prop[t, i] = xValue
+
+        ll = self.LogLikelihood(currentData["Y"], X_prop,
+                                currentData["r"],
+                                currentData["betaIN"],
+                                currentData["betaOUT"],
+                                currentData["tauSq"],
+                                currentData["sigmaSq"])
+
+        lp = self.LogMiddleXPrior(X_prop,
+                                  currentData["sigmaSq"],
+                                  i, t)
+
+        return ll + lp
+
+    def LogTimeTConditionalPosterior(self, currentData, xValue):
+        i, t = currentData["i"], currentData["t"]          # t == T-1
+        X_prop = currentData["X"].copy()
+        X_prop[t, i] = xValue
+
+        ll = self.LogLikelihood(currentData["Y"], X_prop,
+                                currentData["r"],
+                                currentData["betaIN"],
+                                currentData["betaOUT"],
+                                currentData["tauSq"],
+                                currentData["sigmaSq"])
+
+        lp = self.LogXTPrior(X_prop,
+                             currentData["sigmaSq"],
+                             i)
+
+        return ll + lp
+
+    def LogRConditionalPosterior(self, currentData, rValues):
+        ll = self.LogLikelihood(currentData["Y"],
+                                currentData["X"],
+                                rValues,
+                                currentData["betaIN"],
+                                currentData["betaOUT"],
+                                currentData["tauSq"],
+                                currentData["sigmaSq"])
+
+        lp = self.LogRPrior(rValues)
+        return ll + lp
+
+    def LogBetaINConditionalPosterior(self, currentData, betaINValue):
+        ll = self.LogLikelihood(currentData["Y"],
+                                currentData["X"],
+                                currentData["r"],
+                                betaINValue,
+                                currentData["betaOUT"],
+                                currentData["tauSq"],
+                                currentData["sigmaSq"])
+
+        lp = self.LogBetaINPrior(betaINValue)
+        return ll + lp
+
+    def LogBetaOUTConditionalPosterior(self, currentData, betaOUTValue):
+        ll = self.LogLikelihood(currentData["Y"],
+                                currentData["X"],
+                                currentData["r"],
+                                currentData["betaIN"],
+                                betaOUTValue,
+                                currentData["tauSq"],
+                                currentData["sigmaSq"])
+
+        lp = self.LogBetaOUTPrior(betaOUTValue)
+        return ll + lp
 
 
 
@@ -100,11 +211,13 @@ class BinaryConditionals(ConditionalPosteriors):
                 beta_out * (1.0 - d_ijt / r_i))   # from i
 
     # Log-likelihood of a SINGLE edge
-    def log_p_ijt(self, y_ijt,
-                  beta_in, beta_out,
-                  r_i, r_j, X_i, X_j):
-        eta_ijt = self.eta(beta_in, beta_out, r_i, r_j, X_i, X_j)
-        return self.log_p(y_ijt, eta_ijt)
+    def LogPijt(self, Y, X, r,
+                  betaIN, betaOUT,
+                  tauSq, sigmaSq,
+                  i, j, t):
+        y = Y[t, i, j]
+        eta_ijt = self.eta(betaIN, betaOUT, r[i], r[j], X[t, i], X[t, j])
+        return self.log_p(y, eta_ijt)
 
 class PoissonConditionals(ConditionalPosteriors):
     def __init__(self):
