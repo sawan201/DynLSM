@@ -348,7 +348,7 @@ gibbs.py:
             return sample value
 
     class BernoulliConditionals: inherits from ConditionalPosteriors
-        constructor __init__(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas):
+        constructor __init__(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, thetaTau, phiTau, alphas, n, p, T):
             self.nuIN = nuIN
             self.etaIN = etaIN
             self.nuOUT = nuOUT
@@ -358,6 +358,9 @@ gibbs.py:
             self.thetaTau = thetaTau
             self.phiTau = phiTau
             self.alphas = alphas
+            self.n = n
+            self.p = p
+            self.T = T
 
         function LogPijt(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, i, j, t):
             Calculate log-likelihood of Y[t, i, j] given else under Bernoulli assumption using ETAijt

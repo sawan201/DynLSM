@@ -1,5 +1,5 @@
 import numpy as np  # Import NumPy for numerical operations and array handling
-import Conditionals as cond  # Import the Conditionals module (your modeling functions)
+import conditionalposteriors as cond  # Import the Conditionals module (your modeling functions)
 import gibbs as gibbs  # Import the Gibbs sampling module
 
 def compute_phi_tau(X1, scale=1.05):  # Define a function to compute the phi_tau hyperparameter

@@ -49,14 +49,15 @@ class Gibbs:
             # Assign the conditionals based on the input argument
             if modelType == "binary":
                 conditionals = cds.BinaryConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
-                                                    thetaTau, phiTau, alphas)
+                                                    thetaTau, phiTau, alphas, n, p, T)
             elif modelType == "poisson":
                 conditionals = cds.PoissonConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
-                                                    thetaTau, phiTau, alphas)
+                                                    thetaTau, phiTau, alphas, n, p, T)
 
             # Define key things:
             T = self.Y.shape[0]
             n = self.Y.shape[1]
+            self.p = p
 
             # Set up empty Numpy arrays
             positions = np.empty(shape=(ns, T, n, p))
@@ -103,7 +104,9 @@ class Gibbs:
                 
                 # Sample radii using Metropolis-Hastings
                 newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
-                                                   self.currentData)
+                                                   self.currentData, 
+                                                   LogProposalEvaluate = self.LogEvaluateDirichlet, 
+                                                   proposalSymmetric= False)
                 radii[iter] = newRadii
                 self.currentData["r"] = newRadii
 
@@ -127,7 +130,7 @@ class Gibbs:
             
             return positions, radii, tauSq, sigmaSq, betaIN, betaOUT
 
-    def MetropolisHastings(ConditionalPosterior, ProposalSampler, currentValue, data, 
+    def MetropolisHastings(self, ConditionalPosterior, ProposalSampler, currentValue, data, 
                         LogProposalEvaluate = None, proposalSymmetric = True, logPosterior = True):
         """
         Inputs:
@@ -191,8 +194,8 @@ class Gibbs:
     def SampleFromNormalFixedVar(self, mean):
         return np.random.normal(mean, np.sqrt(self.randomWalkVariance))
 
-    def SampleFromDirichlet(alphas):
+    def SampleFromDirichlet(self, alphas):
         return np.random.dirichlet(alphas)
 
-    def LogEvaluateDirichlet(parameters, values):
+    def LogEvaluateDirichlet(self, parameters, values):
         return dirichlet.logpdf(values, parameters)
