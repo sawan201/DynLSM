@@ -43,7 +43,7 @@ def main():  # Main function to run the simulation and sampling
    
 
     # Fit or sample from the conditional model using the hyperparameters
-    P = cond.conditionals(
+    P = cond.BinaryConditionals(
         theta_tau=2.05,  # Shape parameter for tau^2 prior
         phi_tau=phi_tau,  # Scale parameter for tau^2 prior
         theta_sig=9.0,  # Shape parameter for sigma^2 prior
@@ -51,9 +51,11 @@ def main():  # Main function to run the simulation and sampling
         nu_in=0.0,  # Additional model hyperparameters
         xi_in=1.0,
         nu_out=0.0,
-        xi_out=1.0
+        xi_out=1.0,
+        alphas=None,  # Not used in this context, assuming None
+        p=None
     )
-
+    
     # Initialize an adjacency tensor Y of shape (T, n, n) with zeros
     Y = np.zeros((T, n, n), dtype=int)
 
@@ -67,7 +69,7 @@ def main():  # Main function to run the simulation and sampling
 
                 r_j = scaled_inverse_norm(X1, j)  # Compute radius/influence for actor j
 
-                # Compute the linear predictor (log-odds) for the edge probability
+                
                 eta = P.eta(
                     beta_in=1.0,  # Input effect parameter
                     beta_out=2.0,  # Output effect parameter
