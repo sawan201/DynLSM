@@ -49,7 +49,7 @@ class Gibbs:
             # Assign the conditionals based on the input argument
             if modelType == "binary":
                 conditionals = cds.BinaryConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
-                                                    thetaTau, phiTau, alphas, n, p, T)
+                                                    thetaTau, phiTau, alphas=alphas, p=p)
             elif modelType == "poisson":
                 conditionals = cds.PoissonConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
                                                     thetaTau, phiTau, alphas, n, p, T)
@@ -127,7 +127,7 @@ class Gibbs:
                 newSigmaSq = conditionals.SampleSigmaSquared(self.currentData["X"])
                 sigmaSq[iter] = newSigmaSq
                 self.currentData["sigmaSq"] = newSigmaSq
-            
+                print("Iteration", iter, "completed.")
             return positions, radii, tauSq, sigmaSq, betaIN, betaOUT
 
     def MetropolisHastings(self, ConditionalPosterior, ProposalSampler, currentValue, data, 
