@@ -22,7 +22,7 @@ class AbstractInitialization:
         self.InitializeBetaOUT()
         self.InitializeSigmaSq()
         self.InitializeTauSq()
-        return self.X, self.R, self.betaIN, self.betaOUT, self.tauSq, self.sigmaSq
+        return self.X, self.r, self.betaIN, self.betaOUT, self.tauSq, self.sigmaSq
 
     def InitializeX():
         raise NotImplementedError("This method must be implemented by a subclass.")
