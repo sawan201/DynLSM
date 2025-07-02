@@ -1,6 +1,7 @@
 import numpy as np  # Import NumPy for numerical operations and array handling
 import conditionalposteriors as cond  # Import the Conditionals module 
 import gibbs as gibbs  # Import the Gibbs sampling module
+import matplotlib.pyplot as plt
 
 '''
 Helper Functions
@@ -24,8 +25,10 @@ def sigmoid(x):  # Define the sigmoid (logistic) function to squash values into 
 Main Function
 '''
 
+np.random.seed(42)
+
 def main():  # Main function to run the simulation and sampling
-    T, n, p = 5, 10, 2  # Set time points (T), number of actors (n), and latent space dimensions (p)
+    T, n, p = 6, 30, 2  # Set time points (T), number of actors (n), and latent space dimensions (p)
     SigmaSq = 1.0 / (5 * n)**2  # Compute the step-size variance for latent position draws
 
     # Pre-allocate the latent positions array of shape (T, n, p)
@@ -131,6 +134,8 @@ def main():  # Main function to run the simulation and sampling
     print(f"Big X: {LargeX[:10]}")  # Print the first 10 time points of latent positions
     print(f"Adjacency tensor Y: {Y[:10]}")  # Print the sampled adjacency tensor
 
+    plt.plot(LargeX[:, 0, 1])
+    plt.show()
 
 
 
@@ -141,11 +146,12 @@ def main():  # Main function to run the simulation and sampling
 
 
 
+'''
 
     # ------------------------------------------------------------
     #  RUN GIBBS SAMPLER AND CHECK PARAMETER RECOVERY
     # ------------------------------------------------------------
-    ns_total  = 4_000          # total MCMC sweeps
+    ns_total  = 7_000          # total MCMC sweeps
     burn_in   = 1_000          # first draws to discard
     alphas    = np.ones(n)     # flat Dirichlet prior for radii
 
@@ -193,13 +199,9 @@ def main():  # Main function to run the simulation and sampling
                         betaIN_chain=betaIN_chain, betaOUT_chain=betaOUT_chain,
                         tauSq_chain=tauSq_chain, sigmaSq_chain=sigmaSq_chain)
     print("Saved full chains to sim_run.npz")
-    
 
 
-
-
-
-
+'''
 
 
 
