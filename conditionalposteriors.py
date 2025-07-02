@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import invgamma
+from scipy.special import gammaln
 
 class ConditionalPosteriors:
     def __init__(self,
@@ -27,7 +28,7 @@ class ConditionalPosteriors:
     def LogLikelihood(self, Y, X, r, betaIN, betaOUT, tauSq, sigmaSq):
         T, n, _ = Y.shape   # Last dimension is n, ignore with _
         log_like = 0.0
-
+        # WRITE A DISTANCE MATRIX FUNCTION TO CALCULATE DISTANCES BETWEEN ALL PAIRS OF ACTORS AT EACH TIME POINT, SYMMETRIC SO WE DO NOT HAVE TO DO IT TWICE
         for t in range(T):
             for i in range(n):   # Going over every sender
                 for j in range(n):   # Every reciever
@@ -219,9 +220,47 @@ class BinaryConditionals(ConditionalPosteriors):
         eta_ijt = self.eta(betaIN, betaOUT, r[i], r[j], X[t, i], X[t, j])
         return self.log_p(y, eta_ijt)
 
+### CHECK OVER, GENERATED FROM CHAT ###
 class PoissonConditionals(ConditionalPosteriors):
-    def __init__(self):
-        print("PoissonConditionals not yet implemented")
+    """
+    Dynamic latent–space model with Poisson edges
+    Y_ijt  ~  Poisson( λ_ijt ),     log λ_ijt = eta_ijt
+    """
+
+    def __init__(self,
+                 theta_tau,  phi_tau,
+                 theta_sig,  phi_sig,
+                 nu_in,      xi_in,
+                 nu_out,     xi_out,
+                 alphas=None,
+                 p=None):
+
+        super().__init__(theta_tau, phi_tau,
+                         theta_sig,  phi_sig,
+                         nu_in,      xi_in,
+                         nu_out,     xi_out,
+                         alphas=alphas,
+                         p=p)
+
+        # overwrite the Bernoulli log-pmf with the Poisson one
+        #   log p(y|η) = y*η − exp(η) − log(y!)
+        self.log_p = lambda y, eta: y * eta - np.exp(eta) - gammaln(y + 1)
+
+    # — same η form as the binary model —
+    def eta(self, beta_in, beta_out, r_i, r_j, X_i, X_j):
+        d_ijt = np.linalg.norm(X_i - X_j)
+        return (beta_in  * (1.0 - d_ijt / r_j) +
+                beta_out * (1.0 - d_ijt / r_i))
+
+    # log-likelihood contribution of **one** dyad
+    def LogPijt(self, Y, X, r,
+                betaIN, betaOUT,
+                tauSq, sigmaSq,
+                i, j, t):
+
+        y      = Y[t, i, j]
+        eta_ij = self.eta(betaIN, betaOUT, r[i], r[j], X[t, i], X[t, j])
+        return self.log_p(y, eta_ij)
 
 
 
