@@ -52,7 +52,7 @@ class Gibbs:
                                                     thetaTau, phiTau, alphas=alphas, p=p)
             elif modelType == "poisson":
                 conditionals = cds.PoissonConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
-                                                    thetaTau, phiTau, alphas, n, p, T)
+                                                    thetaTau, phiTau, alphas = alphas, p = p)
 
             # Define key things:
             T = self.Y.shape[0]
