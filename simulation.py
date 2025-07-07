@@ -28,8 +28,9 @@ Main Function
 np.random.seed(42)
 
 def main():  # Main function to run the simulation and sampling
-    T, n, p = 5, 10, 2  # Set time points (T), number of actors (n), and latent space dimensions (p)
+    T, n, p = 2, 5, 1  # Set time points (T), number of actors (n), and latent space dimensions (p)
     SigmaSq = 1.0 / (5 * n)**2  # Compute the step-size variance for latent position draws
+    model_type = "binary"
 
     # Pre-allocate the latent positions array of shape (T, n, p)
     LargeX = np.zeros((T, n, p))
@@ -59,26 +60,29 @@ def main():  # Main function to run the simulation and sampling
         p=None
     )
     
+    '''
+    
+    '''
     # --------------------------
     #  simulate Poisson counts
     # --------------------------
-    Y = np.zeros((T, n, n), dtype=int)     # adjacency tensor
-
-    beta_in_true  = 1.0
-    beta_out_true = 2.0
-
-    for t in range(T):
-        for i in range(n):
-            r_i = scaled_inverse_norm(X1, i)
-            for j in range(n):
-                if i == j:
-                    continue
-                r_j   = scaled_inverse_norm(X1, j)
-                eta   = P.eta(beta_in_true, beta_out_true,
-                            r_i, r_j,
-                            LargeX[t, i], LargeX[t, j])
-                lam   = np.exp(eta)
-                Y[t, i, j] = np.random.poisson(lam)
+#    Y = np.zeros((T, n, n), dtype=int)     # adjacency tensor
+#
+#    beta_in_true  = 1.0
+#    beta_out_true = 2.0
+#
+#    for t in range(T):
+#        for i in range(n):
+#            r_i = scaled_inverse_norm(X1, i)
+#            for j in range(n):
+#                if i == j:
+#                    continue
+#                r_j   = scaled_inverse_norm(X1, j)
+#                eta   = P.eta(beta_in_true, beta_out_true,
+#                            r_i, r_j,
+#                            LargeX[t, i], LargeX[t, j])
+#                lam   = np.exp(eta)
+#                Y[t, i, j] = np.random.poisson(lam)
 
 
 
@@ -87,49 +91,49 @@ def main():  # Main function to run the simulation and sampling
     # --------------------------
     #  run Gibbs with modelType="poisson"
     # --------------------------
-    sampler = gibbs.Gibbs(Y)
-
-    X_chain, R_chain, tauSq_chain, sigmaSq_chain, \
-    betaIN_chain, betaOUT_chain = sampler.RunGibbs(
-        ns                 = 5000,
-        p                  = p,
-        modelType          = "poisson",
-        initType           = "base",
-        nuIN               = 0.0,
-        etaIN              = 1.0,
-        nuOUT              = 0.0,
-        etaOUT             = 1.0,
-        thetaSigma         = 9.0,
-        phiSigma           = 1.5,
-        thetaTau           = 2.05,
-        phiTau             = phi_tau,
-        alphas             = np.ones(n),
-        randomWalkVariance = 9.0
-    )
-
-
+#    sampler = gibbs.Gibbs(Y)
+#
+#    X_chain, R_chain, tauSq_chain, sigmaSq_chain, \
+#    betaIN_chain, betaOUT_chain = sampler.RunGibbs(
+#        ns                 = 5000,
+#        p                  = p,
+#        modelType          = "poisson",
+#        initType           = "base",
+#        nuIN               = 0.0,
+#        etaIN              = 1.0,
+#        nuOUT              = 0.0,
+#        etaOUT             = 1.0,
+#        thetaSigma         = 9.0,
+#        phiSigma           = 1.5,
+#        thetaTau           = 2.05,
+#        phiTau             = phi_tau,
+#        alphas             = np.ones(n),
+#        randomWalkVariance = 9.0
+#    )
 
 
-    print("Gibbs sampling results:")  # Label the output
-    print("X_new:", X_new)  # Display the sampled latent positions
-    print("R_new:", R_new)  # Display the sampled reach (radii)     
-    print("tauSq_new:", tauSq_new)  # Display the sampled tau^2
-    print("sigmaSq_new:", sigmaSq_new)  # Display the sampled sigma^2       
-    print("betaIN_new:", betaIN_new)  # Display the sampled beta_IN
-    print("betaOUT_new:", betaOUT_new)  # Display the sampled beta_OUT
+
+
+#    print("Gibbs sampling results:")  # Label the output
+#    print("X_new:", X_new)  # Display the sampled latent positions
+#    print("R_new:", R_new)  # Display the sampled reach (radii)     
+#    print("tauSq_new:", tauSq_new)  # Display the sampled tau^2
+#    print("sigmaSq_new:", sigmaSq_new)  # Display the sampled sigma^2       
+#    print("betaIN_new:", betaIN_new)  # Display the sampled beta_IN
+#    print("betaOUT_new:", betaOUT_new)  # Display the sampled beta_OUT
     # Note: The alphas parameter is not used in the Gibbs sampling call,
 
 
     #The rest of the program may not work right now, as it is not fully implemented.
 
-    betaIN_ = (1.0/n) * np.sum(betaIN_new)
-    betaOUT_ = (1.0/n) * np.sum(betaOUT_new)    
-    r_ = (1.0/n) * np.sum(R_new, axis=0)  # Average radius across actors
-    tauSq_ = (1.0/n) * np.sum(tauSq_new)  # Average tau^2 across actors
-    sigmaSq_ = (1.0/n) * np.sum(sigmaSq_new)  # Average sigma^2 across actors   
+#    betaIN_ = (1.0/n) * np.sum(betaIN_new)
+#    betaOUT_ = (1.0/n) * np.sum(betaOUT_new)    
+#    r_ = (1.0/n) * np.sum(R_new, axis=0)  # Average radius across actors
+#    tauSq_ = (1.0/n) * np.sum(tauSq_new)  # Average tau^2 across actors
+#    sigmaSq_ = (1.0/n) * np.sum(sigmaSq_new)  # Average sigma^2 across actors   
 
     
-    '''
+    
     # Initialize an adjacency tensor Y of shape (T, n, n) with zeros
     Y = np.zeros((T, n, n), dtype=int)
 
@@ -166,25 +170,25 @@ def main():  # Main function to run the simulation and sampling
    
 
     
-    X_new, R_new, tauSq_new, sigmaSq_new, betaIN_new, betaOUT_new = gibbs.RunBinaryGibbs(
-        Y=Y,  # The sampled adjacency tensor
-        ns=n,
-        p=2,
-        modelType="binary",  # Model type for Gibbs sampling
-        initType="base",  # Initialization type for Gibbs sampling
-        nuIN=0.0,
-        etaIN=1.0,
-        nuOUT=0.0,
-        etaOUT=1.0,
-        thetaSigma=9.0,  # Shape parameter for sigma^2 prior
-        phiSigma=1.5,  # Scale parameter for sigma^2 prior
-        thetaTau=2.05,  # Shape parameter for tau^2 prior
-        phiTau=phi_tau,  # Scale parameter for tau^2 prior
-        alphas=None,  # Not sure what to put here, assuming None for now   
-        randomWalkVariance=9.0  # Variance for the random walk proposal
-    )
-    '''
-
+#    X_new, R_new, tauSq_new, sigmaSq_new, betaIN_new, betaOUT_new = gibbs.RunBinaryGibbs(
+#        Y=Y,  # The sampled adjacency tensor
+#        ns=n,
+#        p=2,
+#        modelType="binary",  # Model type for Gibbs sampling
+#        initType="base",  # Initialization type for Gibbs sampling
+#        nuIN=0.0,
+#        etaIN=1.0,
+#        nuOUT=0.0,
+#        etaOUT=1.0,
+#        thetaSigma=9.0,  # Shape parameter for sigma^2 prior
+#        phiSigma=1.5,  # Scale parameter for sigma^2 prior
+#        thetaTau=2.05,  # Shape parameter for tau^2 prior
+#        phiTau=phi_tau,  # Scale parameter for tau^2 prior
+#        alphas=None,  # Not sure what to put here, assuming None for now   
+#        randomWalkVariance=9.0  # Variance for the random walk proposal
+#    )
+    
+    
     # print(f"Big X: {LargeX[:10]}")  # Print the first 10 time points of latent positions
     # print(f"Adjacency tensor Y: {Y[:10]}")  # Print the sampled adjacency tensor
 
@@ -206,14 +210,14 @@ def main():  # Main function to run the simulation and sampling
     # ------------------------------------------------------------
     #  RUN GIBBS SAMPLER AND CHECK PARAMETER RECOVERY
     # ------------------------------------------------------------
-    ns_total  = 7_000          # total MCMC sweeps
+    ns_total  = 2_000          # total MCMC sweeps
     burn_in   = 1_000          # first draws to discard
     alphas    = np.ones(n)     # flat Dirichlet prior for radii
 
     sampler = gibbs.Gibbs(Y)   # create sampler object with data
 
-    X_chain, R_chain, tauSq_chain, sigmaSq_chain,
-    betaIN_chain, betaOUT_chain = sampler.RunGibbs(
+    (X_chain, R_chain, tauSq_chain, sigmaSq_chain,
+    betaIN_chain, betaOUT_chain) = sampler.RunGibbs(
         ns                 = ns_total,
         p                  = p,
         modelType          = "binary",
@@ -247,22 +251,16 @@ def main():  # Main function to run the simulation and sampling
     print(f"posterior mean of tauSq (true value varied each i) = {tauSq_hat:6.3f}")
     print("first five posterior means of r:", r_hat[:5])
 
-    # ---------- (optional) save full MCMC output ----------
-    np.savez_compressed("sim_run_poisson.npz",
+    out_file = f"sim_run_{model_type}_ns{ns_total}_T{T}_n{n}_p{p}.npz"
+    np.savez_compressed(out_file,
                         X_true=LargeX, Y=Y,
                         X_chain=X_chain, R_chain=R_chain,
                         betaIN_chain=betaIN_chain, betaOUT_chain=betaOUT_chain,
                         tauSq_chain=tauSq_chain, sigmaSq_chain=sigmaSq_chain)
-    print("Saved full chains to sim_run.npz")
+    print(f"Saved full chains to {out_file}")
 
 
 
 
-
-
-
-
-
-# Entry point check: only run main() if this script is executed directly
-if __name__ == "__main__":  # Check if script is main program
-    main()  # Call the main function to execute
+if __name__ == "__main__":
+    main()
