@@ -3,6 +3,7 @@ Files:
     initialize.py
     conditionalposteriors.py
     simulation.py
+    diagnostics.py
 
 gibbs.py:
     import conditionals as cds
@@ -366,3 +367,63 @@ gibbs.py:
             Calculate log-likelihood of Y[t, i, j] given else under Bernoulli assumption using ETAijt
 
 == END conditionalposteriors.py ==
+
+== BEGIN diagnostics.py ==
+GOAL: We need to construct certain plots for the simulations/models after building them.
+
+class diagnostics:
+    constructor(simResults, outPath, conditionals, truth = ""):
+        Inputs:
+            simResultsPath = path to .npz file containing tensors
+                "Y", "X_Chain", "R_Chain", "betaIN_Chain", "betaOUT_Chain", "tauSq_Chain", "sigmaSq_Chain"
+            outputPath = where to put the resulting plots/analyses
+            conditionals = instance of conditionals used in the model for this
+            truth = dictionary (for a simulation study only) of the key-value pairs:
+                "trueX" : T x n x p tensor with true positions
+                "trueR" : n-length vector with true radii
+                "trueBetaIN" : true Beta_IN parameter used to generate data
+                "trueBetaOUT" : true Beta_OUT parameter used to generate data
+                "trueSigmaSq" : true sigma squared parameter used to generate data
+                "trueTauSq" : true tau squared parameter used to generate data
+        
+        set self.Y, self.XChain, self.RChain, self.betaINChain, self.betaOUTChain, self.tauSqChain, self.sigmaSqChain,
+            self.ns, self.T, self.n, self.p, self.outPath
+        if knownTruth != "":
+            set self.trueX, self.trueR, self.trueBetaIN, self.trueBetaOUT, self.trueSigmaSq, self.trueTauSq
+    
+    BuildGlobalTracePlots(self, showTruth = False):
+        For all global variables, build and output (to self.outPath) a trace plot for betaIN, betaOUT, SigmaSq, TauSq
+        If showTruth == True, plot the true values as well
+
+    BuildGlobalHistograms(self, showTruth = False, binMethod = "sturges", burnIn = 0):
+        For all global variables, build and output (to self.outPath) histograms for the distribution using the 
+            specified bin-determining method (and ignoring anything in the burn-in period)
+        If showTruth == True, plot the true values as well
+    
+    BuildPositionMarkovChainPlot(self, i, showTruth = False):
+        For the index-i actor, plot its position over time for each iteration of the MCMC algorithm.
+        (for the p = 1 case, plot in 2D; for the p = 2 case, plot in 3D)
+        If showTruth = True, plot the true values as well
+        Output result to self.outPath
+    
+    BuildPositionDynamicPlot(self, i, showTruth = False, burnIn = 0):
+        For the index-i actor, plot the estimate of the actor's latent position over time indices 0 ... T
+            (the average of the MCMC estimates after the specified burnIn)
+        If showTruth == True, plot the true values as well
+        Output result to self.outPath
+    
+    BuildLogLikelihoodPlot(self, conditionals, thinning = 1)
+        (require an instance of the conditionals class to determine what log-likelihood to use)
+        Determine the indices to plot the log-likelihood at (as determined by thinning argument)
+            (it's costly to compute log-likelihood; this should speed it up)
+        Calculate the log-likelihood at each index required using the conditionals instance
+        Plot the log-likelihoods against the iteration
+        Output result to self.outPath
+    
+    BuildParameterEstimates(self, burnIn = 0, showTruth = False)
+        For each parameter, determine the average value for the Markov chain after burnIn number of steps
+        (a scalar value for global parameters, a n-length vector for R, and a T x n x p tensor for positions)
+        If showTruth == True, include the true values and the difference between estimated and true
+        Output these results to a .txt file (or similar, maybe .npz?)
+
+== END diagnostics.py ==
