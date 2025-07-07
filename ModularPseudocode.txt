@@ -425,5 +425,9 @@ class diagnostics:
         (a scalar value for global parameters, a n-length vector for R, and a T x n x p tensor for positions)
         If showTruth == True, include the true values and the difference between estimated and true
         Output these results to a .txt file (or similar, maybe .npz?)
+    
+    BuildGlobalAutoCorrelationPlots(self, burnIn, maximumLag = self.ns):
+        For each global parameter, build an autocorrelation plot where the maximumLag is as specified and the specified
+            burnIn period is removed.
 
 == END diagnostics.py ==
