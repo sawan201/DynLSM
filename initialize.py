@@ -55,11 +55,11 @@ class BaseInitialization(AbstractInitialization):
     
     def InitializeBetaIN(self):
         # Initializes to arbitrary value
-        self.betaIN[0] = 1
+        self.betaIN[0] = 0
     
     def InitializeBetaOUT(self):
         # Initializes to arbitrary value
-        self.betaOUT[0] = 1
+        self.betaOUT[0] = 0
     
     def InitializeSigmaSq(self):
         # Initializes to arbitrary value
