@@ -371,8 +371,8 @@ gibbs.py:
 == BEGIN diagnostics.py ==
 GOAL: We need to construct certain plots for the simulations/models after building them.
 
-class diagnostics:
-    constructor(simResults, outPath, conditionals, truth = ""):
+class BinaryDiagnostics:
+    constructor(simResultsPath, outPath, conditionals, truth = ""):
         Inputs:
             simResultsPath = path to .npz file containing tensors
                 "Y", "X_Chain", "R_Chain", "betaIN_Chain", "betaOUT_Chain", "tauSq_Chain", "sigmaSq_Chain"
@@ -388,7 +388,7 @@ class diagnostics:
         
         set self.Y, self.XChain, self.RChain, self.betaINChain, self.betaOUTChain, self.tauSqChain, self.sigmaSqChain,
             self.ns, self.T, self.n, self.p, self.outPath
-        if knownTruth != "":
+        if truth != "":
             set self.trueX, self.trueR, self.trueBetaIN, self.trueBetaOUT, self.trueSigmaSq, self.trueTauSq
     
     BuildGlobalTracePlots(self, showTruth = False):
@@ -400,8 +400,8 @@ class diagnostics:
             specified bin-determining method (and ignoring anything in the burn-in period)
         If showTruth == True, plot the true values as well
     
-    BuildPositionMarkovChainPlot(self, i, showTruth = False):
-        For the index-i actor, plot its position over time for each iteration of the MCMC algorithm.
+    BuildPositionTracePlot(self, i, t, showTruth = False):
+        For the index-i actor at time t, plot its position over time for each iteration of the MCMC algorithm.
         (for the p = 1 case, plot in 2D; for the p = 2 case, plot in 3D)
         If showTruth = True, plot the true values as well
         Output result to self.outPath
