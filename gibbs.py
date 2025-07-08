@@ -19,7 +19,7 @@ class Gibbs:
     '''
     Time recording decorator
     '''
-<<<<<<< HEAD
+
 # Test comment
     def timer(func):
         @wraps(func)  # preserves the original function name and docstring
@@ -31,7 +31,7 @@ class Gibbs:
             return result
         return wrapper
 
-=======
+
 
     def timer(func):
         @wraps(func)  # preserves the original function name and docstring
@@ -43,7 +43,7 @@ class Gibbs:
             return result
         return wrapper
 
->>>>>>> 194c8df (Added timer in gibbs.py)
+
     @timer
     def RunGibbs(self, ns, p, modelType, initType, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
                  thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200):
