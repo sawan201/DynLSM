@@ -14,7 +14,7 @@ class Gibbs:
         self.n = Y.shape[1]
 
     def RunGibbs(self, ns, p, modelType, initType, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
-                 thetaTau, phiTau, alphas, randomWalkVariance = 9):
+                 thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200):
             '''
             Inputs: 
                 ns (int number of steps)
@@ -45,6 +45,7 @@ class Gibbs:
             '''
             # Read in necessary parameters
             self.randomWalkVariance = randomWalkVariance
+            self.dirichletFactor = dirichletFactor
 
             # Assign the conditionals based on the input argument
             if modelType == "binary":
@@ -196,7 +197,8 @@ class Gibbs:
         return np.random.normal(mean, np.sqrt(self.randomWalkVariance))
 
     def SampleFromDirichlet(self, alphas):
-        return np.random.dirichlet(alphas)
+        parameters = self.dirichletFactor * alphas
+        return np.random.dirichlet(parameters)
 
     def LogEvaluateDirichlet(self, parameters, values):
         return dirichlet.logpdf(values, parameters)

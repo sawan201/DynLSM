@@ -391,8 +391,9 @@ class BinaryDiagnostics:
         if truth != "":
             set self.trueX, self.trueR, self.trueBetaIN, self.trueBetaOUT, self.trueSigmaSq, self.trueTauSq
     
-    BuildGlobalTracePlots(self, showTruth = False):
+    BuildGlobalTracePlots(self, thinning = 1, showTruth = False):
         For all global variables, build and output (to self.outPath) a trace plot for betaIN, betaOUT, SigmaSq, TauSq
+        Every {thinning} steps in the Markov chain will be plotted
         If showTruth == True, plot the true values as well
 
     BuildGlobalHistograms(self, showTruth = False, binMethod = "sturges", burnIn = 0):
@@ -400,6 +401,11 @@ class BinaryDiagnostics:
             specified bin-determining method (and ignoring anything in the burn-in period)
         If showTruth == True, plot the true values as well
     
+    BuildRadiusTracePlot(self, i, showTruth = False):
+        For the index-i actor, plot its radius trace plot over each MCMC iteration.
+        If showTruth, plot the true values as well
+        Output results to self.outPath
+
     BuildPositionTracePlot(self, i, t, showTruth = False):
         For the index-i actor at time t, plot its position over time for each iteration of the MCMC algorithm.
         (for the p = 1 case, plot in 2D; for the p = 2 case, plot in 3D)
