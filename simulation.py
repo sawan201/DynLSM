@@ -3,6 +3,8 @@ import conditionalposteriors as cond  # Import the Conditionals module
 import gibbs as gibbs  # Import the Gibbs sampling module
 import matplotlib.pyplot as plt
 
+
+
 '''
 Helper Functions
 These functions are used to compute hyperparameters and perform operations needed for the simulation.
