@@ -18,8 +18,8 @@ def main():
     EtaOut = 1.0  # Output effect parameter for the model
     BetaIn = 1.0  # Input effect parameter for the model
     BetaOut = 1.0  # Output effect parameter for the model
-    RandomWalkVariance = 4.0  # Variance for the random walk (used in the model)
-    DirichletFactor = 100  # Factor for the Dirichlet prior (not used in this context)
+    RandomWalkVariance = 4.0  # Variance for the random walk 
+    DirichletFactor = 100  # Factor for the Dirichlet prior 
     model_type = "binary"  # Type of model (e.g., "binary")
     InitType = "base"  # Initialization type for the model
     NumberOfSamples = 2000  # Total MCMC sweeps
