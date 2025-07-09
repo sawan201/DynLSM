@@ -3,16 +3,28 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from statsmodels.graphics.tsaplots import plot_acf
 import os
+import conditionalposteriors as cp
 
 class BinaryDiagnostics:
-    def __init__(self, simResultsPath, outPath, conditionals, truth = None):
+    def __init__(self, simResultsPath, outPath, modelType = "binary", truth = None):
+        '''
+        Creates a BinaryDiagnostics object.
+        simResultsPath = path to the exact simResults .npz file (not the folder it is located in)
+        outPath = path to the folder you would like the plots dropped into
+        modelType = "binary" or "poisson" depending on likelihood function needed
+        truth = optional dictionary with keys "trueX", "trueR", "trueBetaIN", "trueBetaOUT", "trueSigmaSq", "trueTauSq"
+        '''
         # simResultsPath is the path leading to an .npz file where matrices/tensors with the following names are:
         # "Y", "X_Chain", "R_Chain", "betaIN_Chain", "betaOUT_Chain", "tauSqChain", "sigmaSqChain"
         self.simResults = np.load(simResultsPath)
         # outPath = where to store visualizations
         self.outPath = outPath
-        # conditionals = whatever instance of the conditionals class was used when the model was running
-        self.conditionals = conditionals
+        # Determine which type of conditionals to use based on the model type specified
+        # We only need the conditionals for the likelihood function, not for any of their attributes
+        if modelType == "binary":
+            self.conditionals = cp.BinaryConditionals(0, 0, 0, 0, 0, 0, 0, 0)
+        else:
+            print("Model Type incorrectly specified. Use 'binary' for binary conditionals.")
         # truth = if a simulation study, this is a dictionary containing the true values
         if truth:
             self.trueX = truth["trueX"]
