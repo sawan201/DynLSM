@@ -19,7 +19,7 @@ def main():
     BetaIn = 1.0  # Input effect parameter for the model
     BetaOut = 1.0  # Output effect parameter for the model
     RandomWalkVariance = 4.0  # Variance for the random walk (used in the model)
-    model_type = "binary"  # Type of model (e.g., "binary", "continuous")
+    model_type = "binary"  # Type of model (e.g., "binary")
     InitType = "base"  # Initialization type for the model
     NumberOfSamples = 2000  # Total MCMC sweeps
     BurnIn = 500  # First draws to discard
