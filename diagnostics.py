@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from statsmodels.graphics.tsaplots import plot_acf
 import os
 
 class BinaryDiagnostics:
@@ -241,6 +242,7 @@ class BinaryDiagnostics:
         positionEstimate = np.mean(self.XChain[burnIn:, :, :, :], axis=0)
 
         if showTruth:
+            # Save the globals and radii to a .txt file
             outputString = f'''
             Global Parameters
             betaIN Estimate:    {betaINEstimate}    (true: {self.trueBetaIN}, difference {betaINEstimate - self.trueBetaIN})
@@ -252,6 +254,8 @@ class BinaryDiagnostics:
             '''
             for i in range(self.n):
                 outputString += f"\nRadius Estimate for Index {i} Actor: {radiiEstimate[i]}     (true: {self.trueR[i]}, difference {radiiEstimate[i] - self.trueR[i]})"
+
+            # Save the estimates themselves
             np.savez(f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}.npz",
                     betaINEstimate = betaINEstimate,
                     betaOUTEstimate = betaOUTEstimate,
@@ -267,11 +271,61 @@ class BinaryDiagnostics:
                     truePositions = self.trueX)
 
         else:
+            # Save the globals and radii to a .txt file
+            outputString = f'''
+            Global Parameters
+            betaIN Estimate:    {betaINEstimate}
+            betaOUT Estimate:   {betaOUTEstimate}
+            tauSq Estimate:     {tauSqEstimate}
+            sigmaSq Estimate:   {sigmaSqEstimate}
+            
+            Radii Parameters:
+            '''
+            for i in range(self.n):
+                outputString += f"\nRadius Estimate for Index {i} Actor: {radiiEstimate[i]}"
+
             # Save to a .npz file
-            np.savez(f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}.npz",
+            np.savez(f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}_NoTruth.npz",
                     betaINEstimate = betaINEstimate,
                     betaOUTEstimate = betaOUTEstimate,
                     tauSqEstimate = tauSqEstimate,
                     sigmaSqEstimate = sigmaSqEstimate,
                     radiiEstimate = radiiEstimate,
                     positionEstimate = positionEstimate)
+        
+        with open(os.path.join(os.getcwd(), f"Estimates after {burnIn} Burn-In Values.txt")) as writeFile:
+            writeFile.write(outputString)
+    
+    def BuildGlobalAutocorrelationPlots(self, burnIn = 0, maxLag = None):
+        '''
+        For each global parameter, build an autocorrelation plot where the maximumLag is as specified and the specified
+        burnIn period is removed.
+        '''
+        if maxLag is None:
+            maxLag = self.ns - burnIn
+        
+        # Build dictionary of parameter values to use
+        global_chains = {
+            'betaIN':   self.betaINChain[burnIn:],
+            'betaOUT':  self.betaOUTChain[burnIn:],
+            'tauSq':    self.tauSqChain[burnIn:],
+            'sigmaSq':  self.sigmaSqChain[burnIn:]
+            }
+
+        # Step 2: Create subplots: one for each parameter
+        num_params = len(global_chains)
+        fig, axs = plt.subplots(num_params, 1, figsize=(8, 2.5 * num_params))
+        
+        if num_params == 1:
+            axs = [axs]  # ensure axs is always iterable
+
+        # Step 3: Loop through each parameter and plot its autocorrelation
+        for ax, (name, chain) in zip(axs, global_chains.items()):
+            plot_acf(chain, ax=ax, lags=maxLag)
+            ax.set_title(f'Autocorrelation for {name}')
+            ax.set_xlabel('Lag')
+            ax.set_ylabel('Autocorrelation')
+
+        plt.tight_layout()
+        plt.savefig(os.path.join(os.getcwd(), "Autocorrelation Plots - Global.png"))
+        plt.close()
