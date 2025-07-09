@@ -150,8 +150,8 @@ class Simulation():
 
         # ---------- print comparison ----------
         print("\n=== PARAMETER RECOVERY CHECK ===")
-        print(f"true  betaIN  = 1.0   |  posterior mean = {betaIN_hat:6.3f}")
-        print(f"true  betaOUT = 2.0   |  posterior mean = {betaOUT_hat:6.3f}")
+        print(f"true  betaIN  = {self.BetaIn}   |  posterior mean = {betaIN_hat:6.3f}")
+        print(f"true  betaOUT = {self.BetaOut}   |  posterior mean = {betaOUT_hat:6.3f}")
         print(f"true  SigmaSq = {SigmaSq:6.4f} |  posterior mean = {sigmaSq_hat:6.4f}")
         print(f"posterior mean of tauSq (true value varied each i) = {tauSq_hat:6.3f}")
         print("first five posterior means of r:", r_hat[:5])
