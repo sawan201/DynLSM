@@ -21,10 +21,12 @@ def main():
     RandomWalkVariance = 4.0  # Variance for the random walk (used in the model)
     model_type = "binary"  # Type of model (e.g., "binary", "continuous")
     InitType = "base"  # Initialization type for the model
+    NumberOfSamples = 2000  # Total MCMC sweeps
+    BurnIn = 500  # First draws to discard
 
     #(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, model_type, InitType)
 
-    sim = simulation.Simulation(T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, model_type, InitType)
+    sim = simulation.Simulation(T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, model_type, InitType, NumberOfSamples, BurnIn)
     
     sim.run()  # Run the simulation
 
