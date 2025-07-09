@@ -4,7 +4,7 @@ import gibbs as gibbs  # Import the Gibbs sampling module
 import matplotlib.pyplot as plt
 
 class Simulation():
-    def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, model_type, InitType, NumberOfSamples, BurnIn):
+    def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, DirichletFactor, model_type, InitType, NumberOfSamples, BurnIn):
         self.T = T  # Number of time points
         self.n = n  # Number of actors
         self.p = p  # Latent space dimensions
@@ -22,8 +22,9 @@ class Simulation():
         self.BetaIn = BetaIn  # Input effect parameter for the model
         self.BetaOut = BetaOut  # Output effect parameter for the model
         self.RandomWalkVariance = RandomWalkVariance  # Variance for the random walk (used in the model)
-        self.model_type = model_type  # Type of model (e.g., "binary",
-        self.InitType = InitType  # Initialization type for the model (e.g., "base", "random", etc.)
+        self.DirichletFactor = DirichletFactor  # Factor for the Dirichlet prior (not used in this context)
+        self.model_type = model_type  # Type of model (e.g., "binary")
+        self.InitType = InitType  # Initialization type for the model (e.g., "base")
         self.NumberOfSamples = NumberOfSamples  # Number of samples to draw in the Gibbs sampler
         self.BurnIn = BurnIn  # Number of initial samples to discard (burn-in period)
 
@@ -135,6 +136,7 @@ class Simulation():
             phiTau             = phi_tau,
             alphas             = alphas,
             randomWalkVariance = self.RandomWalkVariance,
+            dirichletFactor    = self.DirichletFactor
         )
 
         # ---------- posterior summaries (after burn-in) ----------

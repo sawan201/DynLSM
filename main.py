@@ -19,14 +19,15 @@ def main():
     BetaIn = 1.0  # Input effect parameter for the model
     BetaOut = 1.0  # Output effect parameter for the model
     RandomWalkVariance = 4.0  # Variance for the random walk (used in the model)
+    DirichletFactor = 100  # Factor for the Dirichlet prior (not used in this context)
     model_type = "binary"  # Type of model (e.g., "binary")
     InitType = "base"  # Initialization type for the model
     NumberOfSamples = 2000  # Total MCMC sweeps
     BurnIn = 500  # First draws to discard
 
-    #(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, model_type, InitType)
 
-    sim = simulation.Simulation(T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, model_type, InitType, NumberOfSamples, BurnIn)
+
+    sim = simulation.Simulation(T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, DirichletFactor, model_type, InitType, NumberOfSamples, BurnIn)
     
     sim.run()  # Run the simulation
 
