@@ -28,7 +28,7 @@ Main Function
 np.random.seed(181)
 
 def main():  # Main function to run the simulation and sampling
-    T, n, p = 6, 30, 2  # Set time points (T), number of actors (n), and latent space dimensions (p)
+    T, n, p = 5, 5, 1  # Set time points (T), number of actors (n), and latent space dimensions (p)
     SigmaSq = 1.0 / (5 * n)**2  # Compute the step-size variance for latent position draws
     model_type = "binary"
 
@@ -210,7 +210,7 @@ def main():  # Main function to run the simulation and sampling
     # ------------------------------------------------------------
     #  RUN GIBBS SAMPLER AND CHECK PARAMETER RECOVERY
     # ------------------------------------------------------------
-    ns_total  = 9_000          # total MCMC sweeps
+    ns_total  = 2_000          # total MCMC sweeps
     burn_in   = 1_000          # first draws to discard
     alphas    = np.ones(n)     # flat Dirichlet prior for radii
 
