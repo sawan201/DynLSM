@@ -224,3 +224,54 @@ class BinaryDiagnostics:
         plt.ylabel("Log-Likelihood")
         plt.savefig(os.path.join(os.getcwd(), f"Log-Likelihood Plot.png"))
         plt.close()
+
+    def BuildParameterEstimates(self, showTruth = False, burnIn = 0):
+        '''
+        For each parameter, determine the average value for the Markov chain after burnIn number of steps
+        (a scalar value for global parameters, a n-length vector for R, and a T x n x p tensor for positions)
+        If showTruth == True, include the true values and the difference between estimated and true
+        Output these results to a .txt file (or similar, maybe .npz?)
+        '''
+        # Estimate the parameters
+        betaINEstimate = np.mean(self.betaINChain[burnIn:])
+        betaOUTEstimate = np.mean(self.betaOUTChain[burnIn:])
+        tauSqEstimate = np.mean(self.tauSqChain[burnIn:])
+        sigmaSqEstimate = np.mean(self.sigmaSqChain[burnIn:])
+        radiiEstimate = np.mean(self.RChain[burnIn:, :], axis=0)
+        positionEstimate = np.mean(self.XChain[burnIn:, :, :, :], axis=0)
+
+        if showTruth:
+            outputString = f'''
+            Global Parameters
+            betaIN Estimate:    {betaINEstimate}    (true: {self.trueBetaIN}, difference {betaINEstimate - self.trueBetaIN})
+            betaOUT Estimate:   {betaOUTEstimate}   (true: {self.trueBetaOUT}, difference {betaOUTEstimate - self.trueBetaOUT})
+            tauSq Estimate:     {tauSqEstimate}     (true: {self.trueTauSq}, difference {tauSqEstimate - self.trueTauSq})
+            sigmaSq Estimate:   {sigmaSqEstimate}   (true: {self.trueSigmaSq}, difference {sigmaSqEstimate - self.trueSigmaSq})
+            
+            Radii Parameters:
+            '''
+            for i in range(self.n):
+                outputString += f"\nRadius Estimate for Index {i} Actor: {radiiEstimate[i]}     (true: {self.trueR[i]}, difference {radiiEstimate[i] - self.trueR[i]})"
+            np.savez(f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}.npz",
+                    betaINEstimate = betaINEstimate,
+                    betaOUTEstimate = betaOUTEstimate,
+                    tauSqEstimate = tauSqEstimate,
+                    sigmaSqEstimate = sigmaSqEstimate,
+                    radiiEstimate = radiiEstimate,
+                    positionEstimate = positionEstimate,
+                    trueBetaIN = self.trueBetaIN,
+                    trueBetaOUT = self.trueBetaOUT,
+                    trueSigmaSq = self.trueSigmaSq,
+                    trueTauSq = self.trueTauSq,
+                    trueRadii = self.trueR,
+                    truePositions = self.trueX)
+
+        else:
+            # Save to a .npz file
+            np.savez(f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}.npz",
+                    betaINEstimate = betaINEstimate,
+                    betaOUTEstimate = betaOUTEstimate,
+                    tauSqEstimate = tauSqEstimate,
+                    sigmaSqEstimate = sigmaSqEstimate,
+                    radiiEstimate = radiiEstimate,
+                    positionEstimate = positionEstimate)
