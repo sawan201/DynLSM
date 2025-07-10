@@ -91,7 +91,7 @@ class Simulation():
         Y = np.zeros((T, n, n), dtype=int)
 
         # Compute the r values (added by LS, 7-10-25)
-        trueR = np.array(self.n)
+        trueR = np.zeros(self.n)
         for i in range(self.n):
             trueR[i] = self.scaled_inverse_norm(X1, i)
 
