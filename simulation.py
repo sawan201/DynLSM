@@ -2,9 +2,11 @@ import numpy as np  # Import NumPy for numerical operations and array handling
 import conditionalposteriors as cond  # Import the Conditionals module 
 import gibbs as gibbs  # Import the Gibbs sampling module
 import matplotlib.pyplot as plt
+import os
 
 class Simulation():
-    def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, DirichletFactor, model_type, InitType, NumberOfSamples, BurnIn):
+    def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, DirichletFactor, model_type, InitType, NumberOfSamples, BurnIn,
+                 outPath = os.getcwd(), simName = ""):
         self.T = T  # Number of time points
         self.n = n  # Number of actors
         self.p = p  # Latent space dimensions
@@ -27,6 +29,8 @@ class Simulation():
         self.InitType = InitType  # Initialization type for the model (e.g., "base")
         self.NumberOfSamples = NumberOfSamples  # Number of samples to draw in the Gibbs sampler
         self.BurnIn = BurnIn  # Number of initial samples to discard (burn-in period)
+        self.outPath = outPath # Where to output the resulting .npz file to (a directory)
+        self.simName = simName # Name to attach to the simulation file
 
     '''
     Helper Functions
@@ -165,7 +169,7 @@ class Simulation():
         print(f"posterior mean of tauSq (true value varied each i) = {tauSq_hat:6.3f}")
         print("first five posterior means of r:", r_hat[:5])
 
-        out_file = f"sim_run_{model_type}_ns{ns_total}_T{T}_n{n}_p{p}.npz"
+        out_file = os.path.join(self.outPath, f"sim_run_{model_type}{self.simName}_ns{ns_total}_T{T}_n{n}_p{p}.npz")
         np.savez_compressed(out_file,
                             X_true=LargeX, Y=Y,
                             X_chain=X_chain, R_chain=R_chain,
