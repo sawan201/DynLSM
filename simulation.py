@@ -133,8 +133,8 @@ class Simulation():
 
         sampler = gibbs.Gibbs(Y)   # create sampler object with data
 
-        (X_chain, R_chain, tauSq_chain, sigmaSq_chain,
-        betaIN_chain, betaOUT_chain) = sampler.RunGibbs(
+        (X_Chain, R_Chain, tauSqChain, sigmaSqChain,
+        betaIN_Chain, betaOUT_Chain) = sampler.RunGibbs(
             ns                 = ns_total,
             p                  = p,
             modelType          = self.model_type,
@@ -154,12 +154,12 @@ class Simulation():
 
         # ---------- posterior summaries (after burn-in) ----------
         keep         = slice(burn_in, None)
-        betaIN_hat   = betaIN_chain[keep].mean()
-        betaOUT_hat  = betaOUT_chain[keep].mean()
-        tauSq_hat    = tauSq_chain[keep].mean()
-        sigmaSq_hat  = sigmaSq_chain[keep].mean()
-        r_hat        = R_chain[keep].mean(axis=0)           # actor-wise mean
-        X_hat        = X_chain[keep].mean(axis=0)           # latent positions
+        betaIN_hat   = betaIN_Chain[keep].mean()
+        betaOUT_hat  = betaOUT_Chain[keep].mean()
+        tauSq_hat    = tauSqChain[keep].mean()
+        sigmaSq_hat  = sigmaSqChain[keep].mean()
+        r_hat        = R_Chain[keep].mean(axis=0)           # actor-wise mean
+        X_hat        = X_Chain[keep].mean(axis=0)           # latent positions
 
         # ---------- print comparison ----------
         print("\n=== PARAMETER RECOVERY CHECK ===")
@@ -172,9 +172,9 @@ class Simulation():
         out_file = os.path.join(self.outPath, f"sim_run_{model_type}{self.simName}_ns{ns_total}_T{T}_n{n}_p{p}.npz")
         np.savez_compressed(out_file,
                             X_true=LargeX, Y=Y,
-                            X_chain=X_chain, R_chain=R_chain,
-                            betaIN_chain=betaIN_chain, betaOUT_chain=betaOUT_chain,
-                            tauSq_chain=tauSq_chain, sigmaSq_chain=sigmaSq_chain,
+                            X_Chain=X_Chain, R_Chain=R_Chain,
+                            betaIN_Chain=betaIN_Chain, betaOUT_Chain=betaOUT_Chain,
+                            tauSqChain=tauSqChain, sigmaSqChain=sigmaSqChain,
                             trueX=LargeX, trueR=trueR, trueBetaIN=self.BetaIn,
                             trueBetaOUT=self.BetaOut, trueSigmaSq=self.SigmaSq,
                             trueTauSq=self.TauSq, thetaTau=self.ThetaTau, thetaSigma=self.ThetaSigma,
