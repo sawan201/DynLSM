@@ -148,7 +148,7 @@ class BinaryDiagnostics:
             plt.plot(data[:, 0], color='blue', linewidth=2, label="Chain Values")
             if showTruth:
                 trueValues = self.trueX[t, i, 0]*np.ones(self.ns)
-                ax.plot(trueValues[stepIndices], label="True Value", color="red", linewidth=2)
+                plt.plot(trueValues[stepIndices], label="True Value", color="red", linewidth=2)
             plt.xlabel("Gibbs Iteration")
             plt.ylabel("Latent Position")
             plt.title(f"Position Trace Plot - Actor Index {i}")
@@ -199,7 +199,7 @@ class BinaryDiagnostics:
             if showTruth:
                 # Need to plot the true values (from self.trueX, which has shape (T, n, p))
                 trueData = self.trueX[:, i, 0]
-                ax.plot(trueData, color="red", label="True Positions", linewidth=2)
+                plt.plot(trueData, color="red", label="True Positions", linewidth=2)
             plt.xlabel("Time")
             plt.ylabel("Latent Position")
             plt.title(f"Average Position of Index {i} Actor Over Time")
