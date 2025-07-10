@@ -375,7 +375,7 @@ class BinaryDiagnostics:
     constructor(simResultsPath, outPath, conditionals, truth = ""):
         Inputs:
             simResultsPath = path to .npz file containing tensors
-                "Y", "X_Chain", "R_Chain", "betaIN_Chain", "betaOUT_Chain", "tauSq_Chain", "sigmaSq_Chain"
+                "Y", "X_Chain", "R_Chain", "betaIN_Chain", "betaOUT_Chain", "tauSqChain", "sigmaSqChain"
             outputPath = where to put the resulting plots/analyses
             conditionals = instance of conditionals used in the model for this
             truth = dictionary (for a simulation study only) of the key-value pairs:
