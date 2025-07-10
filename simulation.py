@@ -173,5 +173,8 @@ class Simulation():
                             tauSq_chain=tauSq_chain, sigmaSq_chain=sigmaSq_chain,
                             trueX=LargeX, trueR=trueR, trueBetaIN=self.BetaIn,
                             trueBetaOUT=self.BetaOut, trueSigmaSq=self.SigmaSq,
-                            trueTauSq=self.TauSq)
+                            trueTauSq=self.TauSq, thetaTau=self.ThetaTau, thetaSigma=self.ThetaSigma,
+                            phiSigma=self.PhiSigma, nuIn=self.NuIn, xiIn=self.XiIn, nuOut=self.NuOut,
+                            xiOut=self.XiOut, etaIn=self.EtaIn, etaOut=self.EtaOut,
+                            randomWalkVariance=self.RandomWalkVariance)
         print(f"Saved full chains to {out_file}")
