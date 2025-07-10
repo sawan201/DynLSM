@@ -314,7 +314,7 @@ class BinaryDiagnostics:
         burnIn period is removed.
         '''
         if maxLag is None:
-            maxLag = self.ns - burnIn
+            maxLag = self.ns - burnIn - 1
         
         # Build dictionary of parameter values to use
         global_chains = {
