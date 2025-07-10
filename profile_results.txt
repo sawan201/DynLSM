@@ -4,6 +4,30 @@ Total time: 8.31514 s
 File: /Users/saada/Desktop/School/2025/DRUMS 2025/DynLSM/gibbs.py
 Function: RunGibbs at line 36
 
+
+    T = 4  # Number of time points
+    n = 3   # Number of actors
+    p = 1   # Latent space dimensions
+    SigmaSq = 1.0  # Variance for the latent positions
+    TauSq = 1.0  # Variance for the tau prior
+    ThetaTau = 2.05  # Shape parameter for tau prior
+    ThetaSigma = 9.0  # Shape parameter for sigma prior
+    PhiSigma = 1.5  # Scale parameter for sigma prior
+    NuIn = 0.0  # Input effect parameter for the model
+    XiIn = 1.0  # Input effect parameter for the model
+    NuOut = 0.0  # Output effect parameter for the model
+    XiOut = 1.0  # Output effect parameter for the model
+    EtaIn = 1.0  # Input effect parameter for the model
+    EtaOut = 1.0  # Output effect parameter for the model
+    BetaIn = 1.0  # Input effect parameter for the model
+    BetaOut = 1.0  # Output effect parameter for the model
+    RandomWalkVariance = 4.0  # Variance for the random walk 
+    DirichletFactor = 100  # Factor for the Dirichlet prior 
+    model_type = "binary"  # Type of model (e.g., "binary")
+    InitType = "base"  # Initialization type for the model
+    NumberOfSamples = 2000  # Total MCMC sweeps
+    BurnIn = 500  # First draws to discard
+
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
     36                                               @line_profiler.profile
