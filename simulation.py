@@ -90,10 +90,11 @@ class Simulation():
         # Initialize an adjacency tensor Y of shape (T, n, n) with zeros
         Y = np.zeros((T, n, n), dtype=int)
 
-        # Compute the r values (added by LS, 7-10-25)
-        trueR = np.zeros(self.n)
+        # Compute the r values by drawing from a Dirichlet with the desired distributions (added by LS, 7-10-25)
+        rParameters = np.zeros(self.n)
         for i in range(self.n):
-            trueR[i] = self.scaled_inverse_norm(X1, i)
+            rParameters[i] = self.scaled_inverse_norm(X1, i)
+        trueR = np.random.dirichlet(rParameters)
 
         # Create the Y adjacency tensor by sampling edges
         for t in range(T):  # Loop over time points
