@@ -86,15 +86,24 @@ class Simulation():
         # Initialize an adjacency tensor Y of shape (T, n, n) with zeros
         Y = np.zeros((T, n, n), dtype=int)
 
+        # Compute the r values (added by LS, 7-10-25)
+        trueR = np.array(self.n)
+        for i in range(self.n):
+            trueR[i] = self.scaled_inverse_norm(X1, i)
+
         # Create the Y adjacency tensor by sampling edges
         for t in range(T):  # Loop over time points
             for i in range(n):  # Loop over actor i
-                r_i = self.scaled_inverse_norm(X1, i)  # Compute radius/influence for actor i
+                # r_i = self.scaled_inverse_norm(X1, i)  # Compute radius/influence for actor i
+                # Use the r values computed at once above (changed by LS, 7-10-25)
+                r_i = trueR[i]
                 for j in range(n):  # Loop over actor j
                     if i == j:  # Skip self-edges
                         continue  # Continue to next j
-
-                    r_j = self.scaled_inverse_norm(X1, j)  # Compute radius/influence for actor j
+                    
+                    # r_j = self.scaled_inverse_norm(X1, j)  # Compute radius/influence for actor j
+                    # Use the r values computed at once above (changed by LS, 7-10-25)
+                    r_j = trueR[j]
 
                     eta = P.eta(
                         beta_in=self.BetaIn,  # Input effect parameter
@@ -161,5 +170,8 @@ class Simulation():
                             X_true=LargeX, Y=Y,
                             X_chain=X_chain, R_chain=R_chain,
                             betaIN_chain=betaIN_chain, betaOUT_chain=betaOUT_chain,
-                            tauSq_chain=tauSq_chain, sigmaSq_chain=sigmaSq_chain)
+                            tauSq_chain=tauSq_chain, sigmaSq_chain=sigmaSq_chain,
+                            trueX=LargeX, trueR=trueR, trueBetaIN=self.BetaIn,
+                            trueBetaOUT=self.BetaOut, trueSigmaSq=self.SigmaSq,
+                            trueTauSq=self.TauSq)
         print(f"Saved full chains to {out_file}")

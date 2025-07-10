@@ -6,13 +6,13 @@ import os
 import conditionalposteriors as cp
 
 class BinaryDiagnostics:
-    def __init__(self, simResultsPath, outPath, modelType = "binary", truth = None):
+    def __init__(self, simResultsPath, outPath, modelType = "binary", truthIncluded = True):
         '''
         Creates a BinaryDiagnostics object.
         simResultsPath = path to the exact simResults .npz file (not the folder it is located in)
         outPath = path to the folder you would like the plots dropped into
         modelType = "binary" or "poisson" depending on likelihood function needed
-        truth = optional dictionary with keys "trueX", "trueR", "trueBetaIN", "trueBetaOUT", "trueSigmaSq", "trueTauSq"
+        truthIncluded = should be true if there are values in the .npz file containing true values for parameters
         '''
         # simResultsPath is the path leading to an .npz file where matrices/tensors with the following names are:
         # "Y", "X_Chain", "R_Chain", "betaIN_Chain", "betaOUT_Chain", "tauSqChain", "sigmaSqChain"
@@ -26,13 +26,13 @@ class BinaryDiagnostics:
         else:
             print("Model Type incorrectly specified. Use 'binary' for binary conditionals.")
         # truth = if a simulation study, this is a dictionary containing the true values
-        if truth:
-            self.trueX = truth["trueX"]
-            self.trueR = truth["trueR"]
-            self.trueBetaIN = truth["trueBetaIN"]
-            self.trueBetaOUT = truth["trueBetaOUT"]
-            self.trueSigmaSq = truth["trueSigmaSq"]
-            self.trueTauSq = truth["trueTauSq"]
+        if truthIncluded:
+            self.trueX = self.simResults["trueX"]
+            self.trueR = self.simResults["trueR"]
+            self.trueBetaIN = self.simResults["trueBetaIN"]
+            self.trueBetaOUT = self.simResults["trueBetaOUT"]
+            self.trueSigmaSq = self.simResults["trueSigmaSq"]
+            self.trueTauSq = self.simResults["trueTauSq"]
         
         # Read in from .npz file
         self.Y = self.simResults["Y"]
