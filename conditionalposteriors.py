@@ -79,11 +79,12 @@ class ConditionalPosteriors:
     ### LATENT POSITION LOG-PRIORS ###
     LOGTWOPI = np.log(2.0 * np.pi)   # Pre-storing log(2pi) so it doesn't have to be recalculated every time in the loop
 
+    @line_profiler.profile
     def mvnorm_logpdf(self, x, mu, var):   # Helper function to calculate the log density of a multivariate normal distribution
         diff = x - mu   # Performing element wise subtraction to get the deviation vector
         p = diff.size   # Counting all elements in the array
         return -0.5 * (p * self.LOGTWOPI + p * np.log(var) + diff.dot(diff) / var)   # Evaluating formula for multivariate normal with covariance sigma squared * I_p
-
+    @line_profiler.profile
     def LogX1Prior(self, X, tauSq, sigmaSq, i):   # Returning the log prior contribution from one actor i 
         x1 = X[0, i]   # Taking out the first time slice vector for actor i
         x2 = X[1, i]   # Taking out the second time slide vector for actor i
