@@ -305,7 +305,7 @@ class BinaryDiagnostics:
                     radiiEstimate = radiiEstimate,
                     positionEstimate = positionEstimate)
         
-        with open(os.path.join(os.getcwd(), f"Estimates after {burnIn} Burn-In Values.txt")) as writeFile:
+        with open(os.path.join(os.getcwd(), f"Estimates after {burnIn} Burn-In Values.txt"), "w+") as writeFile:
             writeFile.write(outputString)
     
     def BuildGlobalAutocorrelationPlots(self, burnIn = 0, maxLag = None):
