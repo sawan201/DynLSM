@@ -75,9 +75,10 @@ class ConditionalPosteriors:
     @line_profiler.profile                                 
     def LogBetaOUTPrior(self, beta_val):
         return -0.5 * (beta_val - self.nu_out) ** 2 / self.xi_out
-    @line_profiler.profile                                 
+                                  
     ### LATENT POSITION LOG-PRIORS ###
     LOG2PI = np.log(2.0 * np.pi)   # Pre-storing log(2pi) so it doesn't have to be recalculated every time in the loop
+    
     @line_profiler.profile                                 
     def mvnorm_logpdf(self, x, mu, var):   # Helper function to calculate the log density of a multivariate normal distribution
         diff = x - mu   # Performing element wise subtraction to get the deviation vector
