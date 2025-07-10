@@ -29,10 +29,10 @@ class BinaryDiagnostics:
         if truthIncluded:
             self.trueX = self.simResults["trueX"]
             self.trueR = self.simResults["trueR"]
-            self.trueBetaIN = self.simResults["trueBetaIN"]
-            self.trueBetaOUT = self.simResults["trueBetaOUT"]
-            self.trueSigmaSq = self.simResults["trueSigmaSq"]
-            self.trueTauSq = self.simResults["trueTauSq"]
+            self.trueBetaIN = float(self.simResults["trueBetaIN"])
+            self.trueBetaOUT = float(self.simResults["trueBetaOUT"])
+            self.trueSigmaSq = float(self.simResults["trueSigmaSq"])
+            self.trueTauSq = float(self.simResults["trueTauSq"])
         
         # Read in from .npz file
         self.Y = self.simResults["Y"]
