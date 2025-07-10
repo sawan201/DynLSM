@@ -4,6 +4,7 @@ import numpy as np
 from scipy.stats import dirichlet
 import time
 from functools import wraps
+import line_profiler
 
 
 
@@ -32,19 +33,7 @@ class Gibbs:
         return wrapper
 
 
-
-    def timer(func):
-        @wraps(func)  # preserves the original function name and docstring
-        def wrapper(*args, **kwargs):
-            start = time.time()
-            result = func(*args, **kwargs)
-            end = time.time()
-            print(f"[TIMER] {func.__name__} took {end - start:.4f} seconds")
-            return result
-        return wrapper
-
-
-    @timer
+    @line_profiler.profile
     def RunGibbs(self, ns, p, modelType, initType, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
                  thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200):
             '''
@@ -164,7 +153,7 @@ class Gibbs:
                 print("Iteration", iter, "completed.")
             return positions, radii, tauSq, sigmaSq, betaIN, betaOUT
 
-    @timer
+    @line_profiler.profile
     def MetropolisHastings(self, ConditionalPosterior, ProposalSampler, currentValue, data, 
                         LogProposalEvaluate = None, proposalSymmetric = True, logPosterior = True):
         """
