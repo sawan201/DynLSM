@@ -177,7 +177,8 @@ class Gibbs:
         if proposalSymmetric == True:
             if logPosterior == True:
                 logAcceptanceRatio = posteriorAtProposal - posteriorAtCurrent
-                acceptanceRatio = min(1, np.exp(logAcceptanceRatio))
+                acceptanceRatio = min(1, np.exp(np.clip(logAcceptanceRatio, -700, 700)))   # To avoid overflow errors
+
             else:
                 acceptanceRatio = min(1, posteriorAtProposal / posteriorAtCurrent)
         
