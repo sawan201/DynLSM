@@ -47,8 +47,11 @@ class Simulation():
         norms_inv = 1.0 / np.linalg.norm(X1, axis=1)  # Inverse of the Euclidean norm for each actor's vector
         return n * norms_inv[i] / np.max(norms_inv)  # Scale by n and normalize by the maximum inverse norm
 
-    def sigmoid(self, x):  # Define the sigmoid (logistic) function to squash values into [0, 1]
-        return 1.0 / (1.0 + np.exp(-x))  # Compute 1 / (1 + exp(-x))
+
+    
+    def sigmoid(self, x):
+        # Prevent overflow in exp by clipping x
+        return 1 / (1 + np.exp(-np.clip(x, -700, 700)))
 
     '''
     Main Function
@@ -118,7 +121,7 @@ class Simulation():
                         X_i=LargeX[t, i],  # Latent position of actor i at time t
                         X_j=LargeX[t, j]  # Latent position of actor j at time t
                     )
-
+                    
                     # Convert log-odds to probability via the sigmoid function
                     prob = self.sigmoid(eta)  # Probability of an edge occurring
 

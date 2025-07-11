@@ -22,8 +22,8 @@ def main():
     DirichletFactor = 100  # Factor for the Dirichlet prior 
     model_type = "binary"  # Type of model (e.g., "binary")
     InitType = "base"  # Initialization type for the model
-    NumberOfSamples = 2000  # Total MCMC sweeps
-    BurnIn = 500  # First draws to discard
+    NumberOfSamples = 10  # Total MCMC sweeps
+    BurnIn = 0  # First draws to discard
 
 
 
