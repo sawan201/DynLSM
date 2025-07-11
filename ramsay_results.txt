@@ -1,0 +1,542 @@
+Timer unit: 1e-09 s
+
+Total time: 47312.2 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #        Hits         Time  Per Hit   % Time  Line Contents
+================================================================
+    28                                             
+    29                                             
+    30     1859814  399490000.0    214.8      0.0  
+    31     1859814  187258000.0    100.7      0.0  
+    32                                             
+    33     7439256 2114556000.0    284.2      0.0  
+    34   172962702        2e+10    142.0      0.1  
+    35 5.18888e+09        8e+11    151.7      1.7  
+    36  5.0215e+09        5e+11    100.8      1.1  
+    37   167383260        1e+10     82.7      0.0  
+    38                                             
+    39 9.70823e+09        5e+13   4689.9     96.2  
+    40 4.85411e+09        4e+11     92.1      0.9  
+    41                                             
+    42                                             
+    43     1859814  468553000.0    251.9      0.0  
+
+Total time: 0.612557 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    51                                           
+    52                                           
+    53      9999    3782000.0    378.2      0.6  
+    54      9999    2322000.0    232.2      0.4  
+    55      9999    3460000.0    346.0      0.6  
+    56      9999   72845000.0   7285.2     11.9  
+    57      9999  530148000.0  53020.1     86.5  
+
+Total time: 0.340762 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    58                                           
+    59                                           
+    60      9999   16567000.0   1656.9      4.9  
+    61      9999    2286000.0    228.6      0.7  
+    62      9999    2320000.0    232.0      0.7  
+    63      9999   45432000.0   4543.7     13.3  
+    64      9999  274157000.0  27418.4     80.5  
+
+Total time: 0.036745 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    72                                           
+    73                                           
+    74     19998   36745000.0   1837.4    100.0  
+
+Total time: 0.027008 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    75                                           
+    76                                           
+    77     19998   27008000.0   1350.5    100.0  
+
+Total time: 5.35017 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    82                                           
+    83                                           
+    84   2999700 1087283000.0    362.5     20.3  
+    85   2999700  444030000.0    148.0      8.3  
+    86   2999700 3818856000.0   1273.1     71.4  
+
+Total time: 6.06345 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    87                                           
+    88                                           
+    89    599940  147060000.0    245.1      2.4  
+    90    599940  125159000.0    208.6      2.1  
+    91    599940 3745343000.0   6242.9     61.8  
+    92    599940 1902733000.0   3171.5     31.4  
+    93    599940  143156000.0    238.6      2.4  
+
+Total time: 4.54712 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    94                                           
+    95                                           
+    96    599940  144784000.0    241.3      3.2  
+    97    599940  120373000.0    200.6      2.6  
+    98    599940  130377000.0    217.3      2.9  
+    99    599940 2123798000.0   3540.0     46.7  
+   100    599940 1878937000.0   3131.9     41.3  
+   101    599940  148849000.0    248.1      3.3  
+
+Total time: 2.46533 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   102                                           
+   103                                           
+   104    599940  142289000.0    237.2      5.8  
+   105    599940  147608000.0    246.0      6.0  
+   106    599940 2175432000.0   3626.1     88.2  
+
+Total time: 0.003083 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   107                                           
+   108                                           
+   109     19998    3083000.0    154.2    100.0  
+
+Total time: 16610.5 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   115                                           
+   116                                           
+   117    599940  102246000.0    170.4      0.0  
+   118    599940  376095000.0    626.9      0.0  
+   119    599940  257856000.0    429.8      0.0  
+   120                                           
+   121   1199880        2e+13    1e+07     99.9  
+   122    599940   76486000.0    127.5      0.0  
+   123    599940   58646000.0     97.8      0.0  
+   124    599940   54171000.0     90.3      0.0  
+   125    599940   52500000.0     87.5      0.0  
+   126    599940   50487000.0     84.2      0.0  
+   127                                           
+   128   1199880 7354983000.0   6129.8      0.0  
+   129    599940   97776000.0    163.0      0.0  
+   130    599940   70084000.0    116.8      0.0  
+   131    599940   63171000.0    105.3      0.0  
+   132                                           
+   133    599940  206223000.0    343.7      0.0  
+
+Total time: 16625.1 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   134                                           
+   135                                           
+   136    599940   97230000.0    162.1      0.0  
+   137    599940  485169000.0    808.7      0.0  
+   138    599940  263322000.0    438.9      0.0  
+   139                                           
+   140   1199880        2e+13    1e+07    100.0  
+   141    599940   69895000.0    116.5      0.0  
+   142    599940   61997000.0    103.3      0.0  
+   143    599940   60662000.0    101.1      0.0  
+   144    599940   52310000.0     87.2      0.0  
+   145    599940   56553000.0     94.3      0.0  
+   146   1199880 5928130000.0   4940.6      0.0  
+   147    599940   97064000.0    161.8      0.0  
+   148    599940   53608000.0     89.4      0.0  
+   149                                           
+   150    599940  194801000.0    324.7      0.0  
+
+Total time: 16629.2 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   151                                           
+   152                                           
+   153    599940   96469000.0    160.8      0.0  
+   154    599940  446085000.0    743.5      0.0  
+   155    599940  267701000.0    446.2      0.0  
+   156                                           
+   157   1199880        2e+13    1e+07    100.0  
+   158    599940   72836000.0    121.4      0.0  
+   159    599940   60317000.0    100.5      0.0  
+   160    599940   60814000.0    101.4      0.0  
+   161    599940   66647000.0    111.1      0.0  
+   162    599940   60831000.0    101.4      0.0  
+   163                                           
+   164   1199880 3562349000.0   2968.9      0.0  
+   165    599940   90987000.0    151.7      0.0  
+   166    599940   53802000.0     89.7      0.0  
+   167                                           
+   168    599940  195310000.0    325.5      0.0  
+
+Total time: 554.351 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   169                                           
+   170                                           
+   171     39996        6e+11    1e+07    100.0  
+   172     19998    2138000.0    106.9      0.0  
+   173     19998    2030000.0    101.5      0.0  
+   174     19998    2328000.0    116.4      0.0  
+   175     19998    2020000.0    101.0      0.0  
+   176     19998    2096000.0    104.8      0.0  
+   177     19998    1831000.0     91.6      0.0  
+   178                                           
+   179     19998   41951000.0   2097.8      0.0  
+   180     19998    7739000.0    387.0      0.0  
+
+Total time: 553.043 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   181                                           
+   182                                           
+   183     39996        6e+11    1e+07    100.0  
+   184     19998    2220000.0    111.0      0.0  
+   185     19998    2039000.0    102.0      0.0  
+   186     19998    1715000.0     85.8      0.0  
+   187     19998    2220000.0    111.0      0.0  
+   188     19998    2085000.0    104.3      0.0  
+   189     19998    1853000.0     92.7      0.0  
+   190                                           
+   191     19998   77918000.0   3896.3      0.0  
+   192     19998    6755000.0    337.8      0.0  
+
+Total time: 552.171 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   193                                           
+   194                                           
+   195     39996        6e+11    1e+07    100.0  
+   196     19998    1849000.0     92.5      0.0  
+   197     19998    2018000.0    100.9      0.0  
+   198     19998    1631000.0     81.6      0.0  
+   199     19998    1755000.0     87.8      0.0  
+   200     19998    1751000.0     87.6      0.0  
+   201     19998    1556000.0     77.8      0.0  
+   202                                           
+   203     19998   60392000.0   3019.9      0.0  
+   204     19998    6443000.0    322.2      0.0  
+
+Total time: 21267.8 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #        Hits         Time  Per Hit   % Time  Line Contents
+================================================================
+   212                                             
+   213                                             
+   214 4.85412e+09        2e+13   3729.6     85.1  
+   215 9.70823e+09        2e+12    238.8     10.9  
+   216 4.85412e+09        8e+11    174.1      4.0  
+
+Total time: 37559.4 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/conditionalposteriors.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #        Hits         Time  Per Hit   % Time  Line Contents
+================================================================
+   219                                             
+   220                                             
+   221                                             
+   222                                             
+   223                                             
+   224 4.85411e+09        7e+11    147.7      1.9  
+   225 4.85411e+09        3e+13   6532.8     84.4  
+   226 4.85411e+09        5e+12   1057.2     13.7  
+
+Total time: 51618.6 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/gibbs.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    36                                           
+    37                                           
+    38                                           
+    39                                           
+    40                                           
+    41                                           
+    42                                           
+    43                                           
+    44                                           
+    45                                           
+    46                                           
+    47                                           
+    48                                           
+    49                                           
+    50                                           
+    51                                           
+    52                                           
+    53                                           
+    54                                           
+    55                                           
+    56                                           
+    57                                           
+    58                                           
+    59                                           
+    60                                           
+    61                                           
+    62                                           
+    63                                           
+    64                                           
+    65                                           
+    66                                           
+    67                                           
+    68         1          0.0      0.0      0.0  
+    69         1       1000.0   1000.0      0.0  
+    70                                           
+    71                                           
+    72         1          0.0      0.0      0.0  
+    73         2      14000.0   7000.0      0.0  
+    74         1          0.0      0.0      0.0  
+    75                                           
+    76                                           
+    77                                           
+    78                                           
+    79                                           
+    80         1       1000.0   1000.0      0.0  
+    81         1          0.0      0.0      0.0  
+    82         1       1000.0   1000.0      0.0  
+    83                                           
+    84                                           
+    85         1       1000.0   1000.0      0.0  
+    86         1          0.0      0.0      0.0  
+    87         1       1000.0   1000.0      0.0  
+    88         1       1000.0   1000.0      0.0  
+    89         1          0.0      0.0      0.0  
+    90         1          0.0      0.0      0.0  
+    91                                           
+    92                                           
+    93         1          0.0      0.0      0.0  
+    94         1       6000.0   6000.0      0.0  
+    95                                           
+    96                                           
+    97         1      36000.0  36000.0      0.0  
+    98                                           
+    99                                           
+   100         2       2000.0   1000.0      0.0  
+   101         1       2000.0   2000.0      0.0  
+   102         1       1000.0   1000.0      0.0  
+   103         1          0.0      0.0      0.0  
+   104         1          0.0      0.0      0.0  
+   105         1          0.0      0.0      0.0  
+   106         1          0.0      0.0      0.0  
+   107                                           
+   108                                           
+   109     10000    3601000.0    360.1      0.0  
+   110                                           
+   111                                           
+   112     39996   14374000.0    359.4      0.0  
+   113     29997    3678000.0    122.6      0.0  
+   114      9999    3500000.0    350.0      0.0  
+   115     19998    3229000.0    161.5      0.0  
+   116      9999    3629000.0    362.9      0.0  
+   117                                           
+   118      9999    4592000.0    459.2      0.0  
+   119                                           
+   120    929907  227162000.0    244.3      0.0  
+   121    899910  239552000.0    266.2      0.0  
+   122    899910  115701000.0    128.6      0.0  
+   123    899910        5e+13    6e+07     96.8  
+   124    899910  530472000.0    589.5      0.0  
+   125    899910  288338000.0    320.4      0.0  
+   126    899910 7647129000.0   8497.7      0.0  
+   127                                           
+   128                                           
+   129     19998        6e+11    3e+07      1.1  
+   130      9999    1314000.0    131.4      0.0  
+   131      9999    2827000.0    282.7      0.0  
+   132      9999    1230000.0    123.0      0.0  
+   133      9999    9354000.0    935.5      0.0  
+   134      9999    3887000.0    388.7      0.0  
+   135                                           
+   136                                           
+   137     19998        6e+11    3e+07      1.1  
+   138      9999    4581000.0    458.1      0.0  
+   139      9999    3029000.0    302.9      0.0  
+   140      9999    1839000.0    183.9      0.0  
+   141     19998        6e+11    3e+07      1.1  
+   142      9999    4408000.0    440.8      0.0  
+   143      9999    2702000.0    270.2      0.0  
+   144      9999    1744000.0    174.4      0.0  
+   145                                           
+   146                                           
+   147      9999  658778000.0  65884.4      0.0  
+   148      9999    3747000.0    374.7      0.0  
+   149      9999    1487000.0    148.7      0.0  
+   150      9999  371156000.0  37119.3      0.0  
+   151      9999    6059000.0    606.0      0.0  
+   152      9999    1431000.0    143.1      0.0  
+   153      9999   88727000.0   8873.6      0.0  
+   154         1      18000.0  18000.0      0.0  
+
+Total time: 51604.3 s
+
+Could not find file /Users/ramsay/Desktop/DRUMS/Code_DRUMS/DynLSM/gibbs.py
+Are you sure you are running this program from the same directory
+that you ran the profiler from?
+Continuing without the function's contents.
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   156                                           
+   157                                           
+   158                                           
+   159                                           
+   160                                           
+   161                                           
+   162                                           
+   163                                           
+   164                                           
+   165                                           
+   166                                           
+   167                                           
+   168                                           
+   169                                           
+   170                                           
+   171                                           
+   172    929907        7e+10  73462.1      0.1  
+   173    929907        3e+13    3e+07     50.0  
+   174    929907        3e+13    3e+07     49.8  
+   175                                           
+   176                                           
+   177    929907  152498000.0    164.0      0.0  
+   178    919908  100209000.0    108.9      0.0  
+   179    919908  128293000.0    139.5      0.0  
+   180    919908  907603000.0    986.6      0.0  
+   181                                           
+   182                                           
+   183                                           
+   184                                           
+   185                                           
+   186                                           
+   187      9999  601940000.0  60200.0      0.0  
+   188      9999  292077000.0  29210.6      0.0  
+   189                                           
+   190      9999    1764000.0    176.4      0.0  
+   191      9999    2602000.0    260.2      0.0  
+   192      9999    9441000.0    944.2      0.0  
+   193                                           
+   194                                           
+   195                                           
+   196                                           
+   197                                           
+   198                                           
+   199                                           
+   200                                           
+   201    929907  165228000.0    177.7      0.0  
+   202    117266   60079000.0    512.3      0.0  
+   203                                           
+   204                                           
+   205    812641 1222294000.0   1504.1      0.0  
+   206    812641  110169000.0    135.6      0.0  
+   207    117347   64771000.0    552.0      0.0  
+   208                                           
+   209    695294  384415000.0    552.9      0.0  
+
