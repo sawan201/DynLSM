@@ -206,7 +206,7 @@ class BinaryDiagnostics:
             plt.savefig(os.path.join(self.outPath, f"Dynamic Position Plot - Actor Index {i}.png"))
             plt.close()
     
-    def BuildLogLikelihoodPlot(self, conditionals, thinning = 1):
+    def BuildLogLikelihoodPlot(self, thinning = 1, conditionals = None):
         '''
         (require an instance of the conditionals class to determine what log-likelihood to use)
         Determine the indices to plot the log-likelihood at (as determined by thinning argument)
@@ -215,6 +215,9 @@ class BinaryDiagnostics:
         Plot the log-likelihoods against the iteration
         Output result to self.outPath
         '''
+        if conditionals is None:
+            conditionals = self.conditionals
+        
         # Pick every {thinning}-th index to calculate log-likelihood at and plot
         plotIndices = range(0, self.ns, thinning)
 
