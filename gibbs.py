@@ -189,8 +189,12 @@ class Gibbs:
 
             if logPosterior == True:
                 logAcceptanceRatio = (posteriorAtProposal + logCurrentValueGivenProposal) - (posteriorAtCurrent + logProposalValueGivenCurrent)
-                acceptanceRatio = min(1, np.exp(logAcceptanceRatio))
-            
+                
+                if logAcceptanceRatio >= 0:
+                    acceptanceRatio = 1
+                else:
+                    acceptanceRatio = np.exp(logAcceptanceRatio)
+                
             else:
                 proposalValueGivenCurrent = np.exp(logProposalValueGivenCurrent)
                 currentValueGivenProposal = np.exp(logCurrentValueGivenProposal)
@@ -198,7 +202,7 @@ class Gibbs:
                 acceptanceRatio = min(1, (posteriorAtProposal * currentValueGivenProposal) / (posteriorAtCurrent * proposalValueGivenCurrent))
         
         # We have an acceptanceRatio. Now, we need to decide whether to accept or reject.
-        if acceptanceRatio == 1:
+        if acceptanceRatio >= 1:
             return proposalValue
         else:
             # Choose a random number between [0, 1]
