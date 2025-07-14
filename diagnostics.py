@@ -154,8 +154,8 @@ class BinaryDiagnostics:
             ax.set_xlabel("Latent X Position")
             ax.set_ylabel("Latent Y Position")
             ax.set_zlabel("Gibbs Iteration")
-            ax.set_title(f"Position Trace Plot - Actor Index {i}")
-            plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}.png"))
+            ax.set_title(f"Position Trace Plot - Actor Index {i}, Time {t}")
+            plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}, Time {t}.png"))
             plt.close()
         
         elif self.p == 1:
@@ -167,8 +167,8 @@ class BinaryDiagnostics:
                 plt.plot(trueValues[stepIndices], label="True Value", color="red", linewidth=2)
             plt.xlabel("Gibbs Iteration")
             plt.ylabel("Latent Position")
-            plt.title(f"Position Trace Plot - Actor Index {i}")
-            plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}.png"))
+            plt.title(f"Position Trace Plot - Actor Index {i}, Time {t}")
+            plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}, Time {t}.png"))
             plt.close()
     
     def BuildPositionDynamicPlot(self, i, showTruth = False, burnIn = 0):
