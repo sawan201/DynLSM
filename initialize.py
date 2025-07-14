@@ -42,6 +42,42 @@ class AbstractInitialization:
     def InitializeBetaOUT():
         raise NotImplementedError("This method must be implemented by a subclass.")
 
+class InitializeToTruth(AbstractInitialization):
+    # Allows us to initialize to the true values for testing
+    def __init__(self, Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, 
+                 trueX, trueR, trueBetaIN, trueBetaOUT, trueTauSq, trueSigmaSq):
+        self.Y = Y
+        self.X = X
+        self.r = r
+        self.betaIN = betaIN
+        self.betaOUT = betaOUT
+        self.tauSq = tauSq
+        self.sigmaSq = sigmaSq
+        self.trueX = trueX
+        self.trueR = trueR
+        self.trueBetaIN = trueBetaIN
+        self.trueBetaOUT = trueBetaOUT
+        self.trueTauSq = trueTauSq
+        self.trueSigmaSq = trueSigmaSq
+    
+    def InitializeX(self):
+        self.X[0] = self.trueX
+    
+    def InitializeR(self):
+        self.r[0] = self.trueR
+    
+    def InitializeBetaIN(self):
+        self.betaIN[0] = self.trueBetaIN
+    
+    def InitializeBetaOUT(self):
+        self.betaOUT[0] = self.trueBetaOUT
+    
+    def InitializeSigmaSq(self):
+        self.sigmaSq[0] = self.trueSigmaSq
+    
+    def InitializeTauSq(self):
+        self.tauSq[0] = self.trueTauSq
+
 class BaseInitialization(AbstractInitialization):
     # uses the constructor from AbstractInitialization
 

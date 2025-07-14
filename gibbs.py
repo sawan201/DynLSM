@@ -35,7 +35,8 @@ class Gibbs:
 
     @line_profiler.profile
     def RunGibbs(self, ns, p, modelType, initType, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
-                 thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200):
+                 thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200,
+                 truth = None):
             '''
             Inputs: 
                 ns (int number of steps)
@@ -51,6 +52,8 @@ class Gibbs:
                 thetaTau (shape parameter of prior on TauSq)
                 phiTau (scale parameter of prior on TauSq)
                 alphas (parameters for Dirichlet prior on r_{1:n})
+                truth (if we are testing, a dictionary with the following keys:
+                    "X", "R", "betaIN", "betaOUT", "tauSq", "sigmaSq")
             
             ** FOR NOW: 
                 ** Fix the variance of the normal random walk
@@ -93,6 +96,11 @@ class Gibbs:
             if initType == "base":
                 initialization = init.BaseInitialization(self.Y, positions, radii, betaIN, betaOUT, tauSq, sigmaSq)
             
+            elif initType == "truth":
+                initialization = init.InitializeToTruth(self.Y, positions, radii, betaIN, betaOUT, tauSq, sigmaSq,
+                                                        truth["X"], truth["R"], truth["betaIN"], truth["betaOUT"],
+                                                        truth["tauSq"], truth["sigmaSq"])
+
             # Set initial values for all
             positions, radii, betaIN, betaOUT, tauSq, sigmaSq = initialization.InitializeAll()
 
