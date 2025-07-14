@@ -61,6 +61,9 @@ class Simulation():
         np.random.seed(181)
         T, n, p = self.T, self.n, self.p
         SigmaSq = self.SigmaSq
+        TauSq = self.TauSq  # Variance for the tau prior
+        SigmaSqRoot = np.sqrt(SigmaSq)  # Compute the square root of SigmaSq for sampling
+        TauSqRoot = np.sqrt(TauSq)  # Compute the square root of TauSq for sampling
         model_type = self.model_type
 
         # Pre-allocate the latent positions array of shape (T, n, p)
@@ -69,8 +72,13 @@ class Simulation():
         # Simulate latent positions over time
         for t in range(T):  # Loop over each time point
             for i in range(n):  # Loop over each actor
-                mu = 0.0 if t == 0 else LargeX[t-1, i]  # If t=0, center at origin; otherwise use last position
-                LargeX[t, i] = np.random.normal(loc=mu, scale=SigmaSq, size=p)  # Sample from N(mu, SigmaSq)
+                if t == 0:
+                    mu = 0.0
+                    LargeX[t, i] = np.random.normal(loc=mu, scale=TauSqRoot, size=p)  # Sample from N(0, SigmaSq) 
+                else:
+                    # For t > 0, use the previous time point's position as the mean
+                    mu = LargeX[t-1, i]
+                    LargeX[t, i] = np.random.normal(loc=mu, scale=SigmaSqRoot, size=p)  # Sample from N(mu, SigmaSq)
 
         # Extract the initial positions and compute phi_tau
         X1 = LargeX[0]  # Initial positions at time t=0
