@@ -68,3 +68,16 @@ class BaseInitialization(AbstractInitialization):
     def InitializeTauSq(self):
         # Initializes to arbitrary value
         self.tauSq[0] = 9
+
+class ImprovedInitialization(AbstractInitialization):
+    def initializeR(self):
+        # Initialization as done in paper
+        # Get the total interactions between two points across all time periods
+        sumAcrossT = np.sum(self.Y, axis=0)
+        # Sum to create one vector representing total incoming and another representing total outgoing
+        sumAcrossSecondAxis = np.sum(sumAcrossT, axis=0)
+        sumAcrossThirdAxis = np.sum(sumAcrossT, axis=1)
+        # Find the number incoming + number outgoing for each
+        totalInteractions = sumAcrossSecondAxis + sumAcrossThirdAxis
+        # Ensure that this sums to one (every interaction is represented twice)
+        self.r = totalInteractions / 2 * np.sum(totalInteractions)
