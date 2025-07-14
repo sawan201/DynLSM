@@ -76,7 +76,7 @@ class BinaryDiagnostics:
                                         (self.tauSqChain, "Tau Squared", self.trueTauSq), 
                                         (self.sigmaSqChain, "Sigma Squared", self.trueSigmaSq)]:
             plt.figure(figsize=(10, 6))
-            plt.plot(x=stepIndices, y=data[stepIndices])
+            plt.plot(stepIndices, data[stepIndices])
             plt.title(f"Trace Plot for {name} (n={self.n}, T={self.T}, p={self.p})")
             if thinning != 1:
                 plt.xlabel(f"Iteration")
@@ -116,7 +116,7 @@ class BinaryDiagnostics:
         stepIndices = range(1, self.ns, thinning)
         plt.figure(figsize=(10, 6))
         plt.title(f"Trace Plot for Index {i} Actor's Radius")
-        plt.plot(x=stepIndices, y=self.RChain[stepIndices, i])
+        plt.plot(stepIndices, self.RChain[stepIndices, i])
         if thinning != 1:
             plt.xlabel(f"Iteration")
         else:
@@ -250,7 +250,7 @@ class BinaryDiagnostics:
         
         # Plot the values
         plt.figure(figsize=(8, 6))
-        plt.plot(x=plotIndices, y=logLikelihoods, color="blue", linewidth=2)
+        plt.plot(plotIndices, logLikelihoods, color="blue", linewidth=2)
         plt.title("Log-Likelihood over Gibbs Iterations")
         plt.xlabel("Gibbs Iteration")
         plt.ylabel("Log-Likelihood")
