@@ -47,6 +47,22 @@ class BinaryDiagnostics:
         self.n = self.XChain.shape[2]   # number of actors
         self.p = self.XChain.shape[3]   # dimension of latent space
     
+    def BuildAll(self, traceThinning = 1, likelihoodThinning = 1, burnIn = 0,
+                 histBinMethod = "sturges", autoCorrMaxLag = None, showTruth = False):
+        '''
+        Builds all possible plots (will result in many plots if n, T are not small)
+        '''
+        self.BuildGlobalTracePlots(traceThinning, showTruth)
+        self.BuildGlobalHistograms(showTruth, histBinMethod, burnIn)
+        self.BuildGlobalAutocorrelationPlots(burnIn, autoCorrMaxLag)
+        self.BuildLogLikelihoodPlot(likelihoodThinning, None)
+        self.BuildParameterEstimates(showTruth, burnIn)
+        for i in range(self.n):
+            self.BuildPositionDynamicPlot(i, showTruth, burnIn)
+            self.BuildRadiusTracePlot(i, showTruth, traceThinning)
+            for t in range(self.T):
+                self.BuildPositionTracePlot(i, t, showTruth, traceThinning)
+
     def BuildGlobalTracePlots(self, thinning = 1, showTruth = False):
         '''
         Builds a trace plot and outputs to self.outPath for each global variable (betaIN, betaOUT, tauSq, sigmaSq)
@@ -60,7 +76,7 @@ class BinaryDiagnostics:
                                         (self.tauSqChain, "Tau Squared", self.trueTauSq), 
                                         (self.sigmaSqChain, "Sigma Squared", self.trueSigmaSq)]:
             plt.figure(figsize=(10, 6))
-            plt.plot(data[stepIndices])
+            plt.plot(stepIndices, data[stepIndices])
             plt.title(f"Trace Plot for {name} (n={self.n}, T={self.T}, p={self.p})")
             if thinning != 1:
                 plt.xlabel(f"Iteration")
@@ -100,7 +116,7 @@ class BinaryDiagnostics:
         stepIndices = range(1, self.ns, thinning)
         plt.figure(figsize=(10, 6))
         plt.title(f"Trace Plot for Index {i} Actor's Radius")
-        plt.plot(self.RChain[:, i])
+        plt.plot(stepIndices, self.RChain[stepIndices, i])
         if thinning != 1:
             plt.xlabel(f"Iteration")
         else:
@@ -138,8 +154,8 @@ class BinaryDiagnostics:
             ax.set_xlabel("Latent X Position")
             ax.set_ylabel("Latent Y Position")
             ax.set_zlabel("Gibbs Iteration")
-            ax.set_title(f"Position Trace Plot - Actor Index {i}")
-            plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}.png"))
+            ax.set_title(f"Position Trace Plot - Actor Index {i}, Time {t}")
+            plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}, Time {t}.png"))
             plt.close()
         
         elif self.p == 1:
@@ -151,8 +167,8 @@ class BinaryDiagnostics:
                 plt.plot(trueValues[stepIndices], label="True Value", color="red", linewidth=2)
             plt.xlabel("Gibbs Iteration")
             plt.ylabel("Latent Position")
-            plt.title(f"Position Trace Plot - Actor Index {i}")
-            plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}.png"))
+            plt.title(f"Position Trace Plot - Actor Index {i}, Time {t}")
+            plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}, Time {t}.png"))
             plt.close()
     
     def BuildPositionDynamicPlot(self, i, showTruth = False, burnIn = 0):
@@ -234,7 +250,7 @@ class BinaryDiagnostics:
         
         # Plot the values
         plt.figure(figsize=(8, 6))
-        plt.plot(logLikelihoods, color="blue", linewidth=2)
+        plt.plot(plotIndices, logLikelihoods, color="blue", linewidth=2)
         plt.title("Log-Likelihood over Gibbs Iterations")
         plt.xlabel("Gibbs Iteration")
         plt.ylabel("Log-Likelihood")

@@ -5,7 +5,7 @@ from scipy.stats import dirichlet
 import time
 from functools import wraps
 import line_profiler
-
+from scipy.linalg import orthogonal_procrustes
 
 
 class Gibbs:
@@ -124,7 +124,16 @@ class Gibbs:
                         positions[iter, t, i] = newPosition
                         self.currentData["X"][t, i] = newPosition
                         print("Iteration", iter, "Time", t, "Actor", i, "completed.")
-                
+
+                # Procrustes after finishing the latent-position updates for this iteration
+                X_mat   = positions[iter].reshape(T*n, p)   # Stack T time slices into one matrix
+                X0      = positions[0].reshape(T*n, p)
+                R, _    = orthogonal_procrustes(X_mat, X0)   # Solves the Procrustes problem
+                X_rot = (X_mat @ R).reshape(T, n, p)   # Applying the rotation to every (i, t) coordinate, reshape gets original tensor form back
+
+                positions[iter] = X_rot   # Store rotated positions
+                self.currentData["X"] = X_rot.copy()
+
                 # Sample radii using Metropolis-Hastings
                 newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
                                                    self.currentData, 
@@ -177,7 +186,8 @@ class Gibbs:
         if proposalSymmetric == True:
             if logPosterior == True:
                 logAcceptanceRatio = posteriorAtProposal - posteriorAtCurrent
-                acceptanceRatio = min(1, np.exp(logAcceptanceRatio))
+                acceptanceRatio = min(1, np.exp(np.clip(logAcceptanceRatio, -700, 700)))   # To avoid overflow errors
+
             else:
                 acceptanceRatio = min(1, posteriorAtProposal / posteriorAtCurrent)
         
