@@ -34,7 +34,7 @@ class Gibbs:
 
 
     @line_profiler.profile
-    def RunGibbs(self, ns, p, modelType, initType, nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
+    def RunGibbs(self, ns, p, modelType, initType, nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
                  thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200,
                  truth = None):
             '''
@@ -44,9 +44,9 @@ class Gibbs:
                 modelType (either "poisson" or "binary")
                 initialization (either "base" or something else that we create later)
                 nuIN (mean of prior on betaIN)
-                etaIN (variance of prior on betaIN)
+                xiIN (variance of prior on betaIN)
                 nuOUT (mean of prior on betaOUT)
-                etaOUT (variance of prior on betaOUT)
+                xiOUT (variance of prior on betaOUT)
                 thetaSigma (shape parameter of prior on SigmaSq)
                 phiSigma (scale parameter of prior on SigmaSq)
                 thetaTau (shape parameter of prior on TauSq)
@@ -73,10 +73,10 @@ class Gibbs:
 
             # Assign the conditionals based on the input argument
             if modelType == "binary":
-                conditionals = cds.BinaryConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
+                conditionals = cds.BinaryConditionals(nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
                                                     thetaTau, phiTau, alphas=alphas, p=p)
             elif modelType == "poisson":
-                conditionals = cds.PoissonConditionals(nuIN, etaIN, nuOUT, etaOUT, thetaSigma, phiSigma, 
+                conditionals = cds.PoissonConditionals(nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
                                                     thetaTau, phiTau, alphas = alphas, p = p)
 
             # Define key things:

@@ -55,7 +55,7 @@ class BinaryDiagnostics:
         self.BuildGlobalTracePlots(traceThinning, showTruth)
         self.BuildGlobalHistograms(showTruth, histBinMethod, burnIn)
         self.BuildGlobalAutocorrelationPlots(burnIn, autoCorrMaxLag)
-        self.BuildLogLikelihoodPlot(likelihoodThinning, None)
+        self.BuildLogLikelihoodPlot(likelihoodThinning, None, burnIn)
         self.BuildParameterEstimates(showTruth, burnIn)
         for i in range(self.n):
             self.BuildPositionDynamicPlot(i, showTruth, burnIn)
@@ -222,7 +222,7 @@ class BinaryDiagnostics:
             plt.savefig(os.path.join(self.outPath, f"Dynamic Position Plot - Actor Index {i}.png"))
             plt.close()
     
-    def BuildLogLikelihoodPlot(self, thinning = 1, conditionals = None):
+    def BuildLogLikelihoodPlot(self, thinning = 1, conditionals = None, burnIn = 0):
         '''
         (require an instance of the conditionals class to determine what log-likelihood to use)
         Determine the indices to plot the log-likelihood at (as determined by thinning argument)
@@ -235,7 +235,7 @@ class BinaryDiagnostics:
             conditionals = self.conditionals
         
         # Pick every {thinning}-th index to calculate log-likelihood at and plot
-        plotIndices = range(0, self.ns, thinning)
+        plotIndices = range(burnIn, self.ns, thinning)
 
         # Create an empty vector of log-likelihoods and fill it in
         logLikelihoods = np.zeros(len(plotIndices))
@@ -254,7 +254,7 @@ class BinaryDiagnostics:
         plt.title("Log-Likelihood over Gibbs Iterations")
         plt.xlabel("Gibbs Iteration")
         plt.ylabel("Log-Likelihood")
-        plt.savefig(os.path.join(os.getcwd(), f"Log-Likelihood Plot.png"))
+        plt.savefig(os.path.join(os.getcwd(), f"Log-Likelihood Plot After {burnIn} Burn-In.png"))
         plt.close()
 
     def BuildParameterEstimates(self, showTruth = False, burnIn = 0):
