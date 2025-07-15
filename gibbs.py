@@ -114,8 +114,11 @@ class Gibbs:
         # Begin Sampling
         for iter in range(1, ns):
 
-            # For testing, we may want to fix positions. Otherwise, continue
-            if not fixX:
+            # For testing, we may want to fix positions.
+            if fixX:
+                positions[iter] = positions[iter - 1]
+            # Otherwise, continue to sample X as normal.
+            else:
                 # Sample latent positions
                 for t in range(0, T):
                     if t == 0:
@@ -142,8 +145,11 @@ class Gibbs:
                 positions[iter] = X_rot   # Store rotated positions
                 self.currentData["X"] = X_rot.copy()
 
-            # We may want to fix radii for testing. Otherwise, continue
-            if not fixR:
+            # We may want to fix radii for testing.
+            if fixR:
+                radii[iter] = radii[iter - 1]
+            # Otherwise, sample as normal.
+            else:
                 # Sample radii using Metropolis-Hastings
                 newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
                                                 self.currentData, 
@@ -153,28 +159,40 @@ class Gibbs:
                 self.currentData["r"] = newRadii
 
             # We may want to fix betaIN via a keyword argument
-            if not fixBetaIN:
+            if fixBetaIN:
+                betaIN[iter] = betaIN[iter - 1]
+            # Otherwise, sample betaIN as normal.
+            else:
                 # Sample betaIN and betaOUT using Metropolis-Hastings
                 newBetaIN = self.MetropolisHastings(conditionals.LogBetaINConditionalPosterior, self.SampleFromNormalFixedVar,
                                             betaIN[iter - 1], self.currentData)
                 betaIN[iter] = newBetaIN
                 self.currentData["betaIN"] = newBetaIN
             # We may want to fix betaOUT via a keyword argument
-            if not fixBetaOUT:
+            if fixBetaOUT:
+                betaOUT[iter] = betaOUT[iter - 1]
+            # Otherwise, sample betaOUT as normal.
+            else:
                 newBetaOUT = self.MetropolisHastings(conditionals.LogBetaOUTConditionalPosterior, self.SampleFromNormalFixedVar,
                                                 betaOUT[iter - 1], self.currentData)
                 betaOUT[iter] = newBetaOUT
                 self.currentData["betaOUT"] = newBetaOUT
 
             # We may want to fix tauSq via a keyword argument
-            if not fixTauSq:
+            if fixTauSq:
+                tauSq[iter] = tauSq[iter - 1]
+            # Otherwise, sample tauSq as normal.
+            else:
                 # Sample tauSq and sigmaSq directly from conditional distribution
                 newTauSq = conditionals.SampleTauSquared(self.currentData["X"])
                 tauSq[iter] = newTauSq
                 self.currentData["tauSq"] = newTauSq
             
             # We may want to fix sigmaSq via a keyword argument
-            if not fixSigmaSq:
+            if fixSigmaSq:
+                sigmaSq[iter] = sigmaSq[iter - 1]
+            # Otherwise, sample sigmaSq as normal.
+            else:
                 newSigmaSq = conditionals.SampleSigmaSquared(self.currentData["X"])
                 sigmaSq[iter] = newSigmaSq
                 self.currentData["sigmaSq"] = newSigmaSq
