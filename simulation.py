@@ -149,6 +149,14 @@ class Simulation():
 
         sampler = gibbs.Gibbs(Y)   # create sampler object with data
 
+        '''
+        self, ns, p, modelType, initType, nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
+                 thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200,
+                 truth = None, fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, 
+                 fixSigmaSq = False, fixTauSq = False)
+        
+        '''
+
         (X_Chain, R_Chain, tauSqChain, sigmaSqChain,
         betaIN_Chain, betaOUT_Chain) = sampler.RunGibbs(
             ns                 = ns_total,
@@ -173,8 +181,8 @@ class Simulation():
             fixR               = fixR,
             fixBetaIN          = fixBetaIN,
             fixBetaOUT         = fixBetaOUT,
-            fixTauSq           = fixTauSq,
-            fixSigmaSq         = fixSigmaSq
+            fixSigmaSq         = fixSigmaSq,
+            fixTauSq           = fixTauSq
         )
 
         # ---------- posterior summaries (after burn-in) ----------

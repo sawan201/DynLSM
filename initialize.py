@@ -24,22 +24,22 @@ class AbstractInitialization:
         self.InitializeTauSq()
         return self.X, self.r, self.betaIN, self.betaOUT, self.tauSq, self.sigmaSq
 
-    def InitializeX():
+    def InitializeX(self):
         raise NotImplementedError("This method must be implemented by a subclass.")
 
-    def InitializeR():
+    def InitializeR(self):
         raise NotImplementedError("This method must be implemented by a subclass.")
 
-    def InitializeTauSq():
+    def InitializeTauSq(self):
         raise NotImplementedError("This method must be implemented by a subclass.")
 
-    def InitializeSigmaSq():
+    def InitializeSigmaSq(self):
         raise NotImplementedError("This method must be implemented by a subclass.")
 
-    def InitializeBetaIN():
+    def InitializeBetaIN(self):
         raise NotImplementedError("This method must be implemented by a subclass.")
 
-    def InitializeBetaOUT():
+    def InitializeBetaOUT(self):
         raise NotImplementedError("This method must be implemented by a subclass.")
 
 class InitializeToTruth(AbstractInitialization):
