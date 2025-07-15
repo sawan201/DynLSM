@@ -6,8 +6,7 @@ import os
 
 class Simulation():
     def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, 
-                 BetaIn, BetaOut, RandomWalkVariance, DirichletFactor, model_type, InitType, NumberOfSamples, BurnIn,
-                 outPath = os.getcwd()):
+                 BetaIn, BetaOut, DirichletFactor, model_type, outPath = os.getcwd()):
         self.T = T  # Number of time points
         self.n = n  # Number of actors
         self.p = p  # Latent space dimensions
