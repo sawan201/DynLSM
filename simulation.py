@@ -57,7 +57,11 @@ class Simulation():
     Main Function
     '''
 
-    def run(self):  # Main function to run the simulation and sampling
+    def run(self, fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, 
+            fixSigmaSq = False, fixTauSq = False):  
+        '''
+        Main function to run the simulation and sampling
+        '''
         np.random.seed(181)
         T, n, p = self.T, self.n, self.p
         SigmaSq = self.SigmaSq
@@ -164,7 +168,13 @@ class Simulation():
             dirichletFactor    = self.DirichletFactor,
             truth              = {"X" : LargeX, "R" : trueR, 
                                   "betaIN" : self.BetaIn, "betaOUT" : self.BetaOut, 
-                                  "tauSq" : self.TauSq, "sigmaSq" : self.SigmaSq}
+                                  "tauSq" : self.TauSq, "sigmaSq" : self.SigmaSq},
+            fixX               = fixX,
+            fixR               = fixR,
+            fixBetaIN          = fixBetaIN,
+            fixBetaOUT         = fixBetaOUT,
+            fixTauSq           = fixTauSq,
+            fixSigmaSq         = fixSigmaSq
         )
 
         # ---------- posterior summaries (after burn-in) ----------

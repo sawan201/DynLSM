@@ -33,7 +33,8 @@ class Gibbs:
 
     def RunGibbs(self, ns, p, modelType, initType, nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
                  thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200,
-                 truth = None):
+                 truth = None, fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, 
+                 fixSigmaSq = False, fixTauSq = False):
         '''
         Inputs: 
             ns (int number of steps)
@@ -113,57 +114,71 @@ class Gibbs:
         # Begin Sampling
         for iter in range(1, ns):
 
-            # Sample latent positions
-            for t in range(0, T):
-                if t == 0:
-                    logPosterior = conditionals.LogTime1ConditionalPosterior
-                elif t == T - 1:
-                    logPosterior = conditionals.LogTimeTConditionalPosterior
-                else:
-                    logPosterior = conditionals.LogMiddleTimeConditionalPosterior
+                # For testing, we may want to fix positions. Otherwise, continue
+                if not fixX:
+                # Sample latent positions
+                for t in range(0, T):
+                    if t == 0:
+                        logPosterior = conditionals.LogTime1ConditionalPosterior
+                    elif t == T - 1:
+                        logPosterior = conditionals.LogTimeTConditionalPosterior
+                    else:
+                        logPosterior = conditionals.LogMiddleTimeConditionalPosterior
 
-                for i in range(0, n):
-                    self.currentData["i"] = i
-                    self.currentData["t"] = t
-                    newPosition = self.MetropolisHastings(logPosterior, self.SampleFromIndMultivarNormal, positions[iter - 1, t, i], self.currentData)
-                    positions[iter, t, i] = newPosition
-                    self.currentData["X"][t, i] = newPosition
-                    print("Iteration", iter, "Time", t, "Actor", i, "completed.")
+                    for i in range(0, n):
+                        self.currentData["i"] = i
+                        self.currentData["t"] = t
+                        newPosition = self.MetropolisHastings(logPosterior, self.SampleFromIndMultivarNormal, positions[iter - 1, t, i], self.currentData)
+                        positions[iter, t, i] = newPosition
+                        self.currentData["X"][t, i] = newPosition
+                        print("Iteration", iter, "Time", t, "Actor", i, "completed.")
 
-            # Procrustes after finishing the latent-position updates for this iteration
-            X_mat   = positions[iter].reshape(T*n, p)   # Stack T time slices into one matrix
-            X0      = positions[0].reshape(T*n, p)
-            R, _    = orthogonal_procrustes(X_mat, X0)   # Solves the Procrustes problem
-            X_rot = (X_mat @ R).reshape(T, n, p)   # Applying the rotation to every (i, t) coordinate, reshape gets original tensor form back
+                # Procrustes after finishing the latent-position updates for this iteration
+                X_mat   = positions[iter].reshape(T*n, p)   # Stack T time slices into one matrix
+                X0      = positions[0].reshape(T*n, p)
+                R, _    = orthogonal_procrustes(X_mat, X0)   # Solves the Procrustes problem
+                X_rot = (X_mat @ R).reshape(T, n, p)   # Applying the rotation to every (i, t) coordinate, reshape gets original tensor form back
 
-            positions[iter] = X_rot   # Store rotated positions
-            self.currentData["X"] = X_rot.copy()
+                positions[iter] = X_rot   # Store rotated positions
+                self.currentData["X"] = X_rot.copy()
 
-            # Sample radii using Metropolis-Hastings
-            newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
-                                               self.currentData, 
-                                               LogProposalEvaluate = self.LogEvaluateDirichlet, 
-                                               proposalSymmetric= False)
-            radii[iter] = newRadii
-            self.currentData["r"] = newRadii
+                # We may want to fix radii for testing. Otherwise, continue
+                if not fixR:
+                # Sample radii using Metropolis-Hastings
+                newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
+                                                self.currentData, 
+                                                LogProposalEvaluate = self.LogEvaluateDirichlet, 
+                                                proposalSymmetric= False)
+                radii[iter] = newRadii
+                self.currentData["r"] = newRadii
 
-            # Sample betaIN and betaOUT using Metropolis-Hastings
-            newBetaIN = self.MetropolisHastings(conditionals.LogBetaINConditionalPosterior, self.SampleFromNormalFixedVar,
-                                        betaIN[iter - 1], self.currentData)
-            betaIN[iter] = newBetaIN
-            self.currentData["betaIN"] = newBetaIN
-            newBetaOUT = self.MetropolisHastings(conditionals.LogBetaOUTConditionalPosterior, self.SampleFromNormalFixedVar,
-                                            betaOUT[iter - 1], self.currentData)
-            betaOUT[iter] = newBetaOUT
-            self.currentData["betaOUT"] = newBetaOUT
+                # We may want to fix betaIN via a keyword argument
+                if not fixBetaIN:
+                # Sample betaIN and betaOUT using Metropolis-Hastings
+                newBetaIN = self.MetropolisHastings(conditionals.LogBetaINConditionalPosterior, self.SampleFromNormalFixedVar,
+                                            betaIN[iter - 1], self.currentData)
+                betaIN[iter] = newBetaIN
+                self.currentData["betaIN"] = newBetaIN
+                # We may want to fix betaOUT via a keyword argument
+                if not fixBetaOUT:
+                newBetaOUT = self.MetropolisHastings(conditionals.LogBetaOUTConditionalPosterior, self.SampleFromNormalFixedVar,
+                                                betaOUT[iter - 1], self.currentData)
+                betaOUT[iter] = newBetaOUT
+                self.currentData["betaOUT"] = newBetaOUT
 
-            # Sample tauSq and sigmaSq directly from conditional distribution
-            newTauSq = conditionals.SampleTauSquared(self.currentData["X"])
-            tauSq[iter] = newTauSq
-            self.currentData["tauSq"] = newTauSq
-            newSigmaSq = conditionals.SampleSigmaSquared(self.currentData["X"])
-            sigmaSq[iter] = newSigmaSq
-            self.currentData["sigmaSq"] = newSigmaSq
+                # We may want to fix tauSq via a keyword argument
+                if not fixTauSq:
+                # Sample tauSq and sigmaSq directly from conditional distribution
+                newTauSq = conditionals.SampleTauSquared(self.currentData["X"])
+                tauSq[iter] = newTauSq
+                self.currentData["tauSq"] = newTauSq
+                
+                # We may want to fix sigmaSq via a keyword argument
+                if not fixSigmaSq:
+                newSigmaSq = conditionals.SampleSigmaSquared(self.currentData["X"])
+                sigmaSq[iter] = newSigmaSq
+                self.currentData["sigmaSq"] = newSigmaSq
+                
             print("Iteration", iter, "completed.")
         return positions, radii, tauSq, sigmaSq, betaIN, betaOUT
 
