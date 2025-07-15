@@ -46,6 +46,7 @@ class InitializeToTruth(AbstractInitialization):
     # Allows us to initialize to the true values for testing
     def __init__(self, Y, X, r, betaIN, betaOUT, tauSq, sigmaSq, 
                  trueX, trueR, trueBetaIN, trueBetaOUT, trueTauSq, trueSigmaSq):
+        super().__init__(Y, X, r, betaIN, betaOUT, tauSq, sigmaSq) #Added so that we can use the constructor from AbstractInitialization
         self.Y = Y
         self.X = X
         self.r = r
@@ -59,6 +60,8 @@ class InitializeToTruth(AbstractInitialization):
         self.trueBetaOUT = trueBetaOUT
         self.trueTauSq = trueTauSq
         self.trueSigmaSq = trueSigmaSq
+
+    
     
     def InitializeX(self):
         self.X[0] = self.trueX
@@ -116,4 +119,4 @@ class ImprovedInitialization(AbstractInitialization):
         # Find the number incoming + number outgoing for each
         totalInteractions = sumAcrossSecondAxis + sumAcrossThirdAxis
         # Ensure that this sums to one (every interaction is represented twice)
-        self.r = totalInteractions / 2 * np.sum(totalInteractions)
+        self.r[0] = totalInteractions / 2 * np.sum(totalInteractions) #changed from self.r to self.r[0]

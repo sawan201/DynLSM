@@ -24,7 +24,7 @@ class Simulation():
         self.BetaIn = BetaIn  # Input effect parameter for the model
         self.BetaOut = BetaOut  # Output effect parameter for the model
         self.RandomWalkVariance = RandomWalkVariance  # Variance for the random walk (used in the model)
-        self.DirichletFactor = DirichletFactor  # Factor for the Dirichlet prior (not used in this context)
+        self.DirichletFactor = DirichletFactor  # Factor for the Dirichlet prior 
         self.model_type = model_type  # Type of model (e.g., "binary")
         self.InitType = InitType  # Initialization type for the model (e.g., "base")
         self.NumberOfSamples = NumberOfSamples  # Number of samples to draw in the Gibbs sampler
