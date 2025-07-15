@@ -106,7 +106,7 @@ class BaseInitialization(AbstractInitialization):
         self.tauSq[0] = 9
 
 class ImprovedInitialization(AbstractInitialization):
-    def initializeR(self):
+    def InitializeR(self):
         # Initialization as done in paper
         # Get the total interactions between two points across all time periods
         sumAcrossT = np.sum(self.Y, axis=0)
