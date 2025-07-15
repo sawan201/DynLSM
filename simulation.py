@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import os
 
 class Simulation():
-    def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, EtaIn, EtaOut, BetaIn, BetaOut, RandomWalkVariance, DirichletFactor, model_type, InitType, NumberOfSamples, BurnIn,
+    def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, 
+                 BetaIn, BetaOut, RandomWalkVariance, DirichletFactor, model_type, InitType, NumberOfSamples, BurnIn,
                  outPath = os.getcwd(), simName = ""):
         self.T = T  # Number of time points
         self.n = n  # Number of actors
