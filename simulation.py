@@ -161,7 +161,10 @@ class Simulation():
             phiTau             = phi_tau,
             alphas             = alphas,
             randomWalkVariance = self.RandomWalkVariance,
-            dirichletFactor    = self.DirichletFactor
+            dirichletFactor    = self.DirichletFactor,
+            truth              = {"X" : LargeX, "R" : trueR, 
+                                  "betaIN" : self.BetaIn, "betaOUT" : self.BetaOut, 
+                                  "tauSq" : self.TauSq, "sigmaSq" : self.SigmaSq}
         )
 
         # ---------- posterior summaries (after burn-in) ----------
