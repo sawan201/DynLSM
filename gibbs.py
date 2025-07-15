@@ -4,7 +4,6 @@ import numpy as np
 from scipy.stats import dirichlet
 import time
 from functools import wraps
-import line_profiler
 from scipy.linalg import orthogonal_procrustes
 
 
@@ -17,11 +16,11 @@ class Gibbs:
         self.Y = Y
         self.T = Y.shape[0]
         self.n = Y.shape[1]
+
     '''
     Time recording decorator
     '''
-
-# Test comment
+    # Test comment
     def timer(func):
         @wraps(func)  # preserves the original function name and docstring
         def wrapper(*args, **kwargs):
@@ -32,145 +31,142 @@ class Gibbs:
             return result
         return wrapper
 
-
-    @line_profiler.profile
     def RunGibbs(self, ns, p, modelType, initType, nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
                  thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200,
                  truth = None):
-            '''
-            Inputs: 
-                ns (int number of steps)
-                p (int dimension of latent space)
-                modelType (either "poisson" or "binary")
-                initialization (either "base" or something else that we create later)
-                nuIN (mean of prior on betaIN)
-                xiIN (variance of prior on betaIN)
-                nuOUT (mean of prior on betaOUT)
-                xiOUT (variance of prior on betaOUT)
-                thetaSigma (shape parameter of prior on SigmaSq)
-                phiSigma (scale parameter of prior on SigmaSq)
-                thetaTau (shape parameter of prior on TauSq)
-                phiTau (scale parameter of prior on TauSq)
-                alphas (parameters for Dirichlet prior on r_{1:n})
-                truth (if we are testing, a dictionary with the following keys:
-                    "X", "R", "betaIN", "betaOUT", "tauSq", "sigmaSq")
-            
-            ** FOR NOW: 
-                ** Fix the variance of the normal random walk
-                ** Fix the Dirichlet factor (what value we will use in the proposal)
-            
-            Outputs:
-                X (ns x T x n x p Numpy array of latent positions samples from Markov Chain)
-                r (ns x n Numpy array of reach samples from Markov Chain)
-                tauSq (ns array of tauSq samples from Markov Chain)
-                sigmaSq (ns array of sigmaSq samples from Markov Chain)
-                betaIN (ns array of betaIN samples from Markov Chain)
-                betaOUT (ns array of betaOUT samples from Markov Chain)
-            '''
-            # Read in necessary parameters
-            self.randomWalkVariance = randomWalkVariance
-            self.dirichletFactor = dirichletFactor
+        '''
+        Inputs: 
+            ns (int number of steps)
+            p (int dimension of latent space)
+            modelType (either "poisson" or "binary")
+            initialization (either "base" or something else that we create later)
+            nuIN (mean of prior on betaIN)
+            xiIN (variance of prior on betaIN)
+            nuOUT (mean of prior on betaOUT)
+            xiOUT (variance of prior on betaOUT)
+            thetaSigma (shape parameter of prior on SigmaSq)
+            phiSigma (scale parameter of prior on SigmaSq)
+            thetaTau (shape parameter of prior on TauSq)
+            phiTau (scale parameter of prior on TauSq)
+            alphas (parameters for Dirichlet prior on r_{1:n})
+            truth (if we are testing, a dictionary with the following keys:
+                "X", "R", "betaIN", "betaOUT", "tauSq", "sigmaSq")
+        
+        ** FOR NOW: 
+            ** Fix the variance of the normal random walk
+            ** Fix the Dirichlet factor (what value we will use in the proposal)
+        
+        Outputs:
+            X (ns x T x n x p Numpy array of latent positions samples from Markov Chain)
+            r (ns x n Numpy array of reach samples from Markov Chain)
+            tauSq (ns array of tauSq samples from Markov Chain)
+            sigmaSq (ns array of sigmaSq samples from Markov Chain)
+            betaIN (ns array of betaIN samples from Markov Chain)
+            betaOUT (ns array of betaOUT samples from Markov Chain)
+        '''
+        # Read in necessary parameters
+        self.randomWalkVariance = randomWalkVariance
+        self.dirichletFactor = dirichletFactor
 
-            # Assign the conditionals based on the input argument
-            if modelType == "binary":
-                conditionals = cds.BinaryConditionals(nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
-                                                    thetaTau, phiTau, alphas=alphas, p=p)
-            elif modelType == "poisson":
-                conditionals = cds.PoissonConditionals(nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
-                                                    thetaTau, phiTau, alphas = alphas, p = p)
+        # Assign the conditionals based on the input argument
+        if modelType == "binary":
+            conditionals = cds.BinaryConditionals(nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
+                                                  thetaTau, phiTau, alphas=alphas, p=p)
+        elif modelType == "poisson":
+            conditionals = cds.PoissonConditionals(nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
+                                                   thetaTau, phiTau, alphas = alphas, p = p)
 
-            # Define key things:
-            T = self.Y.shape[0]
-            n = self.Y.shape[1]
-            self.p = p
+        # Define key things:
+        T = self.Y.shape[0]
+        n = self.Y.shape[1]
+        self.p = p
 
-            # Set up empty Numpy arrays
-            positions = np.empty(shape=(ns, T, n, p))
-            radii = np.empty(shape=(ns, n))
-            betaIN = np.empty(shape=(ns))
-            betaOUT = np.empty(shape=(ns))
-            tauSq = np.empty(shape=(ns))
-            sigmaSq = np.empty(shape=(ns))
+        # Set up empty Numpy arrays
+        positions = np.empty(shape=(ns, T, n, p))
+        radii = np.empty(shape=(ns, n))
+        betaIN = np.empty(shape=(ns))
+        betaOUT = np.empty(shape=(ns))
+        tauSq = np.empty(shape=(ns))
+        sigmaSq = np.empty(shape=(ns))
 
-            # Assign the initialization based on the input argument
-            if initType == "base":
-                initialization = init.BaseInitialization(self.Y, positions, radii, betaIN, betaOUT, tauSq, sigmaSq)
-            
-            elif initType == "truth":
-                initialization = init.InitializeToTruth(self.Y, positions, radii, betaIN, betaOUT, tauSq, sigmaSq,
-                                                        truth["X"], truth["R"], truth["betaIN"], truth["betaOUT"],
-                                                        truth["tauSq"], truth["sigmaSq"])
+        # Assign the initialization based on the input argument
+        if initType == "base":
+            initialization = init.BaseInitialization(self.Y, positions, radii, betaIN, betaOUT, tauSq, sigmaSq)
+        
+        elif initType == "truth":
+            initialization = init.InitializeToTruth(self.Y, positions, radii, betaIN, betaOUT, tauSq, sigmaSq,
+                                                    truth["X"], truth["R"], truth["betaIN"], truth["betaOUT"],
+                                                    truth["tauSq"], truth["sigmaSq"])
 
-            # Set initial values for all
-            positions, radii, betaIN, betaOUT, tauSq, sigmaSq = initialization.InitializeAll()
+        # Set initial values for all
+        positions, radii, betaIN, betaOUT, tauSq, sigmaSq = initialization.InitializeAll()
 
-            # Setup the currentData dictionary
-            self.currentData = {"Y" : self.Y, 
-                                "X" : positions[0].copy(),
-                                "r" : radii[0].copy(),
-                                "betaIN" : betaIN[0],
-                                "betaOUT" : betaOUT[0],
-                                "tauSq" : tauSq[0],
-                                "sigmaSq" : sigmaSq[0]}            
+        # Setup the currentData dictionary
+        self.currentData = {"Y" : self.Y, 
+                            "X" : positions[0].copy(),
+                            "r" : radii[0].copy(),
+                            "betaIN" : betaIN[0],
+                            "betaOUT" : betaOUT[0],
+                            "tauSq" : tauSq[0],
+                            "sigmaSq" : sigmaSq[0]}            
 
-            # Begin Sampling
-            for iter in range(1, ns):
+        # Begin Sampling
+        for iter in range(1, ns):
 
-                # Sample latent positions
-                for t in range(0, T):
-                    if t == 0:
-                        logPosterior = conditionals.LogTime1ConditionalPosterior
-                    elif t == T - 1:
-                        logPosterior = conditionals.LogTimeTConditionalPosterior
-                    else:
-                        logPosterior = conditionals.LogMiddleTimeConditionalPosterior
+            # Sample latent positions
+            for t in range(0, T):
+                if t == 0:
+                    logPosterior = conditionals.LogTime1ConditionalPosterior
+                elif t == T - 1:
+                    logPosterior = conditionals.LogTimeTConditionalPosterior
+                else:
+                    logPosterior = conditionals.LogMiddleTimeConditionalPosterior
 
-                    for i in range(0, n):
-                        self.currentData["i"] = i
-                        self.currentData["t"] = t
-                        newPosition = self.MetropolisHastings(logPosterior, self.SampleFromIndMultivarNormal, positions[iter - 1, t, i], self.currentData)
-                        positions[iter, t, i] = newPosition
-                        self.currentData["X"][t, i] = newPosition
-                        print("Iteration", iter, "Time", t, "Actor", i, "completed.")
+                for i in range(0, n):
+                    self.currentData["i"] = i
+                    self.currentData["t"] = t
+                    newPosition = self.MetropolisHastings(logPosterior, self.SampleFromIndMultivarNormal, positions[iter - 1, t, i], self.currentData)
+                    positions[iter, t, i] = newPosition
+                    self.currentData["X"][t, i] = newPosition
+                    print("Iteration", iter, "Time", t, "Actor", i, "completed.")
 
-                # Procrustes after finishing the latent-position updates for this iteration
-                X_mat   = positions[iter].reshape(T*n, p)   # Stack T time slices into one matrix
-                X0      = positions[0].reshape(T*n, p)
-                R, _    = orthogonal_procrustes(X_mat, X0)   # Solves the Procrustes problem
-                X_rot = (X_mat @ R).reshape(T, n, p)   # Applying the rotation to every (i, t) coordinate, reshape gets original tensor form back
+            # Procrustes after finishing the latent-position updates for this iteration
+            X_mat   = positions[iter].reshape(T*n, p)   # Stack T time slices into one matrix
+            X0      = positions[0].reshape(T*n, p)
+            R, _    = orthogonal_procrustes(X_mat, X0)   # Solves the Procrustes problem
+            X_rot = (X_mat @ R).reshape(T, n, p)   # Applying the rotation to every (i, t) coordinate, reshape gets original tensor form back
 
-                positions[iter] = X_rot   # Store rotated positions
-                self.currentData["X"] = X_rot.copy()
+            positions[iter] = X_rot   # Store rotated positions
+            self.currentData["X"] = X_rot.copy()
 
-                # Sample radii using Metropolis-Hastings
-                newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
-                                                   self.currentData, 
-                                                   LogProposalEvaluate = self.LogEvaluateDirichlet, 
-                                                   proposalSymmetric= False)
-                radii[iter] = newRadii
-                self.currentData["r"] = newRadii
+            # Sample radii using Metropolis-Hastings
+            newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
+                                               self.currentData, 
+                                               LogProposalEvaluate = self.LogEvaluateDirichlet, 
+                                               proposalSymmetric= False)
+            radii[iter] = newRadii
+            self.currentData["r"] = newRadii
 
-                # Sample betaIN and betaOUT using Metropolis-Hastings
-                newBetaIN = self.MetropolisHastings(conditionals.LogBetaINConditionalPosterior, self.SampleFromNormalFixedVar,
-                                            betaIN[iter - 1], self.currentData)
-                betaIN[iter] = newBetaIN
-                self.currentData["betaIN"] = newBetaIN
-                newBetaOUT = self.MetropolisHastings(conditionals.LogBetaOUTConditionalPosterior, self.SampleFromNormalFixedVar,
-                                                betaOUT[iter - 1], self.currentData)
-                betaOUT[iter] = newBetaOUT
-                self.currentData["betaOUT"] = newBetaOUT
+            # Sample betaIN and betaOUT using Metropolis-Hastings
+            newBetaIN = self.MetropolisHastings(conditionals.LogBetaINConditionalPosterior, self.SampleFromNormalFixedVar,
+                                        betaIN[iter - 1], self.currentData)
+            betaIN[iter] = newBetaIN
+            self.currentData["betaIN"] = newBetaIN
+            newBetaOUT = self.MetropolisHastings(conditionals.LogBetaOUTConditionalPosterior, self.SampleFromNormalFixedVar,
+                                            betaOUT[iter - 1], self.currentData)
+            betaOUT[iter] = newBetaOUT
+            self.currentData["betaOUT"] = newBetaOUT
 
-                # Sample tauSq and sigmaSq directly from conditional distribution
-                newTauSq = conditionals.SampleTauSquared(self.currentData["X"])
-                tauSq[iter] = newTauSq
-                self.currentData["tauSq"] = newTauSq
-                newSigmaSq = conditionals.SampleSigmaSquared(self.currentData["X"])
-                sigmaSq[iter] = newSigmaSq
-                self.currentData["sigmaSq"] = newSigmaSq
-                print("Iteration", iter, "completed.")
-            return positions, radii, tauSq, sigmaSq, betaIN, betaOUT
+            # Sample tauSq and sigmaSq directly from conditional distribution
+            newTauSq = conditionals.SampleTauSquared(self.currentData["X"])
+            tauSq[iter] = newTauSq
+            self.currentData["tauSq"] = newTauSq
+            newSigmaSq = conditionals.SampleSigmaSquared(self.currentData["X"])
+            sigmaSq[iter] = newSigmaSq
+            self.currentData["sigmaSq"] = newSigmaSq
+            print("Iteration", iter, "completed.")
+        return positions, radii, tauSq, sigmaSq, betaIN, betaOUT
 
-    @line_profiler.profile
     def MetropolisHastings(self, ConditionalPosterior, ProposalSampler, currentValue, data, 
                         LogProposalEvaluate = None, proposalSymmetric = True, logPosterior = True):
         """
