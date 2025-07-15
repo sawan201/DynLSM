@@ -7,7 +7,7 @@ import os
 class Simulation():
     def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, 
                  BetaIn, BetaOut, RandomWalkVariance, DirichletFactor, model_type, InitType, NumberOfSamples, BurnIn,
-                 outPath = os.getcwd(), simName = ""):
+                 outPath = os.getcwd()):
         self.T = T  # Number of time points
         self.n = n  # Number of actors
         self.p = p  # Latent space dimensions
@@ -22,14 +22,9 @@ class Simulation():
         self.XiOut = XiOut  # Variance of prior for betaOUT
         self.BetaIn = BetaIn  # Input effect parameter for the model
         self.BetaOut = BetaOut  # Output effect parameter for the model
-        self.RandomWalkVariance = RandomWalkVariance  # Variance for the random walk (used in the model)
         self.DirichletFactor = DirichletFactor  # Factor for the Dirichlet prior 
         self.model_type = model_type  # Type of model (e.g., "binary")
-        self.InitType = InitType  # Initialization type for the model (e.g., "base")
-        self.NumberOfSamples = NumberOfSamples  # Number of samples to draw in the Gibbs sampler
-        self.BurnIn = BurnIn  # Number of initial samples to discard (burn-in period)
         self.outPath = outPath # Where to output the resulting .npz file to (a directory)
-        self.simName = simName # Name to attach to the simulation file
 
     '''
     Helper Functions
@@ -56,8 +51,8 @@ class Simulation():
     Main Function
     '''
 
-    def run(self, fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, 
-            fixSigmaSq = False, fixTauSq = False):  
+    def run(self, simName, numberOfSamples, burnIn, initType, randomWalkVariance,
+            fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, fixSigmaSq = False, fixTauSq = False):  
         '''
         Main function to run the simulation and sampling
         '''
@@ -142,8 +137,8 @@ class Simulation():
         # ------------------------------------------------------------
         #  RUN GIBBS SAMPLER AND CHECK PARAMETER RECOVERY
         # ------------------------------------------------------------
-        ns_total  = self.NumberOfSamples          # total MCMC sweeps
-        burn_in   = self.BurnIn          # first draws to discard
+        ns_total  = numberOfSamples          # total MCMC sweeps
+        burn_in   = burnIn          # first draws to discard
         alphas    = np.ones(n)     # flat Dirichlet prior for radii
 
         sampler = gibbs.Gibbs(Y)   # create sampler object with data
@@ -161,7 +156,7 @@ class Simulation():
             ns                 = ns_total,
             p                  = p,
             modelType          = self.model_type,
-            initType           = self.InitType,
+            initType           = initType,
             nuIN               = self.NuIn,
             xiIN               = self.XiIn,
             nuOUT              = self.NuOut,
@@ -171,7 +166,7 @@ class Simulation():
             thetaTau           = self.ThetaTau,
             phiTau             = phi_tau,
             alphas             = alphas,
-            randomWalkVariance = self.RandomWalkVariance,
+            randomWalkVariance = randomWalkVariance,
             dirichletFactor    = self.DirichletFactor,
             truth              = {"X" : LargeX, "R" : trueR, 
                                   "betaIN" : self.BetaIn, "betaOUT" : self.BetaOut, 
@@ -201,7 +196,7 @@ class Simulation():
         print(f"posterior mean of tauSq (true value varied each i) = {tauSq_hat:6.3f}")
         print("first five posterior means of r:", r_hat[:5])
 
-        out_file = os.path.join(self.outPath, f"sim_run_{model_type}{self.simName}_ns{ns_total}_T{T}_n{n}_p{p}.npz")
+        out_file = os.path.join(self.outPath, f"sim_run_{model_type}{simName}_ns{ns_total}_T{T}_n{n}_p{p}.npz")
         np.savez_compressed(out_file,
                             X_true=LargeX, Y=Y,
                             X_Chain=X_Chain, R_Chain=R_Chain,
@@ -211,5 +206,5 @@ class Simulation():
                             trueBetaOUT=self.BetaOut, trueSigmaSq=self.SigmaSq,
                             trueTauSq=self.TauSq, thetaTau=self.ThetaTau, thetaSigma=self.ThetaSigma,
                             phiSigma=self.PhiSigma, nuIn=self.NuIn, xiIn=self.XiIn, nuOut=self.NuOut,
-                            xiOut=self.XiOut, randomWalkVariance=self.RandomWalkVariance)
+                            xiOut=self.XiOut, randomWalkVariance=randomWalkVariance)
         print(f"Saved full chains to {out_file}")
