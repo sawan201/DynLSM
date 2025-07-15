@@ -110,6 +110,7 @@ class Gibbs:
                             "betaOUT" : betaOUT[0],
                             "tauSq" : tauSq[0],
                             "sigmaSq" : sigmaSq[0]}            
+        print(self.currentData)
 
         # Begin Sampling
         for iter in range(1, ns):
@@ -274,4 +275,5 @@ class Gibbs:
         return np.random.dirichlet(parameters)
 
     def LogEvaluateDirichlet(self, parameters, values):
-        return dirichlet.logpdf(values, parameters)
+        dirichletAdjustedParameters = self.dirichletFactor * parameters
+        return dirichlet.logpdf(values, dirichletAdjustedParameters)
