@@ -71,11 +71,11 @@ class Gibbs:
 
         # Assign the conditionals based on the input argument
         if modelType == "binary":
-            conditionals = cds.BinaryConditionals(nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
-                                                  thetaTau, phiTau, alphas=alphas, p=p)
+            conditionals = cds.BinaryConditionals(thetaTau, phiTau, thetaSigma, phiSigma, nuIN, xiIN,
+                                                  nuOUT, xiOUT, alphas = alphas, p = p)
         elif modelType == "poisson":
-            conditionals = cds.PoissonConditionals(nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
-                                                   thetaTau, phiTau, alphas = alphas, p = p)
+            conditionals = cds.PoissonConditionals(thetaTau, phiTau, thetaSigma, phiSigma, nuIN, xiIN,
+                                                   nuOUT, xiOUT, alphas = alphas, p = p)
 
         # Define key things:
         T = self.Y.shape[0]
