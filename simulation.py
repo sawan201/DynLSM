@@ -15,12 +15,10 @@ class Simulation():
         self.ThetaTau = ThetaTau  # Shape parameter for the tau prior (used in the model)
         self.ThetaSigma = ThetaSigma  # Shape parameter for the sigma prior (used in the model)
         self.PhiSigma = PhiSigma  # Scale parameter for the sigma prior (used in the model)
-        self.NuIn = NuIn  # Input effect parameter for the model
-        self.XiIn = XiIn  # Input effect parameter for the model
-        self.NuOut = NuOut  # Output effect parameter for the model
-        self.XiOut = XiOut  # Output effect parameter for the model
-        self.EtaIn = EtaIn  # Input effect parameter for the model
-        self.EtaOut = EtaOut  # Output effect parameter for the model
+        self.NuIn = NuIn  # Mean of prior for betaIN
+        self.XiIn = XiIn  # Variance of prior for betaIN
+        self.NuOut = NuOut  # Mean of prior for betaOUT
+        self.XiOut = XiOut  # Variance of prior for betaOUT
         self.BetaIn = BetaIn  # Input effect parameter for the model
         self.BetaOut = BetaOut  # Output effect parameter for the model
         self.RandomWalkVariance = RandomWalkVariance  # Variance for the random walk (used in the model)
@@ -164,9 +162,9 @@ class Simulation():
             modelType          = self.model_type,
             initType           = self.InitType,
             nuIN               = self.NuIn,
-            etaIN              = self.EtaIn,
+            xiIN               = self.XiIn,
             nuOUT              = self.NuOut,
-            etaOUT             = self.EtaOut,
+            xiOUT              = self.XiOut,
             thetaSigma         = self.ThetaSigma,
             phiSigma           = self.PhiSigma,
             thetaTau           = self.ThetaTau,
@@ -212,6 +210,5 @@ class Simulation():
                             trueBetaOUT=self.BetaOut, trueSigmaSq=self.SigmaSq,
                             trueTauSq=self.TauSq, thetaTau=self.ThetaTau, thetaSigma=self.ThetaSigma,
                             phiSigma=self.PhiSigma, nuIn=self.NuIn, xiIn=self.XiIn, nuOut=self.NuOut,
-                            xiOut=self.XiOut, etaIn=self.EtaIn, etaOut=self.EtaOut,
-                            randomWalkVariance=self.RandomWalkVariance)
+                            xiOut=self.XiOut, randomWalkVariance=self.RandomWalkVariance)
         print(f"Saved full chains to {out_file}")
