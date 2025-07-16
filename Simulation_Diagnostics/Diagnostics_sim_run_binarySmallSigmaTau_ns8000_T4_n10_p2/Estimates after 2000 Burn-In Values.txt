@@ -1,0 +1,19 @@
+
+            Global Parameters
+            betaIN Estimate:    1.2184877643198035    (true: 1.0, difference 0.21848776431980355)
+            betaOUT Estimate:   0.9074969359579139   (true: 2.0, difference -1.092503064042086)
+            tauSq Estimate:     7.99742899420905e-05     (true: 0.0004, difference -0.00032002571005790954)
+            sigmaSq Estimate:   0.00024829473824374617   (true: 0.0004, difference -0.00015170526175625385)
+            
+            Radii Parameters:
+            
+Radius Estimate for Index 0 Actor: 0.13821730293344392     (true: 0.11212280743036582, difference 0.026094495503078102)
+Radius Estimate for Index 1 Actor: 0.10782141895715981     (true: 0.07178317019999218, difference 0.03603824875716763)
+Radius Estimate for Index 2 Actor: 0.1785041390737721     (true: 0.1909957341570577, difference -0.012491595083285595)
+Radius Estimate for Index 3 Actor: 0.08081751136547045     (true: 0.08216588674348824, difference -0.0013483753780177826)
+Radius Estimate for Index 4 Actor: 0.06434181084628628     (true: 0.031099089345571953, difference 0.03324272150071432)
+Radius Estimate for Index 5 Actor: 0.05770786682510578     (true: 0.06227329994316695, difference -0.004565433118061173)
+Radius Estimate for Index 6 Actor: 0.09523517510035595     (true: 0.0980764618668602, difference -0.0028412867665042474)
+Radius Estimate for Index 7 Actor: 0.1314967413835722     (true: 0.20825581932967152, difference -0.07675907794609932)
+Radius Estimate for Index 8 Actor: 0.06794333002157918     (true: 0.056435394138966456, difference 0.011507935882612723)
+Radius Estimate for Index 9 Actor: 0.0779147034932544     (true: 0.08679233684485893, difference -0.008877633351604533)
