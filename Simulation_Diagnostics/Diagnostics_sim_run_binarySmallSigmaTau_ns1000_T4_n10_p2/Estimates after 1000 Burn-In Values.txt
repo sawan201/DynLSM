@@ -1,0 +1,19 @@
+
+            Global Parameters
+            betaIN Estimate:    nan    (true: 1.0, difference nan)
+            betaOUT Estimate:   nan   (true: 2.0, difference nan)
+            tauSq Estimate:     nan     (true: 0.0004, difference nan)
+            sigmaSq Estimate:   nan   (true: 0.0004, difference nan)
+            
+            Radii Parameters:
+            
+Radius Estimate for Index 0 Actor: nan     (true: 0.11212280743036582, difference nan)
+Radius Estimate for Index 1 Actor: nan     (true: 0.07178317019999218, difference nan)
+Radius Estimate for Index 2 Actor: nan     (true: 0.1909957341570577, difference nan)
+Radius Estimate for Index 3 Actor: nan     (true: 0.08216588674348824, difference nan)
+Radius Estimate for Index 4 Actor: nan     (true: 0.031099089345571953, difference nan)
+Radius Estimate for Index 5 Actor: nan     (true: 0.06227329994316695, difference nan)
+Radius Estimate for Index 6 Actor: nan     (true: 0.0980764618668602, difference nan)
+Radius Estimate for Index 7 Actor: nan     (true: 0.20825581932967152, difference nan)
+Radius Estimate for Index 8 Actor: nan     (true: 0.056435394138966456, difference nan)
+Radius Estimate for Index 9 Actor: nan     (true: 0.08679233684485893, difference nan)
