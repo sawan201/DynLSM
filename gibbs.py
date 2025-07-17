@@ -32,7 +32,8 @@ class Gibbs:
         return wrapper
 
     def RunGibbs(self, ns, p, modelType, initType, nuIN, xiIN, nuOUT, xiOUT, thetaSigma, phiSigma, 
-                 thetaTau, phiTau, alphas, randomWalkVariance = 9, dirichletFactor = 200,
+                 thetaTau, phiTau, alphas, 
+                 betaRandomWalkVariance = 9, positionRandomWalkVariance = 0.09, dirichletFactor = 10000,
                  truth = None, fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, 
                  fixSigmaSq = False, fixTauSq = False):
         '''
@@ -50,13 +51,14 @@ class Gibbs:
             thetaTau (shape parameter of prior on TauSq)
             phiTau (scale parameter of prior on TauSq)
             alphas (parameters for Dirichlet prior on r_{1:n})
+            betaRandomWalkVariance (variance of univariate normal random walk for betaIN and betaOUT proposal)
+            positionRandomWalkVariance (variance of independent multivariate normal random walk for position proposals)
+            dirichletFactor (factor to multiply prior iteration [sum to one] radii by in parameters of Dirichlet proposal)
             truth (if we are testing, a dictionary with the following keys:
                 "X", "R", "betaIN", "betaOUT", "tauSq", "sigmaSq")
-        
-        ** FOR NOW: 
-            ** Fix the variance of the normal random walk
-            ** Fix the Dirichlet factor (what value we will use in the proposal)
-        
+            fixX, fixR, fixBetaIN, fixBetaOUT, fixSigmaSq, fixTauSq:
+                (Booleans to fix each parameter at the initial value for use in testing)
+                
         Outputs:
             X (ns x T x n x p Numpy array of latent positions samples from Markov Chain)
             r (ns x n Numpy array of reach samples from Markov Chain)
@@ -66,7 +68,8 @@ class Gibbs:
             betaOUT (ns array of betaOUT samples from Markov Chain)
         '''
         # Read in necessary parameters
-        self.randomWalkVariance = randomWalkVariance
+        self.betaRandomWalkVariance = betaRandomWalkVariance
+        self.positionRandomWalkVariance = positionRandomWalkVariance
         self.dirichletFactor = dirichletFactor
 
         # Assign the conditionals based on the input argument
@@ -132,7 +135,8 @@ class Gibbs:
                     for i in range(0, n):
                         self.currentData["i"] = i
                         self.currentData["t"] = t
-                        newPosition = self.MetropolisHastings(logPosterior, self.SampleFromIndMultivarNormal, positions[iter - 1, t, i], self.currentData)
+                        newPosition = self.MetropolisHastings(logPosterior, self.SamplePositionsFromIndMultivarNormal, 
+                                                              positions[iter - 1, t, i], self.currentData)
                         positions[iter, t, i] = newPosition
                         self.currentData["X"][t, i] = newPosition
                         print("Iteration", iter, "Time", t, "Actor", i, "completed.")
@@ -152,10 +156,11 @@ class Gibbs:
             # Otherwise, sample as normal.
             else:
                 # Sample radii using Metropolis-Hastings
-                newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, self.SampleFromDirichlet, radii[iter - 1],
-                                                self.currentData, 
-                                                LogProposalEvaluate = self.LogEvaluateDirichlet, 
-                                                proposalSymmetric= False)
+                newRadii = self.MetropolisHastings(conditionals.LogRConditionalPosterior, 
+                                                   self.SampleFromDirichlet, radii[iter - 1],
+                                                   self.currentData, 
+                                                   LogProposalEvaluate = self.LogEvaluateDirichlet, 
+                                                   proposalSymmetric= False)
                 radii[iter] = newRadii
                 self.currentData["r"] = newRadii
 
@@ -165,8 +170,9 @@ class Gibbs:
             # Otherwise, sample betaIN as normal.
             else:
                 # Sample betaIN and betaOUT using Metropolis-Hastings
-                newBetaIN = self.MetropolisHastings(conditionals.LogBetaINConditionalPosterior, self.SampleFromNormalFixedVar,
-                                            betaIN[iter - 1], self.currentData)
+                newBetaIN = self.MetropolisHastings(conditionals.LogBetaINConditionalPosterior, 
+                                                    self.SampleBetaFromNormalFixedVar,
+                                                    betaIN[iter - 1], self.currentData)
                 betaIN[iter] = newBetaIN
                 self.currentData["betaIN"] = newBetaIN
             # We may want to fix betaOUT via a keyword argument
@@ -174,8 +180,9 @@ class Gibbs:
                 betaOUT[iter] = betaOUT[iter - 1]
             # Otherwise, sample betaOUT as normal.
             else:
-                newBetaOUT = self.MetropolisHastings(conditionals.LogBetaOUTConditionalPosterior, self.SampleFromNormalFixedVar,
-                                                betaOUT[iter - 1], self.currentData)
+                newBetaOUT = self.MetropolisHastings(conditionals.LogBetaOUTConditionalPosterior, 
+                                                     self.SampleBetaFromNormalFixedVar,
+                                                     betaOUT[iter - 1], self.currentData)
                 betaOUT[iter] = newBetaOUT
                 self.currentData["betaOUT"] = newBetaOUT
 
@@ -261,14 +268,18 @@ class Gibbs:
                 return currentValue
 
     # Samples from an independent multivariate normal distribution with self.randomWalkVariance and self.p dimensions
-    def SampleFromIndMultivarNormal(self, mean):
+    def SamplePositionsFromIndMultivarNormal(self, mean):
         # Uses the self.p and self.randomWalkVariance attributes, only needs the mean
-        cvMatrix = self.randomWalkVariance*np.eye(self.p)
+        cvMatrix = self.positionRandomWalkVariance*np.eye(self.p)
         return np.random.multivariate_normal(mean, cvMatrix)
     
     # Samples from a univariate normal distribution
     def SampleFromNormalFixedVar(self, mean):
         return np.random.normal(mean, np.sqrt(self.randomWalkVariance))
+
+    # Samples proposal beta from univariate normal distribution with the specified beta
+    def SampleBetaFromNormalFixedVar(self, mean):
+        return np.random.normal(mean, np.sqrt(self.betaRandomWalkVariance))
 
     def SampleFromDirichlet(self, alphas):
         parameters = self.dirichletFactor * alphas

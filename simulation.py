@@ -6,7 +6,7 @@ import os
 
 class Simulation():
     def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, 
-                 BetaIn, BetaOut, DirichletFactor, model_type, outPath = os.getcwd()):
+                 BetaIn, BetaOut, model_type, outPath = os.getcwd()):
         self.T = T  # Number of time points
         self.n = n  # Number of actors
         self.p = p  # Latent space dimensions
@@ -21,7 +21,6 @@ class Simulation():
         self.XiOut = XiOut  # Variance of prior for betaOUT
         self.BetaIn = BetaIn  # Input effect parameter for the model
         self.BetaOut = BetaOut  # Output effect parameter for the model
-        self.DirichletFactor = DirichletFactor  # Factor for the Dirichlet prior 
         self.model_type = model_type  # Type of model (e.g., "binary")
         self.outPath = outPath # Where to output the resulting .npz file to (a directory)
 
@@ -50,7 +49,8 @@ class Simulation():
     Main Function
     '''
 
-    def run(self, simName, numberOfSamples, burnIn, initType, randomWalkVariance,
+    def run(self, simName, numberOfSamples, burnIn, initType, 
+            betaRandomWalkVariance, positionRandomWalkVariance, dirichletFactor,
             fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, fixSigmaSq = False, fixTauSq = False):  
         '''
         Main function to run the simulation and sampling
@@ -165,8 +165,9 @@ class Simulation():
             thetaTau           = self.ThetaTau,
             phiTau             = phi_tau,
             alphas             = alphas,
-            randomWalkVariance = randomWalkVariance,
-            dirichletFactor    = self.DirichletFactor,
+            betaRandomWalkVariance      = betaRandomWalkVariance,
+            positionRandomWalkVariance  = positionRandomWalkVariance,
+            dirichletFactor    = dirichletFactor,
             truth              = {"X" : LargeX, "R" : trueR, 
                                   "betaIN" : self.BetaIn, "betaOUT" : self.BetaOut, 
                                   "tauSq" : self.TauSq, "sigmaSq" : self.SigmaSq},
@@ -201,9 +202,14 @@ class Simulation():
                             X_Chain=X_Chain, R_Chain=R_Chain,
                             betaIN_Chain=betaIN_Chain, betaOUT_Chain=betaOUT_Chain,
                             tauSqChain=tauSqChain, sigmaSqChain=sigmaSqChain,
+                            # True values
                             trueX=LargeX, trueR=trueR, trueBetaIN=self.BetaIn,
-                            trueBetaOUT=self.BetaOut, trueSigmaSq=self.SigmaSq,
-                            trueTauSq=self.TauSq, thetaTau=self.ThetaTau, thetaSigma=self.ThetaSigma,
-                            phiSigma=self.PhiSigma, nuIn=self.NuIn, xiIn=self.XiIn, nuOut=self.NuOut,
-                            xiOut=self.XiOut, randomWalkVariance=randomWalkVariance)
+                            trueBetaOUT=self.BetaOut, trueSigmaSq=self.SigmaSq, trueTauSq=self.TauSq, 
+                            # Hyperparameters on tauSq and sigmaSq priors
+                            thetaTau=self.ThetaTau, thetaSigma=self.ThetaSigma, phiSigma=self.PhiSigma, phiTau=phi_tau,
+                            # Hyperparameters on betaIN and betaOUT priors
+                            nuIn=self.NuIn, xiIn=self.XiIn, nuOut=self.NuOut, xiOut=self.XiOut,
+                            # Run-specific variances of random walk, dirichlet factor
+                            dirichletFactor=dirichletFactor, betaRandomWalkVariance=betaRandomWalkVariance, 
+                            positionRandomWalkVariance=positionRandomWalkVariance)
         print(f"Saved full chains to {out_file}")

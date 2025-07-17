@@ -155,6 +155,7 @@ class BinaryDiagnostics:
             ax.set_ylabel("Latent Y Position")
             ax.set_zlabel("Gibbs Iteration")
             ax.set_title(f"Position Trace Plot - Actor Index {i}, Time {t}")
+            plt.legend()
             plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}, Time {t}.png"))
             plt.close()
         
@@ -168,6 +169,7 @@ class BinaryDiagnostics:
             plt.xlabel("Gibbs Iteration")
             plt.ylabel("Latent Position")
             plt.title(f"Position Trace Plot - Actor Index {i}, Time {t}")
+            plt.legend()
             plt.savefig(os.path.join(self.outPath, f"Position Trace Plot - Actor Index {i}, Time {t}.png"))
             plt.close()
     
@@ -203,6 +205,7 @@ class BinaryDiagnostics:
             ax.set_ylabel("Latent Y Position")
             ax.set_zlabel("Time")
             ax.set_title(f"Average Position of Index {i} Actor Over Time")
+            plt.legend()
             plt.savefig(os.path.join(self.outPath, f"Dynamic Position Plot - Actor Index {i}.png"))
             plt.close()
         
@@ -219,6 +222,7 @@ class BinaryDiagnostics:
             plt.xlabel("Time")
             plt.ylabel("Latent Position")
             plt.title(f"Average Position of Index {i} Actor Over Time")
+            plt.legend()
             plt.savefig(os.path.join(self.outPath, f"Dynamic Position Plot - Actor Index {i}.png"))
             plt.close()
     
