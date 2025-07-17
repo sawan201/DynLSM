@@ -64,8 +64,9 @@ class InitializeToTruth(AbstractInitialization):
     
     
     def InitializeX(self):
-        self.X[0] = self.trueX
-    
+        self.X[:] = 0.0   # wipe junk in every slice
+        self.X[0] = self.trueX.copy()   # Storing independent array
+
     def InitializeR(self):
         self.r[0] = self.trueR
     
