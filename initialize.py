@@ -120,4 +120,4 @@ class ImprovedInitialization(AbstractInitialization):
         # Find the number incoming + number outgoing for each
         totalInteractions = sumAcrossSecondAxis + sumAcrossThirdAxis
         # Ensure that this sums to one (every interaction is represented twice)
-        self.r[0] = totalInteractions / 2 * np.sum(totalInteractions) #changed from self.r to self.r[0]
+        self.r[0] = totalInteractions / (2 * np.sum(totalInteractions)) #changed from self.r to self.r[0]
