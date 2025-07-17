@@ -34,7 +34,7 @@ class BinaryDiagnostics:
             self.trueSigmaSq = float(self.simResults["trueSigmaSq"])
             self.trueTauSq = float(self.simResults["trueTauSq"])
         
-        # Read in from .npz file
+        # Read in matrices/tensors from .npz file
         self.Y = self.simResults["Y"]
         self.XChain = self.simResults["X_Chain"]
         self.RChain = self.simResults["R_Chain"]
@@ -42,10 +42,42 @@ class BinaryDiagnostics:
         self.betaOUTChain = self.simResults["betaOUT_Chain"]
         self.tauSqChain = self.simResults["tauSqChain"]
         self.sigmaSqChain = self.simResults["sigmaSqChain"]
+        
+        # Read in attributes of run from .npz file
         self.ns = self.XChain.shape[0]  # number of steps in the Markov chain
         self.T = self.XChain.shape[1]   # number of timestamps
         self.n = self.XChain.shape[2]   # number of actors
         self.p = self.XChain.shape[3]   # dimension of latent space
+        self.dirichletFactor = float(self.simResults["dirichletFactor"])
+        self.betaRandomWalkVariance = float(self.simResults["betaRandomWalkVariance"])
+        self.positionRandomWalkVariance = float(self.simResults["positionRandomWalkVariance"])
+        self.initType = self.simResults["initType"].item()
+        self.modelType = self.simResults["modelType"].item()
+        self.randomSeed = float(self.simResults["randomSeed"])
+
+        # Read in hyperparameters from .npz file
+        self.nuIN = float(self.simResults["nuIN"])
+        self.nuOUT = float(self.simResults["nuOUT"])
+        self.xiIN = float(self.simResults["xiIN"])
+        self.xiOUT = float(self.simResults["xiOUT"])
+        self.thetaTau = float(self.simResults["thetaTau"])
+        self.thetaSigma = float(self.simResults["thetaSigma"])
+        self.phiTau = float(self.simResults["phiTau"])
+        self.phiSigma = float(self.simResults["phiSigma"])
+
+        # Read in acceptance ratios from .npz file
+        self.positionAcceptanceRatio = float(self.simResults["positionAcceptanceRatio"])
+        self.radiiAcceptanceRatio = float(self.simResults["radiiAcceptanceRatio"])
+        self.betaINAcceptanceRatio = float(self.simResults["betaINAcceptanceRatio"])
+        self.betaOUTAcceptanceRatio = float(self.simResults["betaOUTAcceptanceRatio"])
+
+        # Read in whether or not parameters were held constant
+        self.fixX = self.simResults["fixX"].item()
+        self.fixR = self.simResults["fixR"].item()
+        self.fixBetaIN = self.simResults["fixBetaIN"].item()
+        self.fixBetaOUT = self.simResults["fixBetaOUT"].item()
+        self.fixSigmaSq = self.simResults["fixSigmaSq"].item()
+        self.fixTauSq = self.simResults["fixTauSq"].item()
     
     def BuildAll(self, traceThinning = 1, likelihoodThinning = 1, burnIn = 0,
                  histBinMethod = "sturges", autoCorrMaxLag = None, showTruth = False):
@@ -276,19 +308,64 @@ class BinaryDiagnostics:
         radiiEstimate = np.mean(self.RChain[burnIn:, :], axis=0)
         positionEstimate = np.mean(self.XChain[burnIn:, :, :, :], axis=0)
 
+        # Begin parameter estimates/model summary with the specs and hyperparameters
+        outputString = f'''
+            n = {self.n}, T = {self.T}, p = {self.p}
+            Run for {self.ns} iterations of Gibbs sampler
+            Fixed beta random walk variance at {self.betaRandomWalkVariance}
+            Fixed position random walk variance at {self.positionRandomWalkVariance}
+            Dirichlet Factor: {self.dirichletFactor}
+            Random Seed: {self.randomSeed}
+
+            Priors:
+            betaIN  ~ Normal with mean {self.nuIN} (nuIN) and variance {self.xiIN} (xiIN)
+            betaOUT ~ Normal with mean {self.nuOUT} (nuOUT) and variance {self.xiIN} (xiIN)
+            tauSq   ~ Inverse Gamma with shape (alpha) parameter {self.thetaTau} and scale (beta) parameter {self.phiTau}
+            sigmaSq ~ Inverse Gamma with shape (alpha) parameter {self.thetaSigma} and scale (beta) parameter {self.phiSigma}
+
+            Were parameters held constant?
+            Positions (X):  {self.fixX}
+            Radii (r):      {self.fixR}
+            BetaIN:         {self.fixBetaIN}
+            BetaOUT:        {self.fixBetaOUT}
+            TauSq:          {self.fixTauSq}
+            SigmaSq:        {self.fixSigmaSq}
+
+            Acceptance Ratios:
+            Positions (X)   {self.positionAcceptanceRatio}
+            Radii (r)       {self.radiiAcceptanceRatio}
+            betaIN          {self.betaINAcceptanceRatio}
+            betaOUT         {self.betaOUTAcceptanceRatio}
+        '''
+
         if showTruth:
             # Save the globals and radii to a .txt file
-            outputString = f'''
+            outputString += f'''
             Global Parameters
-            betaIN Estimate:    {betaINEstimate}    (true: {self.trueBetaIN}, difference {betaINEstimate - self.trueBetaIN})
-            betaOUT Estimate:   {betaOUTEstimate}   (true: {self.trueBetaOUT}, difference {betaOUTEstimate - self.trueBetaOUT})
-            tauSq Estimate:     {tauSqEstimate}     (true: {self.trueTauSq}, difference {tauSqEstimate - self.trueTauSq})
-            sigmaSq Estimate:   {sigmaSqEstimate}   (true: {self.trueSigmaSq}, difference {sigmaSqEstimate - self.trueSigmaSq})
+            betaIN Estimate:    {betaINEstimate}    (true: {self.trueBetaIN})
+                (difference: {betaINEstimate - self.trueBetaIN}, percent error {self.CalculatePercentError(self.trueBetaIN, betaINEstimate)})
+            betaOUT Estimate:   {betaOUTEstimate}   (true: {self.trueBetaOUT})
+                (difference {betaOUTEstimate - self.trueBetaOUT}, percent error {self.CalculatePercentError(self.trueBetaOUT, betaOUTEstimate)})
+            tauSq Estimate:     {tauSqEstimate}     (true: {self.trueTauSq})
+                (difference {tauSqEstimate - self.trueTauSq}, percent erorr {self.CalculatePercentError(self.trueTauSq, tauSqEstimate)})
+            sigmaSq Estimate:   {sigmaSqEstimate}   (true: {self.trueSigmaSq})
+                (difference {sigmaSqEstimate - self.trueSigmaSq}, percent error {self.CalculatePercentError(self.trueSigmaSq, sigmaSqEstimate)})
             
             Radii Parameters:
             '''
             for i in range(self.n):
-                outputString += f"\nRadius Estimate for Index {i} Actor: {radiiEstimate[i]}     (true: {self.trueR[i]}, difference {radiiEstimate[i] - self.trueR[i]})"
+                outputString += f"\nRadius Estimate for Index {i} Actor: {radiiEstimate[i]}     (true: {self.trueR[i]})"
+                outputString += f"\n\t(difference {radiiEstimate[i] - self.trueR[i]}, percent error {self.CalculatePercentError(self.trueR[i], radiiEstimate[i])})"
+
+            outputString += '''
+            Latent Positions:
+            '''
+
+            for t in range(self.T):
+                outputString += f'''
+            Time t={t}:'''
+                for i in range(self.n):
+                    outputString += f"\nPosition Estimate for Index {i} Actor: {positionEstimate[t, i]}     (true: {self.trueX[t, i]})"
 
             # Save the estimates themselves
             np.savez(f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}.npz",
@@ -307,7 +384,7 @@ class BinaryDiagnostics:
 
         else:
             # Save the globals and radii to a .txt file
-            outputString = f'''
+            outputString += f'''
             Global Parameters
             betaIN Estimate:    {betaINEstimate}
             betaOUT Estimate:   {betaOUTEstimate}
@@ -318,6 +395,16 @@ class BinaryDiagnostics:
             '''
             for i in range(self.n):
                 outputString += f"\nRadius Estimate for Index {i} Actor: {radiiEstimate[i]}"
+
+            outputString += '''
+            Latent Positions:
+            '''
+
+            for t in range(self.T):
+                outputString += f'''
+            Time t={t}:'''
+                for i in range(self.n):
+                    outputString += f"\nPosition Estimate for Index {i} Actor: {positionEstimate[t, i]}"
 
             # Save to a .npz file
             np.savez(f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}_NoTruth.npz",
@@ -364,3 +451,7 @@ class BinaryDiagnostics:
         plt.tight_layout()
         plt.savefig(os.path.join(os.getcwd(), "Autocorrelation Plots - Global.png"))
         plt.close()
+    
+    def CalculatePercentError(self, truth, estimate):
+        # percent error = 100 * (estimate - truth) / truth
+        return (100 * (estimate - truth)) / truth

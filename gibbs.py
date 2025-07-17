@@ -85,6 +85,12 @@ class Gibbs:
         n = self.Y.shape[1]
         self.p = p
 
+        # Initialize variables for acceptance ratios:
+        self.positionAcceptances = 0
+        self.radiiAcceptances = 0
+        self.betaINAcceptances = 0
+        self.betaOUTAcceptances = 0
+
         # Set up empty Numpy arrays
         positions = np.empty(shape=(ns, T, n, p))
         radii = np.empty(shape=(ns, n))
@@ -139,6 +145,10 @@ class Gibbs:
                                                               positions[iter - 1, t, i], self.currentData)
                         positions[iter, t, i] = newPosition
                         self.currentData["X"][t, i] = newPosition
+                        # Add one to acceptances if we have a new position that is different from the prior one.
+                        self.positionAcceptances = self.CheckAcceptance(newPosition, 
+                                                                        positions[iter-1, t, i], 
+                                                                        self.positionAcceptances)
                         print("Iteration", iter, "Time", t, "Actor", i, "completed.")
 
                 # Procrustes after finishing the latent-position updates for this iteration
@@ -163,6 +173,8 @@ class Gibbs:
                                                    proposalSymmetric= False)
                 radii[iter] = newRadii
                 self.currentData["r"] = newRadii
+                # Add one to radiiAcceptances if we have a new chain value that is different from the one before.
+                self.radiiAcceptances = self.CheckAcceptance(radii[iter], radii[iter - 1], self.radiiAcceptances)
 
             # We may want to fix betaIN via a keyword argument
             if fixBetaIN:
@@ -175,6 +187,9 @@ class Gibbs:
                                                     betaIN[iter - 1], self.currentData)
                 betaIN[iter] = newBetaIN
                 self.currentData["betaIN"] = newBetaIN
+                # Add one to betaINAcceptances if we have a new chain value that is different from the one before
+                self.betaINAcceptances = self.CheckAcceptance(newBetaIN, betaIN[iter - 1], self.betaINAcceptances)
+
             # We may want to fix betaOUT via a keyword argument
             if fixBetaOUT:
                 betaOUT[iter] = betaOUT[iter - 1]
@@ -185,6 +200,8 @@ class Gibbs:
                                                      betaOUT[iter - 1], self.currentData)
                 betaOUT[iter] = newBetaOUT
                 self.currentData["betaOUT"] = newBetaOUT
+                # Add one to betaOUTAcceptances if we have a new chain value that is different from the one before
+                self.betaOUTAcceptances = self.CheckAcceptance(newBetaOUT, betaOUT[iter - 1], self.betaOUTAcceptances)
 
             # We may want to fix tauSq via a keyword argument
             if fixTauSq:
@@ -204,8 +221,15 @@ class Gibbs:
                 newSigmaSq = conditionals.SampleSigmaSquared(self.currentData["X"])
                 sigmaSq[iter] = newSigmaSq
                 self.currentData["sigmaSq"] = newSigmaSq
-        
+
             print("Iteration", iter, "Completed")
+        
+        # Calculate acceptance ratios
+        self.positionAcceptanceRatio = self.positionAcceptances / (ns * T * n)
+        self.radiiAcceptanceRatio = self.radiiAcceptances / ns
+        self.betaINAcceptanceRatio = self.betaINAcceptances / ns
+        self.betaOUTAcceptanceRatio = self.betaOUTAcceptances / ns
+
         return positions, radii, tauSq, sigmaSq, betaIN, betaOUT
 
     def MetropolisHastings(self, ConditionalPosterior, ProposalSampler, currentValue, data, 
@@ -288,3 +312,10 @@ class Gibbs:
     def LogEvaluateDirichlet(self, parameters, values):
         dirichletAdjustedParameters = self.dirichletFactor * parameters
         return dirichlet.logpdf(values, dirichletAdjustedParameters)
+
+    # Function to determine whether things are equal, and if so, add one to the third parameter passed in
+    def CheckAcceptance(self, value1, value2, numberAcceptances):
+        if value1 == value2:
+            return numberAcceptances + 1
+        else:
+            return numberAcceptances

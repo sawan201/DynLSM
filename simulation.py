@@ -211,5 +211,16 @@ class Simulation():
                             nuIn=self.NuIn, xiIn=self.XiIn, nuOut=self.NuOut, xiOut=self.XiOut,
                             # Run-specific variances of random walk, dirichlet factor
                             dirichletFactor=dirichletFactor, betaRandomWalkVariance=betaRandomWalkVariance, 
-                            positionRandomWalkVariance=positionRandomWalkVariance)
+                            positionRandomWalkVariance=positionRandomWalkVariance,
+                            # Acceptance ratios
+                            positionAcceptanceRatio=sampler.positionAcceptanceRatio,
+                            radiiAcceptanceRatio=sampler.radiiAcceptanceRatio,
+                            betaINAcceptanceRatio=sampler.betaINAcceptanceRatio,
+                            betaOUTAcceptanceRatio=sampler.betaOUTAcceptanceRatio,
+                            # Whether or not certain parameters were fixed
+                            fixX=fixX, fixR=fixR, fixBetaIN=fixBetaIN, 
+                            fixBetaOUT=fixBetaOUT, fixSigmaSq=fixSigmaSq, fixTauSq=fixTauSq,
+                            # Saving the model type and initialization type
+                            initType=initType, modelType=model_type, randomSeed=randomSeed
+                            )
         print(f"Saved full chains to {out_file}")
