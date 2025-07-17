@@ -50,12 +50,12 @@ class Simulation():
     '''
 
     def run(self, simName, numberOfSamples, burnIn, initType, 
-            betaRandomWalkVariance, positionRandomWalkVariance, dirichletFactor,
+            betaRandomWalkVariance, positionRandomWalkVariance, dirichletFactor, randomSeed,
             fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, fixSigmaSq = False, fixTauSq = False):  
         '''
         Main function to run the simulation and sampling
         '''
-        np.random.seed(181)
+        np.random.seed(randomSeed)
         T, n, p = self.T, self.n, self.p
         SigmaSq = self.SigmaSq
         TauSq = self.TauSq  # Variance for the tau prior
