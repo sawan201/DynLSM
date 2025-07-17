@@ -1,12 +1,4 @@
-from line_profiler import load_stats, show_text
-import contextlib
+import diagnostics
 
-# 1. Load your .lprof data
-stats = load_stats('ramsay_test.py.lprof')
-
-# 2. Open a text file and redirect print output into it
-with open('ramsay_results.txt', 'w') as f, contextlib.redirect_stdout(f):
-    # show_text takes (timings, unit) and prints the table to stdout
-    show_text(stats.timings, stats.unit)
-
-# When the with-block ends, profile_results.txt contains the full report.
+X = diagnostics.BinaryDiagnostics("/Users/saada/Desktop/School/2025/DRUMS 2025/DynLSM/sim_run_binaryBiggerTuned_ns1500_T4_n10_p1.npz", "/Users/saada/Desktop/School/2025/DRUMS 2025/DynLSM/Saad's Results 2", "binary", True)
+X.BuildAll()
