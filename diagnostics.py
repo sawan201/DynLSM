@@ -108,14 +108,18 @@ class BinaryDiagnostics:
                                         (self.tauSqChain, "Tau Squared", self.trueTauSq), 
                                         (self.sigmaSqChain, "Sigma Squared", self.trueSigmaSq)]:
             plt.figure(figsize=(10, 6))
-            plt.plot(stepIndices, data[stepIndices])
+            # plt.plot(stepIndices, data[stepIndices])
+            # Plot using NCSU color scheme
+            plt.plot(stepIndices, data[stepIndices], color="#000000")
             plt.title(f"Trace Plot for {name} (n={self.n}, T={self.T}, p={self.p})")
             if thinning != 1:
                 plt.xlabel(f"Iteration")
             else:
                 plt.xlabel(f"Iteration (thinning every {thinning} steps)")
             if showTruth:
-                plt.axhline(y=trueValue, color='red', linestyle='--', label='True Value')
+                # Plot using NCSU color scheme
+                plt.axhline(y=trueValue, color='#CC0000', linestyle='--', label='True Value')
+                # plt.axhline(y=trueValue, color='red', linestyle='--', label='True Value')
             plt.savefig(os.path.join(self.outPath, f"TracePlot - {name}.png"))
             plt.close()
 
@@ -133,9 +137,13 @@ class BinaryDiagnostics:
             plt.figure(figsize=(10, 6))
             plt.title(f"Histogram for {name}")
             cutData = data[burnIn:]
-            plt.hist(cutData, bins=binMethod)
+            # plt.hist(cutData, bins=binMethod)
+            # Plot using NC State color scheme
+            plt.hist(cutData, bins=binMethod, color="#000000")
             if showTruth:
-                plt.axvline(x=trueValue, color='red', linestyle='--', linewidth=2, label='True Value')
+                # plt.axvline(x=trueValue, color='red', linestyle='--', linewidth=2, label='True Value')
+                # Plot using NC State color scheme
+                plt.axvline(x=trueValue, color='#CC0000', linestyle='--', linewidth=2, label='True Value')
             plt.savefig(os.path.join(self.outPath, f"Histogram - {name}.png"))
             plt.close()
     
@@ -178,11 +186,13 @@ class BinaryDiagnostics:
             # Select the specific aspects of data
             latentDimX = data[:, 0]
             latentDimY = data[:, 1]
-            ax.plot(latentDimX, latentDimY, stepIndices, color='blue', linewidth=2, label="Chain Values")
+            ax.plot(latentDimX, latentDimY, stepIndices, color='#000000', linewidth=2, label="Chain Values")
             if showTruth:
                 trueDimX = self.trueX[t, i, 0]*np.ones(self.ns)
                 trueDimY = self.trueX[t, i, 1]*np.ones(self.ns)
-                ax.plot(trueDimX, trueDimY, np.arange(self.ns), label="True Value", color="red", linewidth=2)
+                # ax.plot(trueDimX, trueDimY, np.arange(self.ns), label="True Value", color="red", linewidth=2)
+                # Plot with NCSU color scheme.
+                ax.plot(trueDimX, trueDimY, np.arange(self.ns), label="True Value", color="#CC0000", linewidth=2)
             ax.set_xlabel("Latent X Position")
             ax.set_ylabel("Latent Y Position")
             ax.set_zlabel("Gibbs Iteration")
@@ -227,12 +237,16 @@ class BinaryDiagnostics:
             dim1Estimate = averagePositions[:, 0] # all time periods, first coordinate
             dim2Estimate = averagePositions[:, 1] # all time periods, second coordinate
             timeData = np.arange(self.T)      # number of time periods
-            ax.plot(dim1Estimate, dim2Estimate, timeData, color="blue", label="Chain Averages", linewidth=2)
+            # ax.plot(dim1Estimate, dim2Estimate, timeData, color="blue", label="Chain Averages", linewidth=2)
+            # Plot with NC State color scheme
+            ax.plot(dim1Estimate, dim2Estimate, timeData, color="#000000", label="Chain Averages", linewidth=2)
             if showTruth:
                 # Need to plot the true values (from self.trueX, which has shape (T, n, p))
                 trueDim1Data = self.trueX[:, i, 0]
                 trueDim2Data = self.trueX[:, i, 1]
-                ax.plot(trueDim1Data, trueDim2Data, timeData, color="red", label="True Positions", linewidth=2)
+                # ax.plot(trueDim1Data, trueDim2Data, timeData, color="red", label="True Positions", linewidth=2)
+                # Plot with NC State colors scheme
+                ax.plot(trueDim1Data, trueDim2Data, timeData, color="#CC0000", label="True Positions", linewidth=2)
             ax.set_xlabel("Latent X Position")
             ax.set_ylabel("Latent Y Position")
             ax.set_zlabel("Time")
