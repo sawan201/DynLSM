@@ -174,7 +174,8 @@ class Gibbs:
                 radii[iter] = newRadii
                 self.currentData["r"] = newRadii
                 # Add one to radiiAcceptances if we have a new chain value that is different from the one before.
-                self.radiiAcceptances = self.CheckAcceptance(radii[iter], radii[iter - 1], self.radiiAcceptances)
+                # We assume that if the first radius didn't change, they all didn't change.
+                self.radiiAcceptances = self.CheckAcceptance(radii[iter, 0], radii[iter - 1, 0], self.radiiAcceptances)
 
             # We may want to fix betaIN via a keyword argument
             if fixBetaIN:
