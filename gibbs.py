@@ -146,9 +146,14 @@ class Gibbs:
                         positions[iter, t, i] = newPosition
                         self.currentData["X"][t, i] = newPosition
                         # Add one to acceptances if we have a new position that is different from the prior one.
-                        self.positionAcceptances = self.CheckAcceptance(newPosition, 
-                                                                        positions[iter-1, t, i], 
-                                                                        self.positionAcceptances)
+                        if p == 1:
+                            self.positionAcceptances = self.CheckAcceptance(newPosition, 
+                                                                            positions[iter - 1, t, i],
+                                                                            self.positionAcceptances)
+                        else:
+                            self.positionAcceptances = self.CheckArrayAcceptance(newPosition, 
+                                                                                positions[iter-1, t, i], 
+                                                                                self.positionAcceptances)
                         print("Iteration", iter, "Time", t, "Actor", i, "completed.")
 
                 # Procrustes after finishing the latent-position updates for this iteration
@@ -175,7 +180,7 @@ class Gibbs:
                 self.currentData["r"] = newRadii
                 # Add one to radiiAcceptances if we have a new chain value that is different from the one before.
                 # We assume that if the first radius didn't change, they all didn't change.
-                self.radiiAcceptances = self.CheckAcceptance(radii[iter, 0], radii[iter - 1, 0], self.radiiAcceptances)
+                self.radiiAcceptances = self.CheckArrayAcceptance(radii[iter], radii[iter - 1], self.radiiAcceptances)
 
             # We may want to fix betaIN via a keyword argument
             if fixBetaIN:
@@ -317,6 +322,11 @@ class Gibbs:
     # Function to determine whether things are equal, and if so, add one to the third parameter passed in
     def CheckAcceptance(self, value1, value2, numberAcceptances):
         if value1 == value2:
+            return numberAcceptances + 1
+        else:
+            return numberAcceptances
+    def CheckArrayAcceptance(self, value1, value2, numberAcceptances):
+        if np.array_equal(value1, value2):
             return numberAcceptances + 1
         else:
             return numberAcceptances
