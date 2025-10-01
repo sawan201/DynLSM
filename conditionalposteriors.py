@@ -19,9 +19,7 @@ class ConditionalPosteriors:
         self.alphas = alphas
         self.p = p
 
-        # log-likelihood for a SINGLE BERNOULLI observation
-        # This can swap out for something like poisson over time, but the eta term will remain the same.
-        self.log_p = lambda y, eta: y * eta - np.logaddexp(0.0, eta)
+      
 
     def LogLikelihood(self, Y, X, r, betaIN, betaOUT, tauSq, sigmaSq):
         T, n, _ = Y.shape   # Last dimension is n, ignore with _
@@ -194,6 +192,22 @@ class ConditionalPosteriors:
 
 ### IMPLEMENTING SUBCLASSES FOR MODULAR SWAPPING ###
 class BinaryConditionals(ConditionalPosteriors):
+    def __init__(self,
+                 theta_tau,  phi_tau,
+                 theta_sig,  phi_sig,
+                 nu_in,      xi_in,
+                 nu_out,     xi_out,
+                 alphas=None,
+                 p=None):
+
+        super().__init__(theta_tau, phi_tau,
+                         theta_sig,  phi_sig,
+                         nu_in,      xi_in,
+                         nu_out,     xi_out,
+                         alphas=alphas,
+                         p=p)
+        
+        self.log_p = lambda y, eta: y * eta - np.logaddexp(0.0, eta)
     # Eta linear predictor for a SINGLE edge
     def eta(self, beta_in, beta_out, r_i, r_j, X_i, X_j):
         d_ijt = np.linalg.norm(X_i - X_j)   # Euclidean norm of x_i and x_j
@@ -213,7 +227,8 @@ class BinaryConditionals(ConditionalPosteriors):
 class PoissonConditionals(ConditionalPosteriors):
     """
     Dynamic latent–space model with Poisson edges
-    Y_ijt  ~  Poisson( λ_ijt ),     log λ_ijt = eta_ijt
+    Y_ijt  ~  Poisson( λ_ijt ),     log λ_ijt = eta_ijt => λ_ijt = exp(eta_ijt)
+    log(x!) = log(Gamma(x + 1))
     """
 
     def __init__(self,
@@ -231,9 +246,8 @@ class PoissonConditionals(ConditionalPosteriors):
                          alphas=alphas,
                          p=p)
 
-        # overwrite the Bernoulli log-pmf with the Poisson one
-        #   log p(y|η) = y*η − exp(η) − log(y!)
-        self.log_p = lambda y, eta: y * eta - np.exp(eta) - gammaln(y + 1)
+        
+        self.log_p = lambda y, eta: y * eta - np.exp(eta) - gammaln(y + 1.0)
 
     # — same η form as the binary model —
     def eta(self, beta_in, beta_out, r_i, r_j, X_i, X_j):
