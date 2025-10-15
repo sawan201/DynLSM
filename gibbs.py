@@ -35,7 +35,7 @@ class Gibbs:
                  thetaTau, phiTau, alphas, 
                  betaRandomWalkVariance = 9, positionRandomWalkVariance = 0.09, dirichletFactor = 10000,
                  truth = None, fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, 
-                 fixSigmaSq = False, fixTauSq = False):
+                 fixSigmaSq = False, fixTauSq = False, subsequence_length = 0):
         '''
         Inputs: 
             ns (int number of steps)
@@ -79,6 +79,11 @@ class Gibbs:
         elif modelType == "poisson":
             conditionals = cds.PoissonConditionals(thetaTau, phiTau, thetaSigma, phiSigma, nuIN, xiIN,
                                                    nuOUT, xiOUT, alphas = alphas, p = p)
+        
+        elif modelType == "case_control_binary":
+            conditionals = cds.CaseControlBinaryConditionals(thetaTau, phiTau, thetaSigma, phiSigma,
+                                                             nuIN, xiIN, nuOUT, xiOUT, subsequence_length,
+                                                             alphas = alphas, p = p)
 
         # Define key things:
         T = self.Y.shape[0]

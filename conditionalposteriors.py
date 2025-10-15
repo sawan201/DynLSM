@@ -266,3 +266,65 @@ class PoissonConditionals(ConditionalPosteriors):
         return self.log_p(y, eta_ij)
 
 # END
+
+# Written by LS, 10-2025
+class CaseControlBinaryConditionals(BinaryConditionals):
+    '''
+    Implements case-control methodology from Sewell & Chen's binary paper (supplemental work)
+    with **SIMPLE RANDOM SAMPLES** instead of stratified samples (easier for testing now,
+    but eventually could be overridden)
+    '''
+    def __init__(self,
+                 theta_tau,  phi_tau,
+                 theta_sig,  phi_sig,
+                 nu_in,      xi_in,
+                 nu_out,     xi_out,
+                 subsequence_length,
+                 alphas=None,
+                 p=None):
+
+        super().__init__(theta_tau, phi_tau,
+                         theta_sig,  phi_sig,
+                         nu_in,      xi_in,
+                         nu_out,     xi_out,
+                         alphas=alphas,
+                         p=p)
+        
+        self.log_p = lambda y, eta: y * eta - np.logaddexp(0.0, eta)
+        self.subsequence_length = subsequence_length
+
+    # Override the means of taking the log-likelihood here.
+    def LogLikelihood(self, Y, X, r, betaIN, betaOUT, tauSq, sigmaSq):
+        T, n, _ = Y.shape   # Last dimension is n, ignore with _
+        overall_log_like = 0.0
+        # Create the frame of numbers to sample from.
+        sample_frame = np.arange(n)
+        for t in range(T):
+            for i in range(n):   # Going over every sender
+                # Create the approximation for just this sender.
+                # (for the term involving the exp)
+                this_i_approximation = 0
+                # Get all the indices that are NOT i
+                filtered_sample_frame = sample_frame[sample_frame != i]
+                sample_subsequence = np.random.choice(filtered_sample_frame,
+                                                      size=self.subsequence_length,
+                                                      replace=False)
+
+                for j in range(n):   # Loop over receivers
+                    # Skip self-loops
+                    if i == j:
+                        continue
+                    # Check to see if y_{ijt} == 1
+                    if Y[t, i, j] == 1:
+                        # If so, we add the eta directly to the overall log-likelihood
+                        overall_log_like += self.eta(betaIN, betaOUT, r[i], r[j],
+                                                     X[t, i], X[j, i])
+                    # Check to see if the j is in the sample subsequence.
+                    if j in sample_subsequence:
+                        eta = self.eta(betaIN, betaOUT, r[i], r[j], X[t, i], X[j, i])
+                        # If so, we subtract log(1 + exp(eta_{ijt})) from the approximation
+                        this_i_approximation -= np.logaddexp(1, eta)
+                    # Turn the sum of the samples into an estimator of the whole:
+                    overall_log_like += ((n - 1)/self.subsequence_length) * this_i_approximation
+
+        return overall_log_like
