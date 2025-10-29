@@ -1,0 +1,148 @@
+
+            n = 17, T = 4, p = 2
+            Run for 10000 iterations of Gibbs sampler
+            Fixed beta random walk variance at 0.05
+            Fixed position random walk variance at 0.02
+            Dirichlet Factor: 80.0
+            Random Seed: 100.0
+
+            Priors:
+            betaIN  ~ Normal with mean 1.0 (nuIN) and variance 100.0 (xiIN)
+            betaOUT ~ Normal with mean 2.0 (nuOUT) and variance 100.0 (xiIN)
+            tauSq   ~ Inverse Gamma with shape (alpha) parameter 3.0 and scale (beta) parameter 0.0003002001095329469
+            sigmaSq ~ Inverse Gamma with shape (alpha) parameter 3.0 and scale (beta) parameter 0.0012
+
+            Were parameters held constant?
+            Positions (X):  False
+            Radii (r):      False
+            BetaIN:         False
+            BetaOUT:        False
+            TauSq:          False
+            SigmaSq:        False
+
+            Acceptance Ratios:
+            Positions (X)   0.9837117647058824
+            Radii (r)       0.9995
+            betaIN          0.4811
+            betaOUT         0.4078
+        
+            Global Parameters
+            betaIN Estimate:    1.068550601888912    (true: 1.0)
+                (difference: 0.06855060188891193, percent error 6.855060188891193)
+            betaOUT Estimate:   1.9223468408809268   (true: 2.0)
+                (difference -0.07765315911907322, percent error -3.882657955953661)
+            tauSq Estimate:     0.0011993337384903669     (true: 0.0004)
+                (difference 0.0007993337384903669, percent erorr 199.8334346225917)
+            sigmaSq Estimate:   0.00043468869671807676   (true: 0.0004)
+                (difference 3.4688696718076736e-05, percent error 8.672174179519184)
+            
+            Radii Parameters:
+            
+Radius Estimate for Index 0 Actor: 0.055773967529456174     (true: 0.007911560653839213)
+	(difference 0.047862406875616964, percent error 604.9679572688475)
+Radius Estimate for Index 1 Actor: 0.04870900714676145     (true: 0.039245381646837274)
+	(difference 0.009463625499924175, percent error 24.11398514374451)
+Radius Estimate for Index 2 Actor: 0.05019426341949544     (true: 0.05556793815679594)
+	(difference -0.0053736747373005, percent error -9.6704591092396)
+Radius Estimate for Index 3 Actor: 0.10622931493919482     (true: 0.04913900982945874)
+	(difference 0.05709030510973608, percent error 116.18122812786218)
+Radius Estimate for Index 4 Actor: 0.17698040128192227     (true: 0.17614876623352788)
+	(difference 0.0008316350483943968, percent error 0.47212084772246604)
+Radius Estimate for Index 5 Actor: 0.05393600013538551     (true: 0.0616759138411588)
+	(difference -0.007739913705773288, percent error -12.549329590327261)
+Radius Estimate for Index 6 Actor: 0.02099028516836664     (true: 0.033235756860643464)
+	(difference -0.012245471692276823, percent error -36.84426909133353)
+Radius Estimate for Index 7 Actor: 0.03923615369275447     (true: 0.08698595471612604)
+	(difference -0.04774980102337157, percent error -54.89369080238352)
+Radius Estimate for Index 8 Actor: 0.07221271654233481     (true: 0.0973763363475499)
+	(difference -0.025163619805215087, percent error -25.841616915430638)
+Radius Estimate for Index 9 Actor: 0.02873484773129098     (true: 0.03368423070898381)
+	(difference -0.004949382977692832, percent error -14.693471911094582)
+Radius Estimate for Index 10 Actor: 0.03554860311538874     (true: 0.014529240866810358)
+	(difference 0.02101936224857838, percent error 144.6693770257029)
+Radius Estimate for Index 11 Actor: 0.029535715360129656     (true: 0.03037630751166387)
+	(difference -0.0008405921515342134, percent error -2.7672624502219154)
+Radius Estimate for Index 12 Actor: 0.0377023400610298     (true: 0.0725831468243144)
+	(difference -0.034880806763284596, percent error -48.0563440542371)
+Radius Estimate for Index 13 Actor: 0.08265597124036496     (true: 0.024334730841721594)
+	(difference 0.058321240398643365, percent error 239.66256614045764)
+Radius Estimate for Index 14 Actor: 0.07472023571910509     (true: 0.14008680581978059)
+	(difference -0.0653665701006755, percent error -46.66147516045768)
+Radius Estimate for Index 15 Actor: 0.024595712488420383     (true: 0.02163991166650199)
+	(difference 0.0029558008219183925, percent error 13.65902443351418)
+Radius Estimate for Index 16 Actor: 0.06224446442861416     (true: 0.05547900747428598)
+	(difference 0.006765456954328175, percent error 12.1946250705078)
+            Latent Positions:
+            
+            Time t=0:
+Position Estimate for Index 0 Actor: [0.05407195 0.06332869]     (true: [-0.03499531  0.00685361])
+Position Estimate for Index 1 Actor: [-0.02158953  0.0311934 ]     (true: [ 0.02306072 -0.00504872])
+Position Estimate for Index 2 Actor: [-0.03029222  0.04222961]     (true: [0.01962642 0.01028438])
+Position Estimate for Index 3 Actor: [-0.04531121  0.05047996]     (true: [ 0.00442359 -0.02140087])
+Position Estimate for Index 4 Actor: [-0.02735362  0.01551162]     (true: [-0.00378992  0.00510003])
+Position Estimate for Index 5 Actor: [-0.02018285  0.02318535]     (true: [-0.00916054  0.00870327])
+Position Estimate for Index 6 Actor: [-0.02195945  0.01235432]     (true: [-0.0116719   0.01633694])
+Position Estimate for Index 7 Actor: [-0.03475227  0.02087238]     (true: [ 0.01345442 -0.00208822])
+Position Estimate for Index 8 Actor: [-0.03273986  0.00900857]     (true: [-0.01062561  0.02059465])
+Position Estimate for Index 9 Actor: [-0.04268036  0.03413049]     (true: [-0.00876271 -0.02236636])
+Position Estimate for Index 10 Actor: [ 0.03558241 -0.02117261]     (true: [0.03237963 0.0308321 ])
+Position Estimate for Index 11 Actor: [-0.04469474  0.02988649]     (true: [-0.00503758 -0.01684871])
+Position Estimate for Index 12 Actor: [-0.01275183  0.01044938]     (true: [0.00369037 0.01874164])
+Position Estimate for Index 13 Actor: [-0.00558163 -0.01303696]     (true: [0.01462001 0.02723112])
+Position Estimate for Index 14 Actor: [-0.03453454  0.02465313]     (true: [-0.00652476  0.00111352])
+Position Estimate for Index 15 Actor: [-0.05147933  0.04279012]     (true: [ 0.00444799 -0.02886434])
+Position Estimate for Index 16 Actor: [-0.03068303  0.01295067]     (true: [-0.01512705  0.01632908])
+            Time t=1:
+Position Estimate for Index 0 Actor: [0.04814803 0.06775417]     (true: [-0.01998641 -0.00226533])
+Position Estimate for Index 1 Actor: [0.00931091 0.05940562]     (true: [ 0.04685316 -0.03886106])
+Position Estimate for Index 2 Actor: [-0.03263907  0.0473226 ]     (true: [-0.00750157 -0.01436431])
+Position Estimate for Index 3 Actor: [-0.04077991  0.06461488]     (true: [-0.00646519 -0.0347643 ])
+Position Estimate for Index 4 Actor: [-0.04993926  0.03352529]     (true: [-0.00364363 -0.00715875])
+Position Estimate for Index 5 Actor: [-0.02649848  0.04167437]     (true: [ 0.01683442 -0.02595864])
+Position Estimate for Index 6 Actor: [-0.03843384  0.00961147]     (true: [-0.0313381  0.0234871])
+Position Estimate for Index 7 Actor: [-0.04484565  0.02005301]     (true: [-0.01881715  0.02732605])
+Position Estimate for Index 8 Actor: [-0.04825993  0.00851358]     (true: [-0.03438596  0.00959973])
+Position Estimate for Index 9 Actor: [-0.05331148  0.05284832]     (true: [-0.02756364 -0.03892501])
+Position Estimate for Index 10 Actor: [ 0.0531853  -0.02454462]     (true: [0.0345569 0.0409883])
+Position Estimate for Index 11 Actor: [-0.05281164  0.01878051]     (true: [-0.02228213  0.00814068])
+Position Estimate for Index 12 Actor: [-0.02478249  0.02565848]     (true: [0.00209815 0.00094701])
+Position Estimate for Index 13 Actor: [-0.00770758 -0.03052223]     (true: [-0.00301596  0.0276039 ])
+Position Estimate for Index 14 Actor: [-0.03992452  0.0278043 ]     (true: [-0.00176787  0.00138449])
+Position Estimate for Index 15 Actor: [-0.07519319  0.05965636]     (true: [-0.0282626  -0.04974854])
+Position Estimate for Index 16 Actor: [-0.04709882 -0.00384595]     (true: [-0.00286627  0.03105318])
+            Time t=2:
+Position Estimate for Index 0 Actor: [0.04155325 0.06895503]     (true: [ 0.00055201 -0.03090914])
+Position Estimate for Index 1 Actor: [0.0007874  0.05393869]     (true: [ 0.0100294  -0.03153919])
+Position Estimate for Index 2 Actor: [-0.02828132  0.05478244]     (true: [-0.01413711 -0.02814867])
+Position Estimate for Index 3 Actor: [-0.04349467  0.10578591]     (true: [ 0.03422696 -0.04577859])
+Position Estimate for Index 4 Actor: [-0.03257264  0.05670286]     (true: [ 0.01136544 -0.03329859])
+Position Estimate for Index 5 Actor: [-0.03010615  0.0628692 ]     (true: [ 0.02844589 -0.0480491 ])
+Position Estimate for Index 6 Actor: [-0.0534795   0.00042513]     (true: [-0.01753567  0.0372249 ])
+Position Estimate for Index 7 Actor: [-0.04968369  0.01438885]     (true: [-0.0501509   0.04542554])
+Position Estimate for Index 8 Actor: [-0.05079689 -0.00076828]     (true: [-0.01880951  0.01816439])
+Position Estimate for Index 9 Actor: [-0.03704504  0.05306105]     (true: [-0.0253862  -0.03835934])
+Position Estimate for Index 10 Actor: [ 0.04834394 -0.01217996]     (true: [0.02298039 0.01699927])
+Position Estimate for Index 11 Actor: [-0.05217339  0.00533889]     (true: [-0.05640117  0.01552396])
+Position Estimate for Index 12 Actor: [-0.02512273  0.03705767]     (true: [ 0.03962962 -0.00659105])
+Position Estimate for Index 13 Actor: [ 0.0095293  -0.05341357]     (true: [0.03362276 0.02766425])
+Position Estimate for Index 14 Actor: [-0.04739539  0.01584938]     (true: [-0.00328834  0.00146364])
+Position Estimate for Index 15 Actor: [-0.09920065  0.07254602]     (true: [-0.03196288 -0.09949157])
+Position Estimate for Index 16 Actor: [-0.05387087  0.00603528]     (true: [-0.03695929  0.00832796])
+            Time t=3:
+Position Estimate for Index 0 Actor: [0.05434822 0.07424193]     (true: [-0.05891429 -0.0302428 ])
+Position Estimate for Index 1 Actor: [0.00291764 0.05244432]     (true: [ 0.00505162 -0.04054272])
+Position Estimate for Index 2 Actor: [-0.03135334  0.04559782]     (true: [-0.01148855 -0.02770439])
+Position Estimate for Index 3 Actor: [-0.04867506  0.13126828]     (true: [ 0.04057432 -0.06082687])
+Position Estimate for Index 4 Actor: [-0.04686957  0.04348944]     (true: [-0.01456239 -0.0313958 ])
+Position Estimate for Index 5 Actor: [-0.04949149  0.08273777]     (true: [ 0.01997159 -0.07176878])
+Position Estimate for Index 6 Actor: [-0.05095967  0.0080421 ]     (true: [-0.02484491  0.01180444])
+Position Estimate for Index 7 Actor: [-0.05936312  0.0022191 ]     (true: [-0.01842749  0.05929335])
+Position Estimate for Index 8 Actor: [-0.06154063 -0.00079253]     (true: [-0.05797114  0.01546836])
+Position Estimate for Index 9 Actor: [-0.04829644  0.01659888]     (true: [-0.05619852  0.00257494])
+Position Estimate for Index 10 Actor: [ 0.05007904 -0.00074092]     (true: [-0.0049596  -0.00494417])
+Position Estimate for Index 11 Actor: [-0.04909376  0.0105446 ]     (true: [-0.06117543 -0.01305738])
+Position Estimate for Index 12 Actor: [-0.0222827  0.0513174]     (true: [ 0.05860971 -0.006979  ])
+Position Estimate for Index 13 Actor: [ 0.02253613 -0.08054253]     (true: [0.05151471 0.04285811])
+Position Estimate for Index 14 Actor: [-0.04860403  0.01124486]     (true: [-0.03324275 -0.02241408])
+Position Estimate for Index 15 Actor: [-0.08928502  0.07673145]     (true: [-0.00603763 -0.08044606])
+Position Estimate for Index 16 Actor: [-0.04880733  0.01192346]     (true: [-0.06130438  0.00518266])
