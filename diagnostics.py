@@ -23,6 +23,8 @@ class BinaryDiagnostics:
         # We only need the conditionals for the likelihood function, not for any of their attributes
         if modelType == "binary":
             self.conditionals = cp.BinaryConditionals(0, 0, 0, 0, 0, 0, 0, 0)
+        elif modelType == "case_control_binary":
+            self.conditionals = cp.BinaryConditionals(0, 0, 0, 0, 0, 0, 0, 0)
         else:
             print("Model Type incorrectly specified. Use 'binary' for binary conditionals.")
         # truth = if a simulation study, this is a dictionary containing the true values
