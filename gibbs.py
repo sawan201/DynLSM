@@ -58,6 +58,7 @@ class Gibbs:
                 "X", "R", "betaIN", "betaOUT", "tauSq", "sigmaSq")
             fixX, fixR, fixBetaIN, fixBetaOUT, fixSigmaSq, fixTauSq:
                 (Booleans to fix each parameter at the initial value for use in testing)
+            subsequence_length (used in case-control)
                 
         Outputs:
             X (ns x T x n x p Numpy array of latent positions samples from Markov Chain)
@@ -73,6 +74,7 @@ class Gibbs:
         self.dirichletFactor = dirichletFactor
 
         # Assign the conditionals based on the input argument
+        print("ModelType:", modelType)
         if modelType == "binary":
             conditionals = cds.BinaryConditionals(thetaTau, phiTau, thetaSigma, phiSigma, nuIN, xiIN,
                                                   nuOUT, xiOUT, alphas = alphas, p = p)

@@ -51,7 +51,8 @@ class Simulation():
 
     def run(self, simName, numberOfSamples, burnIn, initType, 
             betaRandomWalkVariance, positionRandomWalkVariance, dirichletFactor, randomSeed,
-            fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, fixSigmaSq = False, fixTauSq = False):  
+            fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, fixSigmaSq = False, fixTauSq = False,
+            subsequence_length = None):  
         '''
         Main function to run the simulation and sampling
         '''
@@ -176,7 +177,8 @@ class Simulation():
             fixBetaIN          = fixBetaIN,
             fixBetaOUT         = fixBetaOUT,
             fixSigmaSq         = fixSigmaSq,
-            fixTauSq           = fixTauSq
+            fixTauSq           = fixTauSq,
+            subsequence_length = subsequence_length
         )
 
         # ---------- posterior summaries (after burn-in) ----------

@@ -318,10 +318,10 @@ class CaseControlBinaryConditionals(BinaryConditionals):
                     if Y[t, i, j] == 1:
                         # If so, we add the eta directly to the overall log-likelihood
                         overall_log_like += self.eta(betaIN, betaOUT, r[i], r[j],
-                                                     X[t, i], X[j, i])
+                                                     X[t, i], X[t, j])
                     # Check to see if the j is in the sample subsequence.
                     if j in sample_subsequence:
-                        eta = self.eta(betaIN, betaOUT, r[i], r[j], X[t, i], X[j, i])
+                        eta = self.eta(betaIN, betaOUT, r[i], r[j], X[t, i], X[t, j])
                         # If so, we subtract log(1 + exp(eta_{ijt})) from the approximation
                         this_i_approximation -= np.logaddexp(1, eta)
                     # Turn the sum of the samples into an estimator of the whole:
