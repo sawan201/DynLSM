@@ -2,31 +2,30 @@ import numpy as np
 import simulation
 import os 
 
-simName = "BiggerTuned"
-nsamples = 15000
-burnIn = 3000
+simName = "BadInit"
+nsamples = 10000
+burnIn = 2000
 
 # Initialize the simulation parameters
 T = 4  # Number of time points
-n = 10   # Number of actors
+n = 17   # Number of actors
 p = 2   # Latent space dimensions
 SigmaSq = 0.0004  # 1/5n^2
 TauSq = 0.0004  # Variance for the tau prior
-ThetaTau = 20.0  # Shape parameter for tau prior
-ThetaSigma = 20.0  # Shape parameter for sigma prior
-PhiSigma = 0.038  # Scale parameter for sigma prior
+ThetaTau = 3.0  # Shape parameter for tau prior
+ThetaSigma = 3.0  # Shape parameter for sigma prior
+PhiSigma = 0.0012  # Scale parameter for sigma prior
 NuIn = 1.0  # Input effect parameter for the model
-XiIn = 0.2  # Input effect parameter for the model
+XiIn = 100.0  # Input effect parameter for the model
 NuOut = 2.0  # Output effect parameter for the model
-XiOut = 0.2  # Output effect parameter for the model
+XiOut = 100.0  # Output effect parameter for the model
 BetaIn = 1  # Input effect parameter for the model
-BetaOut = 2  # Output effect parameter for the model
-DirichletFactor = 40  # Factor for the Dirichlet prior 
+BetaOut = 2  # Output effect parameter for the model  # Factor for the Dirichlet prior 
 model_type = "binary"  # Type of model (e.g., "binary")    
 
-sim = simulation.Simulation(T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, BetaIn, BetaOut, DirichletFactor, model_type)
+sim = simulation.Simulation(T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, BetaIn, BetaOut, model_type)
 
-sim.run(simName = simName, numberOfSamples = nsamples, burnIn = burnIn, initType = "truth", randomWalkVariance = 0.01, fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, fixSigmaSq = False, fixTauSq = False)
+sim.run(simName = simName, randomSeed = 100, dirichletFactor = 80, positionRandomWalkVariance = 0.02, betaRandomWalkVariance = 0.05, numberOfSamples = nsamples, burnIn = burnIn, initType = "base", fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, fixSigmaSq = False, fixTauSq = False)
 
 
 fname     = f"sim_run_{model_type}{simName}_ns{nsamples}_T{T}_n{n}_p{p}.npz"

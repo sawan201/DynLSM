@@ -56,10 +56,11 @@ class BinaryDiagnostics:
         self.randomSeed = float(self.simResults["randomSeed"])
 
         # Read in hyperparameters from .npz file
-        self.nuIN = float(self.simResults["nuIN"])
-        self.nuOUT = float(self.simResults["nuOUT"])
-        self.xiIN = float(self.simResults["xiIN"])
-        self.xiOUT = float(self.simResults["xiOUT"])
+        self.nuIN  = float(self.simResults["nuIN"]  if "nuIN"  in self.simResults.files else self.simResults["nuIn"])
+        self.nuOUT = float(self.simResults["nuOUT"] if "nuOUT" in self.simResults.files else self.simResults["nuOut"])
+        self.xiIN  = float(self.simResults["xiIN"]  if "xiIN"  in self.simResults.files else self.simResults["xiIn"])
+        self.xiOUT = float(self.simResults["xiOUT"] if "xiOUT" in self.simResults.files else self.simResults["xiOut"])
+
         self.thetaTau = float(self.simResults["thetaTau"])
         self.thetaSigma = float(self.simResults["thetaSigma"])
         self.phiTau = float(self.simResults["phiTau"])
