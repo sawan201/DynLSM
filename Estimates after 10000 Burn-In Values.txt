@@ -1,0 +1,92 @@
+
+            n = 10, T = 4, p = 2
+            Run for 15000 iterations of Gibbs sampler
+            Fixed beta random walk variance at 0.01
+            Fixed position random walk variance at 0.01
+            Dirichlet Factor: 40000.0
+            Random Seed: 42.0
+
+            Priors:
+            betaIN  ~ Normal with mean 1.0 (nuIN) and variance 0.2 (xiIN)
+            betaOUT ~ Normal with mean 2.0 (nuOUT) and variance 0.2 (xiIN)
+            tauSq   ~ Inverse Gamma with shape (alpha) parameter 20.0 and scale (beta) parameter 0.0003800643162221698
+            sigmaSq ~ Inverse Gamma with shape (alpha) parameter 20.0 and scale (beta) parameter 0.038
+
+            Were parameters held constant?
+            Positions (X):  False
+            Radii (r):      False
+            BetaIN:         False
+            BetaOUT:        False
+            TauSq:          False
+            SigmaSq:        False
+
+            Acceptance Ratios:
+            Positions (X)   0.49395666666666666
+            Radii (r)       0.49206666666666665
+            betaIN          0.9772
+            betaOUT         0.9735333333333334
+        
+            Global Parameters
+            betaIN Estimate:    0.0010924167238950057
+            betaOUT Estimate:   0.0015759066005643899
+            tauSq Estimate:     22.67720940884722
+            sigmaSq Estimate:   64.57804947158074
+            
+            Radii Parameters:
+            
+Radius Estimate for Index 0 Actor: 0.18071594974656083
+Radius Estimate for Index 1 Actor: 0.015399304369774507
+Radius Estimate for Index 2 Actor: 0.1275935715927487
+Radius Estimate for Index 3 Actor: 0.023267871991858723
+Radius Estimate for Index 4 Actor: 0.090734239102096
+Radius Estimate for Index 5 Actor: 0.18708137027889382
+Radius Estimate for Index 6 Actor: 0.0546994821432998
+Radius Estimate for Index 7 Actor: 0.18544125755583674
+Radius Estimate for Index 8 Actor: 0.0946797090984433
+Radius Estimate for Index 9 Actor: 0.04038724412048718
+            Latent Positions:
+            
+            Time t=0:
+Position Estimate for Index 0 Actor: [-10.35997242  -2.25786031]
+Position Estimate for Index 1 Actor: [11.31961275 13.67364371]
+Position Estimate for Index 2 Actor: [-2.86149172 11.93882096]
+Position Estimate for Index 3 Actor: [-2.75543247  7.06627078]
+Position Estimate for Index 4 Actor: [-6.65373506 10.79371264]
+Position Estimate for Index 5 Actor: [4.60788309 4.67816862]
+Position Estimate for Index 6 Actor: [ -9.66963414 -12.13772969]
+Position Estimate for Index 7 Actor: [-10.02386394   2.10393258]
+Position Estimate for Index 8 Actor: [ 4.19128741 -0.66824497]
+Position Estimate for Index 9 Actor: [ 0.40684426 -6.69381568]
+            Time t=1:
+Position Estimate for Index 0 Actor: [-7.25855812 -2.09659633]
+Position Estimate for Index 1 Actor: [-5.28563781 -9.94765078]
+Position Estimate for Index 2 Actor: [-7.69588408  2.00004083]
+Position Estimate for Index 3 Actor: [ 0.00988421 -3.40840954]
+Position Estimate for Index 4 Actor: [-3.10748187 10.36040366]
+Position Estimate for Index 5 Actor: [-5.74490375 -3.15578695]
+Position Estimate for Index 6 Actor: [-20.1276026    2.65011829]
+Position Estimate for Index 7 Actor: [-9.25363443  1.37415457]
+Position Estimate for Index 8 Actor: [-0.25953336  0.95666211]
+Position Estimate for Index 9 Actor: [-1.84766555 -0.25182292]
+            Time t=2:
+Position Estimate for Index 0 Actor: [5.06079501 2.08211262]
+Position Estimate for Index 1 Actor: [9.99606263 5.77327177]
+Position Estimate for Index 2 Actor: [-5.17891976 -7.13525023]
+Position Estimate for Index 3 Actor: [-3.89876627 -2.10170416]
+Position Estimate for Index 4 Actor: [ 3.62617469 -2.51363119]
+Position Estimate for Index 5 Actor: [-6.86169087 -6.40136319]
+Position Estimate for Index 6 Actor: [ 7.1096895  -5.68441356]
+Position Estimate for Index 7 Actor: [10.07648611 -2.73933276]
+Position Estimate for Index 8 Actor: [-10.66101974  -2.02020969]
+Position Estimate for Index 9 Actor: [-4.04420126 -0.7363819 ]
+            Time t=3:
+Position Estimate for Index 0 Actor: [12.00870757 -8.29267176]
+Position Estimate for Index 1 Actor: [ 8.51994361 -9.40940047]
+Position Estimate for Index 2 Actor: [-18.76583862   6.79821077]
+Position Estimate for Index 3 Actor: [-4.91401848 -7.96082983]
+Position Estimate for Index 4 Actor: [  1.20732933 -12.90049549]
+Position Estimate for Index 5 Actor: [ 1.67521485 -3.83903352]
+Position Estimate for Index 6 Actor: [-2.08893574  6.98464732]
+Position Estimate for Index 7 Actor: [-1.46128771 -5.65372471]
+Position Estimate for Index 8 Actor: [ -2.99515836 -16.46727777]
+Position Estimate for Index 9 Actor: [8.13401486 4.49146949]
