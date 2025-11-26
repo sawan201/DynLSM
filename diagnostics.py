@@ -307,7 +307,7 @@ class BinaryDiagnostics:
         plt.title("Log-Likelihood over Gibbs Iterations")
         plt.xlabel("Gibbs Iteration")
         plt.ylabel("Log-Likelihood")
-        plt.savefig(os.path.join(os.getcwd(), f"Log-Likelihood Plot After {burnIn} Burn-In.png"))
+        plt.savefig(os.path.join(self.outPath, f"Log-Likelihood Plot After {burnIn} Burn-In.png"))
         plt.close()
 
     def BuildParameterEstimates(self, showTruth = False, burnIn = 0):
@@ -364,7 +364,7 @@ class BinaryDiagnostics:
             betaOUT Estimate:   {betaOUTEstimate}   (true: {self.trueBetaOUT})
                 (difference {betaOUTEstimate - self.trueBetaOUT}, percent error {self.CalculatePercentError(self.trueBetaOUT, betaOUTEstimate)})
             tauSq Estimate:     {tauSqEstimate}     (true: {self.trueTauSq})
-                (difference {tauSqEstimate - self.trueTauSq}, percent erorr {self.CalculatePercentError(self.trueTauSq, tauSqEstimate)})
+                (difference {tauSqEstimate - self.trueTauSq}, percent error {self.CalculatePercentError(self.trueTauSq, tauSqEstimate)})
             sigmaSq Estimate:   {sigmaSqEstimate}   (true: {self.trueSigmaSq})
                 (difference {sigmaSqEstimate - self.trueSigmaSq}, percent error {self.CalculatePercentError(self.trueSigmaSq, sigmaSqEstimate)})
             
@@ -424,7 +424,9 @@ class BinaryDiagnostics:
                     outputString += f"\nPosition Estimate for Index {i} Actor: {positionEstimate[t, i]}"
 
             # Save to a .npz file
-            np.savez(f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}_NoTruth.npz",
+            outputPath = os.path.join(self.outPath,
+                                      f"Estimates_ns{self.ns}_T{self.T}_n{self.n}_p{self.p}_burn{burnIn}_NoTruth.npz")
+            np.savez(outputPath,
                     betaINEstimate = betaINEstimate,
                     betaOUTEstimate = betaOUTEstimate,
                     tauSqEstimate = tauSqEstimate,
@@ -432,7 +434,7 @@ class BinaryDiagnostics:
                     radiiEstimate = radiiEstimate,
                     positionEstimate = positionEstimate)
         
-        with open(os.path.join(os.getcwd(), f"Estimates after {burnIn} Burn-In Values.txt"), "w+") as writeFile:
+        with open(os.path.join(self.outPath, f"Estimates after {burnIn} Burn-In Values.txt"), "w+") as writeFile:
             writeFile.write(outputString)
     
     def BuildGlobalAutocorrelationPlots(self, burnIn = 0, maxLag = None):
@@ -466,7 +468,7 @@ class BinaryDiagnostics:
             ax.set_ylabel('Autocorrelation')
 
         plt.tight_layout()
-        plt.savefig(os.path.join(os.getcwd(), "Autocorrelation Plots - Global.png"))
+        plt.savefig(os.path.join(self.outPath, "Autocorrelation Plots - Global.png"))
         plt.close()
     
     def CalculatePercentError(self, truth, estimate):

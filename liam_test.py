@@ -2,9 +2,9 @@ import numpy as np
 import simulation
 import os 
 
-simName = "LiamFullSubsequenceTest11_10_25"
-nsamples = 30000
-burnIn = 5000
+simName = "LiamFixingAllButOne11_2025"
+nsamples = 10000
+burnIn = 2000
 
 # Initialize the simulation parameters
 T = 4  # Number of time points
@@ -22,7 +22,7 @@ XiOut = 0.2  # Output effect parameter for the model
 BetaIn = 1  # Input effect parameter for the model
 BetaOut = 2  # Output effect parameter for the model
 DirichletFactor = 40000  # Factor for the Dirichlet prior 
-model_type = "case_control_binary"  # Type of model (e.g., "binary")
+model_type = "binary"  # Type of model (e.g., "binary")
 subsequence_length = 9 # length of the subsequence to analyze for case-control    
 
 print("Started")
@@ -30,20 +30,32 @@ print("Started")
 sim = simulation.Simulation(T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, 
                             NuIn, XiIn, NuOut, XiOut, BetaIn, BetaOut, model_type)
 
-sim.run(simName = simName, numberOfSamples = nsamples, burnIn = burnIn, initType = "truth", 
-        betaRandomWalkVariance = 0.01, 
-        positionRandomWalkVariance=0.01,
-        dirichletFactor = DirichletFactor,
-        randomSeed=42,
-        fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, fixSigmaSq = False, fixTauSq = False,
-        subsequence_length = subsequence_length)
+vars = ["X", "R", "BetaIN", "BetaOUT", "SigmaSq", "TauSq"]
+
+for i in range(6):
+    fixMask = [j != i for j in range(6)]
+
+    simName = f"LiamFixAllBut{vars[i]}11_2025"
+    
+    sim.run(simName = simName, numberOfSamples = nsamples, burnIn = burnIn, initType = "truth", 
+            betaRandomWalkVariance = 0.01, 
+            positionRandomWalkVariance=0.001,
+            dirichletFactor = DirichletFactor,
+            randomSeed=42,
+            fixX = fixMask[0], 
+            fixR = fixMask[1], 
+            fixBetaIN = fixMask[2], 
+            fixBetaOUT = fixMask[3], 
+            fixSigmaSq = fixMask[4], 
+            fixTauSq = fixMask[5],
+            subsequence_length = subsequence_length)
 
 
-fname     = f"sim_run_{model_type}{simName}_ns{nsamples}_T{T}_n{n}_p{p}.npz"
-npz_path  = os.path.join(os.getcwd(), fname)
+    fname     = f"sim_run_{model_type}{simName}_ns{nsamples}_T{T}_n{n}_p{p}.npz"
+    npz_path  = os.path.join(os.getcwd(), fname)
 
-with np.load(npz_path) as data:
-    Y = data["Y"]          # (T, n, n) tensor of 0/1
+    with np.load(npz_path) as data:
+        Y = data["Y"]          # (T, n, n) tensor of 0/1
 
-density = Y.mean()         # proportion of ones
-print(f"{density*100:.4f}% of Y entries are 1")
+    density = Y.mean()         # proportion of ones
+    print(f"{density*100:.4f}% of Y entries are 1")
