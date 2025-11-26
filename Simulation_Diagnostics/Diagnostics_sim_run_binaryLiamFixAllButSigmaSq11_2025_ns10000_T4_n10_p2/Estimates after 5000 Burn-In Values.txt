@@ -32,7 +32,7 @@
             betaOUT Estimate:   2.0   (true: 2.0)
                 (difference 0.0, percent error 0.0)
             tauSq Estimate:     0.0004000000000000001     (true: 0.0004)
-                (difference 5.421010862427522e-20, percent erorr 1.3552527156068805e-14)
+                (difference 5.421010862427522e-20, percent error 1.3552527156068805e-14)
             sigmaSq Estimate:   0.0009981804803213855   (true: 0.0004)
                 (difference 0.0005981804803213856, percent error 149.54512008034638)
             

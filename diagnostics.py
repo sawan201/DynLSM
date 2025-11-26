@@ -92,6 +92,7 @@ class BinaryDiagnostics:
         self.BuildGlobalAutocorrelationPlots(burnIn, autoCorrMaxLag)
         self.BuildLogLikelihoodPlot(likelihoodThinning, None, burnIn)
         self.BuildParameterEstimates(showTruth, burnIn)
+        self.BuildAllDistanceTracePlots(showTruth, traceThinning, newDirectory=True)
         for i in range(self.n):
             self.BuildPositionDynamicPlot(i, showTruth, burnIn)
             self.BuildRadiusTracePlot(i, showTruth, traceThinning)
@@ -474,3 +475,64 @@ class BinaryDiagnostics:
     def CalculatePercentError(self, truth, estimate):
         # percent error = 100 * (estimate - truth) / truth
         return (100 * (estimate - truth)) / truth
+    
+    def BuildAllDistanceTracePlots(self, showTruth = False, thinning = 1, newDirectory = False):
+        '''
+        Builds a trace plot for each (i, j) pair (with i != j) at each time point for the distance in latent space
+        If newDirectory == True, we will create a new directory under self.outPath with name "DistancePlots"
+        '''
+        if newDirectory:
+            os.mkdir(os.path.join(self.outPath, "DistancePlots"))
+            positionOutPath = os.path.join(self.outPath, "DistancePlots")
+        
+        else:
+            positionOutPath = self.outPath
+
+        for t in range(self.T):
+            for i in range(self.n):
+                for j in range(self.n):
+                    if i <= j:
+                        # Don't want to create (i -> j) and (j -> i) plots or those for self-loops
+                        continue
+                    else:
+                        self.BuildDistanceTracePlot(t, i, j, showTruth, thinning, positionOutPath)
+    
+    def BuildDistanceTracePlot(self, timeIndex, actor1Index, actor2Index, showTruth = False, thinning = 1, 
+                               outPath = None):
+        '''
+        Builds a trace plot for a specific time index and actor indices.
+        Only every *thinning* steps will be shown
+        Outputs to the specific outPath specified
+        '''
+        # Set outPath to just our current one if it's not specified
+        if outPath is None:
+            outPath = self.outPath
+
+        # Get only the specific iterations of the Gibbs that we want.
+        stepIndices = range(0, self.ns, thinning)
+
+        # Get the data on the specific actors we want
+        actor1Data = self.XChain[stepIndices, timeIndex, actor1Index, :]
+        actor2Data = self.XChain[stepIndices, timeIndex, actor2Index, :]
+
+        # Find the distance between them
+        distances = np.linalg.norm(actor1Data - actor2Data, axis=1)
+
+        # Plot these distances
+        plt.figure(figsize=(8, 6))
+        plt.plot(stepIndices, distances, color='blue', linewidth=2, label="Chain Values")
+        
+        # Plot the true distances if needed
+        if showTruth:
+            actor1Truth = self.trueX[timeIndex, actor1Index, :]
+            actor2Truth = self.trueX[timeIndex, actor2Index, :]
+            trueDistance = np.linalg.norm(actor1Truth - actor2Truth) * np.ones(len(stepIndices))
+            plt.plot(stepIndices, trueDistance, label="True Value", color="red", linewidth=2)
+        
+        plt.title(f"Trace Plot of Distance between Actor {actor1Index} and {actor2Index} at Time {timeIndex}")
+        plt.legend()
+
+        # Save the plot
+        plt.savefig(os.path.join(outPath, 
+                    f"Distance Between Actors {actor1Index} and {actor2Index} at time {timeIndex} Trace Plot.png"))
+        plt.close()
