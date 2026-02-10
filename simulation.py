@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import os
 
 class Simulation():
-    def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut, 
-                 BetaIn, BetaOut, model_type, outPath = os.getcwd()):
+    def __init__(self, T, n, p, SigmaSq, TauSq, ThetaTau, ThetaSigma, PhiSigma, NuIn, XiIn, NuOut, XiOut,
+                 BetaIn, BetaOut, model_type, zeroInflationProb=0.5, outPath = os.getcwd()):
         self.T = T  # Number of time points
         self.n = n  # Number of actors
         self.p = p  # Latent space dimensions
@@ -22,6 +22,7 @@ class Simulation():
         self.BetaIn = BetaIn  # Input effect parameter for the model
         self.BetaOut = BetaOut  # Output effect parameter for the model
         self.model_type = model_type  # Type of model (e.g., "binary")
+        self.zeroInflationProb = zeroInflationProb  # Zero-inflation probability for ZIP model
         self.outPath = outPath # Where to output the resulting .npz file to (a directory)
 
     '''
@@ -128,11 +129,17 @@ class Simulation():
                         X_j=LargeX[t, j]  # Latent position of actor j at time t
                     )
                     
-                    # Convert log-odds to probability via the sigmoid function
-                    prob = self.sigmoid(eta)  # Probability of an edge occurring
-
-                    # Sample the edge as a Bernoulli trial
-                    Y[t, i, j] = np.random.binomial(n=1, p=prob)  # Draw 0 or 1
+                    # Sample based on model type
+                    if model_type == "binary" or model_type == "case_control_binary":
+                        prob = self.sigmoid(eta)
+                        Y[t, i, j] = np.random.binomial(n=1, p=prob)
+                    elif model_type == "poisson":
+                        Y[t, i, j] = np.random.poisson(np.exp(eta))
+                    elif model_type == "zero_inflated_poisson":
+                        if np.random.rand() < self.zeroInflationProb:
+                            Y[t, i, j] = 0
+                        else:
+                            Y[t, i, j] = np.random.poisson(np.exp(eta))
 
         # ------------------------------------------------------------
         #  RUN GIBBS SAMPLER AND CHECK PARAMETER RECOVERY
@@ -178,7 +185,8 @@ class Simulation():
             fixBetaOUT         = fixBetaOUT,
             fixSigmaSq         = fixSigmaSq,
             fixTauSq           = fixTauSq,
-            subsequence_length = subsequence_length
+            subsequence_length = subsequence_length,
+            zeroInflationProb  = self.zeroInflationProb
         )
 
         # ---------- posterior summaries (after burn-in) ----------
