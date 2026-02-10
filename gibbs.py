@@ -35,12 +35,13 @@ class Gibbs:
                  thetaTau, phiTau, alphas, 
                  betaRandomWalkVariance = 9, positionRandomWalkVariance = 0.09, dirichletFactor = 10000,
                  truth = None, fixX = False, fixR = False, fixBetaIN = False, fixBetaOUT = False, 
-                 fixSigmaSq = False, fixTauSq = False, subsequence_length = 0):
+                 fixSigmaSq = False, fixTauSq = False, subsequence_length = 0,
+                 zeroInflationProb = 0.5):
         '''
         Inputs: 
             ns (int number of steps)
             p (int dimension of latent space)
-            modelType (either "poisson" or "binary")
+            modelType (either "poisson", "zero_inflated_poisson", or "binary")
             initialization (either "base" or something else that we create later)
             nuIN (mean of prior on betaIN)
             xiIN (variance of prior on betaIN)
@@ -81,6 +82,10 @@ class Gibbs:
         elif modelType == "poisson":
             conditionals = cds.PoissonConditionals(thetaTau, phiTau, thetaSigma, phiSigma, nuIN, xiIN,
                                                    nuOUT, xiOUT, alphas = alphas, p = p)
+        elif modelType == "zero_inflated_poisson":
+            conditionals = cds.ZeroInflatedPoissonConditionals(thetaTau, phiTau, thetaSigma, phiSigma, nuIN, xiIN,
+                                                               nuOUT, xiOUT, alphas=alphas, p=p,
+                                                               zeroInflationProb=zeroInflationProb)
         
         elif modelType == "case_control_binary":
             conditionals = cds.CaseControlBinaryConditionals(thetaTau, phiTau, thetaSigma, phiSigma,
