@@ -265,6 +265,52 @@ class PoissonConditionals(ConditionalPosteriors):
         eta_ij = self.eta(betaIN, betaOUT, r[i], r[j], X[t, i], X[t, j])
         return self.log_p(y, eta_ij)
 
+class ZeroInflatedPoissonConditionals(ConditionalPosteriors):
+    """
+    Zero-inflated Poisson model for count data with excess zeros, where the probability of a zero 
+    is a mixture of a point mass at zero and a Poisson distribution. Controlled by pi.
+    """
+
+    def __init__(self,
+                 theta_tau,  phi_tau,
+                 theta_sig,  phi_sig,
+                 nu_in,      xi_in,
+                 nu_out,     xi_out,
+                 alphas=None,
+                 p=None,
+                 zeroInflationProb=0.5):
+
+        super().__init__(theta_tau, phi_tau,
+                         theta_sig,  phi_sig,
+                         nu_in,      xi_in,
+                         nu_out,     xi_out,
+                         alphas=alphas,
+                         p=p)
+
+        self.zeroInflationProb = zeroInflationProb
+        self.log_zeroInflationProb = np.log(self.zeroInflationProb)
+        self.log_oneMinusZeroInflationProb = np.log(1.0 - self.zeroInflationProb)
+        self.log_p = lambda y, eta: (
+            np.logaddexp(self.log_zeroInflationProb,
+                         self.log_oneMinusZeroInflationProb - np.exp(eta))
+            if y == 0 else
+            self.log_oneMinusZeroInflationProb + y * eta - np.exp(eta) - gammaln(y + 1.0)
+        )
+
+    def eta(self, beta_in, beta_out, r_i, r_j, X_i, X_j):
+        d_ijt = np.linalg.norm(X_i - X_j)
+        return (beta_in  * (1.0 - d_ijt / r_j) +
+                beta_out * (1.0 - d_ijt / r_i))
+
+    def LogPijt(self, Y, X, r,
+                betaIN, betaOUT,
+                tauSq, sigmaSq,
+                i, j, t):
+
+        y      = Y[t, i, j]
+        eta_ij = self.eta(betaIN, betaOUT, r[i], r[j], X[t, i], X[t, j])
+        return self.log_p(y, eta_ij)
+
 # END
 
 # Written by LS, 10-2025
